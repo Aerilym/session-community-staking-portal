@@ -4,6 +4,7 @@ import type { BLSPublicKey, Ed25519PublicKey, EthereumAddress } from '@session/u
 import { useWallet } from '@session/wallet/hooks/useWallet';
 import { useMemo } from 'react';
 import type { Address } from 'viem';
+import { zeroAddress } from 'viem';
 import { arbitrum, arbitrumSepolia } from 'viem/chains';
 import type { ReadContractData } from 'wagmi/query';
 import type { ServiceNodeRewardsAbi } from '../abis';
@@ -280,11 +281,11 @@ export function useRemoveBLSPublicKeyWithSignature({
   };
 }
 
-export function useGetRecipients({ address }: { address: Address }) {
+export function useGetRecipients({ address }: { address?: Address }) {
   const { data: recipients, ...rest } = useContractReadQuery({
     contract: 'ServiceNodeRewards',
     functionName: 'recipients',
-    args: [address],
+    args: [address ?? zeroAddress],
     enabled: !!address,
   });
 

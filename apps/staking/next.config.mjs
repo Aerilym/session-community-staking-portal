@@ -1,3 +1,4 @@
+import { join } from 'node:path';
 import createNextIntlPlugin from 'next-intl/plugin';
 
 const withNextIntl = createNextIntlPlugin('./lib/locale-server.ts');
@@ -41,6 +42,16 @@ const nextConfig = {
   env:{
     APP_DEBUG: debugEnv,
   },
+  images: {
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+  },
+  // NOTE: Turbopack restricts module resolution to the workspace root it
+  // detects (this repo). The web3sheet workspace packages are linked from
+  // outside the repo, so give Turbopack a root that contains both repos.
+  turbopack: {
+    root: join(import.meta.dirname, '../../..'),
+  },
   transpilePackages: [
     '@session/ui',
     '@session/wallet',
@@ -76,7 +87,7 @@ const nextConfig = {
       },
       {
         source: '/support',
-        destination: 'https://discord.gg/sessiontoken',
+        destination: 'https://community.seshtoken.info/r/general/',
         permanent: false,
       },
       {

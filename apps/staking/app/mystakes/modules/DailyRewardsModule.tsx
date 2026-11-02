@@ -2,6 +2,7 @@
 
 import DynamicModuleCard from '@/app/mystakes/modules/DynamicModuleCard';
 import type { AddressModuleProps } from '@/app/mystakes/modules/types';
+import { SeshAmountWithUsd } from '@/components/FiatUsd';
 import { useDailyRewards } from '@/hooks/useDailyRewards';
 import { DYNAMIC_MODULE } from '@/lib/constants';
 import { formatDate } from '@/lib/locale-client';
@@ -57,7 +58,10 @@ export default function DailyRewardsModule({
       size={size}
       variant={variant}
     >
-      {formatSENTBigInt(dailyRewardAmount, DYNAMIC_MODULE.SENT_ROUNDED_DECIMALS)}
+      <SeshAmountWithUsd
+        amount={dailyRewardAmount ?? null}
+        formatted={formatSENTBigInt(dailyRewardAmount, DYNAMIC_MODULE.SENT_ROUNDED_DECIMALS)}
+      />
     </DynamicModuleCard>
   );
 }

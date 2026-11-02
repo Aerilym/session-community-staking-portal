@@ -3,6 +3,7 @@
 import DynamicModuleCard from '@/app/mystakes/modules/DynamicModuleCard';
 import type { AddressModuleProps } from '@/app/mystakes/modules/types';
 import { useTotalStaked } from '@/app/mystakes/modules/useTotalStaked';
+import { SeshAmountWithUsd } from '@/components/FiatUsd';
 import type { QUERY_STATUS } from '@/lib/query';
 import { useTranslations } from 'next-intl';
 
@@ -12,7 +13,8 @@ export default function StakedBalanceModule({
   variant = 'hero',
 }: AddressModuleProps) {
   const dict = useTranslations('modules.balance');
-  const { totalStakedFormatted, status, refetch, enabled } = useTotalStaked(addressOverride);
+  const { totalStakedFormatted, totalStaked, status, refetch, enabled } =
+    useTotalStaked(addressOverride);
 
   return (
     <DynamicModuleCard
@@ -23,7 +25,7 @@ export default function StakedBalanceModule({
       size={size}
       variant={variant}
     >
-      {totalStakedFormatted}
+      <SeshAmountWithUsd amount={totalStaked ?? null} formatted={totalStakedFormatted} />
     </DynamicModuleCard>
   );
 }

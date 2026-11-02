@@ -24,6 +24,8 @@ export enum ButtonDataTestId {
   Agree_TOS = 'button:agree-tos',
   Claim_Tokens_Open_Dialog = 'button:claim-tokens-open-dialog',
   Claim_Tokens_Submit = 'button:claim-tokens-submit',
+  Claim_Tokens_Legacy_Toggle = 'button:claim-tokens-legacy-toggle',
+  Claim_Tokens_Fee_Mode_Toggle = 'button:claim-tokens-fee-mode-toggle',
   Hide_Prepared_Registration = 'button:hide-prepared-registration',
   Staked_Node_Request_Exit = 'button:staked-node-request-exit',
   Staked_Node_Exit = 'button:staked-node-exit',

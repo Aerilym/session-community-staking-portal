@@ -19,7 +19,13 @@ export type WalletButtonProps = Omit<ButtonProps, 'data-testid'> & {
   identifierOverride?: ReactNode;
 };
 
-export function useWalletTokenBalance() {
+export function useWalletTokenBalance(): {
+  value: bigint | undefined;
+  decimals: number | undefined;
+  symbol: string | undefined;
+  balance: string;
+  refetch: () => Promise<unknown>;
+} {
   const { chainId, tokens } = useWallet();
 
   const token = useMemo(

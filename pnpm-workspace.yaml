@@ -1,6 +1,7 @@
 packages:
   - apps/*
   - packages/*
+  - ../web3sheet/packages/*
 onlyBuiltDependencies:
   - '@biomejs/biome'
   - better-sqlite3-multiple-ciphers

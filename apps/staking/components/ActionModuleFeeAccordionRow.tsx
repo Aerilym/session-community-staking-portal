@@ -15,8 +15,9 @@ export function ActionModuleFeeAccordionRow({
   gasHighTooltip,
   gasHighShowTooltip,
   showDivider,
+  hideGasIcon,
 }: {
-  label: string;
+  label: ReactNode;
   tooltip: ReactNode;
   fees: Array<{
     label: string;
@@ -28,8 +29,9 @@ export function ActionModuleFeeAccordionRow({
   hasMissingEstimatesTooltipContent: ReactNode;
   gasHighShowTooltip?: boolean;
   gasHighTooltip?: ReactNode;
-  totalFee: string | null;
+  totalFee: ReactNode | null;
   showDivider?: boolean;
+  hideGasIcon?: boolean;
 }) {
   const hasMissingEstimates = fees.some(({ fee, hasExemption }) => fee === null && !hasExemption);
   const exemptFromAllFees = fees.every(({ hasExemption }) => hasExemption);
@@ -66,7 +68,7 @@ export function ActionModuleFeeAccordionRow({
           <AlertTooltip tooltipContent={hasMissingEstimatesTooltipContent} />
         ) : null}
         {gasHighShowTooltip ? <AlertTooltip tooltipContent={gasHighTooltip} /> : null}
-        <FuelIcon className="h-3.5 w-3.5" />
+        {!hideGasIcon ? <FuelIcon className="h-3.5 w-3.5" /> : null}
         {totalFee ? (
           <span className="inline-flex items-center gap-2 text-nowrap align-middle">
             <span className={cn(exemptFromAllFees && 'line-through')}>{totalFee}</span>

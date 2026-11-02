@@ -2,8 +2,18 @@
   "extends": "@session/typescript-config/nextjs.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "declaration": false,
+    "declarationMap": false,
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "wagmi": ["../../packages/contracts/node_modules/wagmi"],
+      "wagmi/*": ["../../packages/contracts/node_modules/wagmi/*"],
+      "@wagmi/core": ["../../packages/contracts/node_modules/@wagmi/core"],
+      "@wagmi/core/*": ["../../packages/contracts/node_modules/@wagmi/core/*"],
+      "@wagmi/connectors": ["../../packages/contracts/node_modules/@wagmi/connectors"],
+      "@wagmi/connectors/*": ["../../packages/contracts/node_modules/@wagmi/connectors/*"],
+      "viem": ["../../packages/contracts/node_modules/viem"],
+      "viem/*": ["../../packages/contracts/node_modules/viem/*"]
     },
     "plugins": [
       {

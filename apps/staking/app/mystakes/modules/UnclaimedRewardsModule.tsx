@@ -2,6 +2,7 @@
 
 import DynamicModuleCard from '@/app/mystakes/modules/DynamicModuleCard';
 import type { AddressModuleProps } from '@/app/mystakes/modules/types';
+import { SeshAmountWithUsd } from '@/components/FiatUsd';
 import { useNetworkBalances } from '@/hooks/useNetworkBalances';
 import { DYNAMIC_MODULE, URL } from '@/lib/constants';
 import { externalLink } from '@/lib/locale-defaults';
@@ -33,7 +34,10 @@ export default function UnclaimedRewardsModule({
       size={size}
       variant={variant}
     >
-      {formatSENTBigInt(claimableRewards, DYNAMIC_MODULE.SENT_ROUNDED_DECIMALS)}
+      <SeshAmountWithUsd
+        amount={claimableRewards ?? null}
+        formatted={formatSENTBigInt(claimableRewards, DYNAMIC_MODULE.SENT_ROUNDED_DECIMALS)}
+      />
     </DynamicModuleCard>
   );
 }

@@ -30,7 +30,7 @@ export function Footer() {
 
   return (
     <FooterComp
-      logo={{ src: '/images/logo.png', alt: 'Session Token Logo' }}
+      logo={{ src: '/images/logo-community.svg', alt: 'seshtoken.info — community staking' }}
       menuItems={menuItems}
       socialLinks={socialLinks}
       footerManagedBy={dictionary('managedBy')}

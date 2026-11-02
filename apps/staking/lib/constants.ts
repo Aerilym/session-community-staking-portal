@@ -50,12 +50,10 @@ export enum COMMUNITY_DATE {
 }
 
 export const SOCIALS = {
-  [Social.Discord]: { name: Social.Discord, link: 'https://discord.gg/sessiontoken' },
-  [Social.X]: { name: Social.X, link: 'https://x.com/session_token' },
-  [Social.Youtube]: { name: Social.Youtube, link: 'https://www.youtube.com/@sessiontv' },
-  [Social.Session]: { name: Social.Session, link: 'https://getsession.org/' },
-  [Social.Github]: { name: Social.Github, link: 'https://github.com/session-foundation/websites' },
-  [Social.RSS]: { name: Social.RSS, link: 'https://token.getsession.org/blog/feed' },
+  [Social.Discord]: { name: Social.Discord, link: 'https://getsession.org/discord' },
+  [Social.Session]: { name: Social.Session, link: 'https://community.seshtoken.info/r/general/' },
+  [Social.X]: { name: Social.X, link: 'https://x.com/aerilym' },
+  [Social.Github]: { name: Social.Github, link: 'https://github.com/aerilym/session-websites' },
 } satisfies Partial<Record<Social, SocialLink>>;
 
 export enum FAUCET {
@@ -236,6 +234,7 @@ export enum PREFERENCE {
   INFO_NOTICE_DONT_SHOW_REGISTER = 'infoNoticeDontShowRegister',
   INFO_NOTICE_DONT_SHOW_STAKE = 'infoNoticeDontShowStake',
   INFO_NOTICE_DONT_SHOW_STAKE_TOP_UP = 'infoNoticeDontShowStakeTopUp',
+  CLAIM_FEE_PAY_IN_SESH = 'claimFeePayInSesh',
   MY_STAKES_SETTINGS_VIEW = 'myStakesSettingsView',
 }
 
@@ -299,6 +298,12 @@ export const prefDetails = {
     label: "Don't show staking top up warning",
     type: 'boolean',
     defaultValue: false,
+  },
+  [PREFERENCE.CLAIM_FEE_PAY_IN_SESH]: {
+    label: 'Pay Claim Fee in SESH',
+    type: 'boolean',
+    defaultValue: false,
+    description: 'Pay the claim service fee in SESH instead of ETH',
   },
 } as const satisfies WalletSheetSettingDetailsGenerator;
 

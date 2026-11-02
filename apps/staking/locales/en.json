@@ -26,7 +26,7 @@
   },
   "metadata": {
     "root": {
-      "title": "Session Staking Portal",
+      "title": "SESH Token Community Staking Portal",
       "description": "Stake and get rewarded for securing the Session Network."
     },
     "notFound": {
@@ -326,8 +326,17 @@
         "updateBalanceCost": "Update Balance Cost:",
         "updateBalanceCostExemptionReason": "You have already updated your rewards balance.",
         "claimRewardsCost": "Claim Cost:",
+        "serviceFeeTransferCost": "Service Fee Transfer Cost:",
         "amountClaimable": "Amount Claimable",
         "amountClaimableTooltip": "Amount of unlocked {tokenSymbol} able to be claimed.",
+        "serviceFee": "Service Fee",
+        "serviceFeeTooltip": "Fee charged by this portal for the single-transaction claim service. Use the legacy claim to avoid the fee.",
+        "serviceFeeFlat": "Flat Fee:",
+        "serviceFeeBps": "Proportional Fee ({percent}% of claim):",
+        "serviceFeePayInSesh": "Pay service fee in SESH",
+        "netAfterFee": "You will receive",
+        "legacyToggle": "Use legacy claim (2 transactions, no fee)",
+        "batchedToggle": "Use single-transaction claim",
         "buttons": {
           "submit": "Claim {tokenSymbol}",
           "submitAria": "Claim {tokenSymbol} with a claim gas fee of {gasAmount} {gasTokenSymbol}"
@@ -342,6 +351,11 @@
       "error": "An error occurred while fetching the signature for your unclaimed rewards. Please try again. If the problem persists, submit a ticket in the <discord-link>Session Token Discord</discord-link> for assistance.",
       "errorButton": "Retry",
       "stage": {
+        "batch": {
+          "idle": "Confirm the claim in your wallet",
+          "pending": "Claiming {tokenAmount} on Arbitrum",
+          "success": "Claimed {tokenAmount} on Arbitrum"
+        },
         "balance": {
           "idle": "Updating claim amount on Arbitrum",
           "pending": "Updating claim amount on Arbitrum",

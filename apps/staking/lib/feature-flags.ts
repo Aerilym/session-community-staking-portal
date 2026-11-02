@@ -11,6 +11,7 @@ export enum REMOTE_FEATURE_FLAG {
   DISABLE_NODE_REGISTRATION_MULTI = 'remote_disableNodeRegistrationMulti',
   DISABLE_NODE_REGISTRATION_RESERVED = 'remote_disableNodeRegistrationReserved',
   DISABLE_CLAIM_REWARDS = 'remote_disableClaimRewards',
+  DISABLE_BATCHED_CLAIM = 'remote_disableBatchedClaim',
   DISABLE_REQUEST_NODE_EXIT = 'remote_disableRequestNodeExit',
   DISABLE_NODE_EXIT = 'remote_disableNodeExit',
   DISABLE_NODE_STAKING_MULTI = 'remote_disableNodeStakingMulti',
@@ -30,6 +31,10 @@ export const remoteFeatureFlagsInfo: Record<
   [REMOTE_FEATURE_FLAG.DISABLE_CLAIM_REWARDS]: {
     name: 'Disable Claim Rewards',
     description: 'Disable the ability to claim rewards.',
+  },
+  [REMOTE_FEATURE_FLAG.DISABLE_BATCHED_CLAIM]: {
+    name: 'Disable Batched Claim',
+    description: 'Force the legacy two-transaction claim flow for all users.',
   },
   [REMOTE_FEATURE_FLAG.DISABLE_REQUEST_NODE_EXIT]: {
     name: 'Disable Node Exit Request',

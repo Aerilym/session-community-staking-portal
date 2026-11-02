@@ -105,7 +105,7 @@ export const ActionModuleTooltip = forwardRef<HTMLDivElement, HTMLAttributes<HTM
 ActionModuleTooltip.displayName = 'ActionModuleTooltip';
 
 type ActionModuleRowContentProps = {
-  label: string;
+  label: ReactNode;
   tooltip: ReactNode;
   children: ReactNode;
   containerClassName?: string;

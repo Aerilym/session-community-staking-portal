@@ -6,7 +6,7 @@ import {
   ModuleContent,
   ModuleText,
 } from '@session/ui/components/Module';
-import { PresentIcon } from '@session/ui/icons/PresentIcon';
+import { HandCoinsIcon } from '@session/ui/icons/HandCoinsIcon';
 import { cn } from '@session/ui/lib/utils';
 import { AlertDialog, AlertDialogContent, AlertDialogTrigger } from '@session/ui/ui/alert-dialog';
 import type { ReactNode } from 'react';
@@ -15,7 +15,8 @@ export type ModuleButtonDialogTriggerProps = ButtonModuleProps & {
   label?: string;
   dialogTitle?: string;
   textClassName?: string;
-  IconComp?: typeof PresentIcon;
+  IconComp?: typeof HandCoinsIcon;
+  /** True to colour the icon via stroke (lucide style icons), false to colour via fill. Defaults true for the stroke based default icon. */
   iconStrokeForFill?: boolean;
   dialogContent?: ReactNode;
 };
@@ -30,15 +31,17 @@ export default function ModuleButtonDialogTrigger({
   dialogContent,
   'data-testid': dataTestId,
 }: ModuleButtonDialogTriggerProps) {
-  const Icon = IconComp ?? PresentIcon;
+  const Icon = IconComp ?? HandCoinsIcon;
+  // NOTE: the default icon is stroke based, colour it via stroke unless an
+  // explicit icon chooses fill
+  const useStrokeClasses = IconComp === undefined ? true : !!iconStrokeForFill;
   const iconFillClassName = disabled
-    ? iconStrokeForFill
+    ? useStrokeClasses
       ? 'stroke-session-text'
       : 'fill-session-text'
-    : iconStrokeForFill
+    : useStrokeClasses
       ? 'stroke-session-green group-hover:stroke-session-black'
       : 'fill-session-green group-hover:fill-session-black';
-
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>

@@ -24,8 +24,8 @@
     "@session/util-crypto": "workspace:*",
     "@tanstack/react-query": "5.61.5",
     "@session/wallet": "workspace:*",
-    "viem": "2.21.54",
-    "wagmi": "2.13.5"
+    "viem": "2.57.14",
+    "wagmi": "2.19.5"
   },
   "devDependencies": {
     "@session/typescript-config": "workspace:*",
