@@ -76,7 +76,7 @@ export default function PriceModule() {
   const usdFormatted = formatUSD(price?.price ?? 0);
   const date = useMemo(() => (price ? formatPriceTimeMedium(price.t) : null), [price]);
 
-  const range = useMemo(() => {
+  const chartRange = useMemo(() => {
     const range = { min: 0, max: 0 };
     if (data) {
       range.min = Number.POSITIVE_INFINITY;
@@ -134,7 +134,7 @@ export default function PriceModule() {
             />
             <YAxis
               dataKey="price"
-              domain={[range.min, range.max]}
+              domain={[chartRange.min, chartRange.max]}
               tickFormatter={(v) => formatUSD(v)}
               tickCount={20}
               fontSize={10}
