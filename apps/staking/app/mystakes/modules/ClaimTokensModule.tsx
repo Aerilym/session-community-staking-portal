@@ -56,6 +56,7 @@ export default function ClaimTokensModule({
       }
       dialogTitle={dict('title')}
       label={dict('title')}
+      size="lg"
       data-testid={ButtonDataTestId.Claim_Tokens_Open_Dialog}
       disabled={disabled}
       IconComp={iconOverride}

@@ -97,7 +97,7 @@ export const ActionModuleTooltip = forwardRef<HTMLDivElement, HTMLAttributes<HTM
   ({ className, children, ...props }, ref) => (
     <Tooltip ref={ref} tooltipContent={children}>
       <div className={cn('cursor-pointer', className)} {...props}>
-        <QuestionIcon className="h-3.5 w-3.5 fill-session-text" />
+        <QuestionIcon className="h-3.5 w-3.5 fill-muted-foreground" />
       </div>
     </Tooltip>
   )

@@ -57,6 +57,24 @@ export function ethWeiToUsd(ethWei: bigint): number {
   );
 }
 
+/**
+ * Number of significant digits the computed fee is rounded down to (e.g.
+ * 0.00003360512977 ETH becomes 0.0000336 ETH).
+ */
+export const FEE_SIGNIFICANT_DIGITS = 3;
+
+/**
+ * Truncates a positive bigint down to the given number of significant digits
+ * (e.g. 33_605_129_770_000n with 3 digits becomes 33_600_000_000_000n).
+ */
+export function roundDownToSignificantDigits(value: bigint, digits: number): bigint {
+  if (value <= 0n || digits <= 0) return value;
+  const excess = value.toString().length - digits;
+  if (excess <= 0) return value;
+  const divisor = 10n ** BigInt(excess);
+  return (value / divisor) * divisor;
+}
+
 const TRAILING_ZEROS_REGEX = /(\.\d*?)0+$/;
 const TRAILING_DOT_REGEX = /\.$/;
 
@@ -171,7 +189,8 @@ export function computeFee(
       ? config.ethFlat + seshAtomicToEthWei(proportional)
       : config.seshFlat + proportional;
 
-  return fee > 0n ? fee : null;
+  const rounded = roundDownToSignificantDigits(fee, FEE_SIGNIFICANT_DIGITS);
+  return rounded > 0n ? rounded : null;
 }
 /**
  * Checks whether a fee mode can be paid, i.e. a positive fee component is

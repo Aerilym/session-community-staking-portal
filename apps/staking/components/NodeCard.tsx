@@ -21,7 +21,7 @@ import { useTranslations } from 'next-intl';
 import { type HTMLAttributes, type ReactNode, forwardRef, useMemo, useState } from 'react';
 
 export const outerNodeCardVariants = cva(
-  'rounded-xl bg-module-outline p-px bg-blend-lighten shadow-md transition-all ease-in-out',
+  'rounded-lg bg-module-outline p-px bg-blend-lighten shadow-md transition-all ease-in-out',
   {
     variants: {
       variant: {
@@ -35,7 +35,7 @@ export const outerNodeCardVariants = cva(
 );
 
 const innerNodeCardVariants = cva(
-  'flex h-full w-full flex-col rounded-xl bg-module px-5 py-4 align-middle md:px-6 md:py-5',
+  'flex h-full w-full flex-col rounded-[0.45rem] bg-module px-5 py-4 align-middle md:px-6 md:py-5',
   {
     variants: {
       variant: {
@@ -59,7 +59,7 @@ const NodeCard = forwardRef<HTMLDivElement, StakeCardProps>(
     return (
       <div
         className={cn(
-          'relative flex w-full flex-row flex-wrap items-center gap-0.5 rounded-xl bg-module px-5 py-4 align-middle reduced-motion:transition-none transition-all duration-500 ease-in-out md:px-6 md:py-5',
+          'relative flex w-full flex-row flex-wrap items-center gap-0.5 rounded-lg bg-module px-4 py-3 align-middle reduced-motion:transition-none transition-all duration-500 ease-in-out md:px-6 md:py-5',
           className
         )}
         style={{
@@ -108,7 +108,7 @@ const NodeCardTitle = forwardRef<HTMLHeadingElement, HTMLAttributes<HTMLHeadingE
   ({ className, ...props }, ref) => (
     <h4
       ref={ref}
-      className={cn('font-medium text-gradient-white text-lg leading-none md:text-xl', className)}
+      className={cn('font-medium text-gradient-white text-sm leading-none md:text-base', className)}
       {...props}
     />
   )
@@ -327,7 +327,7 @@ const NodeContributorList = forwardRef<HTMLDivElement, StakedNodeContributorList
         </div>
         <span
           className={cn(
-            'letter mt-0.5 block text-lg tracking-widest transition-all duration-300 ease-in-out',
+            'letter mt-0.5 block text-base tracking-widest transition-all duration-300 ease-in-out',
             forceExpand
               ? 'w-0 opacity-0'
               : 'w-max opacity-100 peer-checked:w-0 peer-checked:opacity-0'
@@ -365,7 +365,7 @@ export const ToggleCardExpansionButton = forwardRef<
         expanded ? StakedNodeDataTestId.Collapse_Button : StakedNodeDataTestId.Expand_Button
       }
       className={cn(
-        'ms-auto flex w-max cursor-pointer select-none items-center align-middle peer-checked:[&>svg]:rotate-180',
+        'ms-auto flex w-max cursor-pointer select-none items-center align-middle peer-checked:mt-0 peer-checked:mb-0 peer-checked:[&>svg]:rotate-180',
         className
       )}
       {...props}

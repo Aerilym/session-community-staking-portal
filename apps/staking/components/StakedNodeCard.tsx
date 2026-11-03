@@ -38,10 +38,10 @@ import {
   useFormatDate,
 } from '@/lib/locale-client';
 import { useUser } from '@/providers/user-provider';
-import { NodeCardDataTestId } from '@/testing/data-test-ids';
+import { NodeCardDataTestId, StakedNodeDataTestId } from '@/testing/data-test-ids';
 import { formatSENTBigInt } from '@session/contracts/hooks/Token';
 import type { Stake, StakeContributor } from '@session/staking-api-js/schema';
-import type { statusVariants } from '@session/ui/components/StatusIndicator';
+import { StatusIndicator, type statusVariants } from '@session/ui/components/StatusIndicator';
 import { KeyRoundIcon } from '@session/ui/icons/KeyRoundIcon';
 import { SpannerAndScrewdriverIcon } from '@session/ui/icons/SpannerAndScrewdriverIcon';
 import { cn } from '@session/ui/lib/utils';
@@ -52,8 +52,8 @@ import { getDateFromUnixTimestampSeconds } from '@session/util-js/date';
 import { useWallet } from '@session/wallet/hooks/useWallet';
 import type { VariantProps } from 'class-variance-authority';
 import { useTranslations } from 'next-intl';
-import { type HTMLAttributes, forwardRef, useMemo } from 'react';
-import { CollapsableContent, ToggleCardExpansionButton } from './NodeCard';
+import { Fragment, type HTMLAttributes, forwardRef, useMemo } from 'react';
+import { CollapsableContent, NodeCardTitle, ToggleCardExpansionButton } from './NodeCard';
 
 /**
  * Checks if a given stake is ready to exit the smart contract.
@@ -323,6 +323,21 @@ const StakedNodeCard = forwardRef<
 
   const state = useMemo(() => parseStakeState(stake, blockHeight), [stake, blockHeight]);
 
+  const statusComp = (
+    <Fragment key="status">
+      <NodeCardTitle
+        className="me-2 inline-flex items-center gap-1"
+        data-testid={StakedNodeDataTestId.Title}
+      >
+        <StatusIndicator
+          status={getNodeStatus(state)}
+          data-testid={StakedNodeDataTestId.Indicator}
+        />
+        {state}
+      </NodeCardTitle>
+    </Fragment>
+  );
+
   const notificationComp = (
     <NodeNotification
       key="notification"
@@ -350,7 +365,6 @@ const StakedNodeCard = forwardRef<
   const snKeyComp = (
     <StakeCardSnKey
       key="snKey"
-      {...sharedProps}
       pubkey={pubKey}
       tooltipSide={isDetailedView ? 'top' : 'bottom'}
       isOperator={isOperator}
@@ -469,6 +483,7 @@ const StakedNodeCard = forwardRef<
   );
 
   const componentData: Array<ComponentData> = [
+    { id: 'status', component: statusComp },
     { id: 'notification', component: notificationComp },
     { id: 'contributors', component: contributorsComp },
     { id: 'snKey', component: snKeyComp },
@@ -492,12 +507,14 @@ const StakedNodeCard = forwardRef<
       ref={ref}
       {...props}
       data-testid={NodeCardDataTestId.Staked_Node}
-      title={state}
-      statusIndicatorColor={getNodeStatus(state)}
       isDetailedView={isDetailedView}
-      className={cn(props.className, isDetailedView ? 'gap-x-2' : '')}
+      className={cn(
+        props.className,
+        isDetailedView ? 'gap-x-1' : 'px-3 pt-3 pb-0 md:px-4 md:pt-4 md:pb-1'
+      )}
     >
       {children}
+      <br className="hidden peer-checked:block" />
     </StakeCard>
   );
 });

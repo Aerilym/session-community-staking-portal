@@ -20,12 +20,12 @@ const pricesSchema = z.object({
   prices: z.array(
     z.object({
       price: z.number(),
-      t: z.number(),
+      updated_at: z.number(),
     })
   ),
 });
 
-const useHistoricalPriceQuery = () => {
+export const useHistoricalPriceQuery = () => {
   const { getItem } = usePreferences();
   const autoRefresh = !getItem(PREFERENCE.DISABLE_BACKEND_AUTO_REFRESH);
   return useQuery({
@@ -40,9 +40,9 @@ const useHistoricalPriceQuery = () => {
       return pricesSchema
         .parse(await res.json())
         .prices.reverse()
-        .map(({ price, t }) => ({
-          price: Number(price.toFixed(3)),
-          t: Math.trunc(t),
+        .map(({ price, updated_at: t }) => ({
+          price,
+          t,
         }))
         .filter(({ price }) => price < 100 && price > 0);
     },
@@ -61,7 +61,16 @@ export default function PriceModule() {
   const titleFormat = useTranslations('modules.title');
   const title = dictionary('title');
 
-  const { data } = useHistoricalPriceQuery();
+  const { data: dataRaw } = useHistoricalPriceQuery();
+
+  const data = useMemo(
+    () =>
+      dataRaw?.map(({ price, t }) => ({
+        price: Number(price.toFixed(3)),
+        t: Math.trunc(t),
+      })),
+    [dataRaw]
+  );
 
   const price = data?.length ? data[data.length - 1] : undefined;
   const usdFormatted = formatUSD(price?.price ?? 0);

@@ -320,7 +320,7 @@
       "description": "The total number of nodes you are currently staked to."
     },
     "claim": {
-      "title": "Claim",
+      "title": "Claim {tokenSymbol}",
       "dialog": {
         "title": "Claim Tokens",
         "updateBalanceCost": "Update Balance Cost:",
@@ -335,8 +335,8 @@
         "serviceFeeBps": "Proportional Fee ({percent}% of claim):",
         "serviceFeePayInSesh": "Pay service fee in SESH",
         "netAfterFee": "You will receive",
-        "legacyToggle": "Use legacy claim (2 transactions, no fee)",
-        "batchedToggle": "Use single-transaction claim",
+        "legacyToggle": "Use legacy 2-step claim (2 transactions, no service fee)",
+        "batchedToggle": "Use single-click claim",
         "buttons": {
           "submit": "Claim {tokenSymbol}",
           "submitAria": "Claim {tokenSymbol} with a claim gas fee of {gasAmount} {gasTokenSymbol}"
@@ -411,6 +411,23 @@
       "titleShort": "24h Rewards",
       "title": "24h Rewards",
       "description": "Rewards earned over the past 24 hours. From {startDate} to {endDate}"
+    },
+    "explorer": {
+      "title": "SESH Explorer",
+      "searchPlaceholder": "Search address / node / tx…",
+      "search": "Search"
+    },
+    "keyInfo": {
+      "totalStaked": "Total Staked",
+      "dailyRewards": "24h Rewards",
+      "apy": "APY",
+      "current": "current",
+      "totalStakedTooltip": "The total amount of SESH you currently have staked across all nodes.",
+      "dailyRewardsTooltip": "Rewards earned by your stakes over the last 24 hours.",
+      "apyTooltip": "Your effective annual yield: your 24h rewards annualised over your total stake."
+    },
+    "seshPrice": {
+      "title": "SESH Price"
     }
   },
   "sessionNodes": {

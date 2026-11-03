@@ -1,47 +1,21 @@
-import { NodeCard, NodeCardTitle } from '@/components/NodeCard';
-import { StakedNodeDataTestId } from '@/testing/data-test-ids';
-import {
-  StatusIndicator,
-  type StatusIndicatorVariants,
-} from '@session/ui/components/StatusIndicator';
+import { NodeCard } from '@/components/NodeCard';
 import { type HTMLAttributes, type ReactNode, forwardRef } from 'react';
 import type { Address } from 'viem';
 
 type StakeCardProps = HTMLAttributes<HTMLDivElement> & {
   toggleId: string;
   'data-testid': string;
-  title: string;
-  statusIndicatorColor: StatusIndicatorVariants['status'];
   operatorAddress?: Address;
   isDetailedView?: boolean;
 };
 
 const StakeCard = forwardRef<HTMLDivElement, StakeCardProps>(
-  (
-    {
-      className,
-      toggleId,
-      statusIndicatorColor,
-      title,
-      operatorAddress,
-      isDetailedView,
-      children,
-      ...props
-    },
-    ref
-  ) => {
+  ({ className, toggleId, operatorAddress, isDetailedView, children, ...props }, ref) => {
     return (
       <NodeCard ref={ref} {...props} className={className} data-testid={props['data-testid']}>
         {!isDetailedView ? (
           <input id={toggleId} type="checkbox" className="peer hidden appearance-none" />
         ) : null}
-        <StatusIndicator
-          status={statusIndicatorColor}
-          data-testid={StakedNodeDataTestId.Indicator}
-        />
-        <NodeCardTitle className="mx-1" data-testid={StakedNodeDataTestId.Title}>
-          {title}
-        </NodeCardTitle>
         {children}
       </NodeCard>
     );
@@ -93,6 +67,7 @@ export const getOrderingForMode = (mode: VIEW_MODE): Array<OrderableComponents> 
     default:
       return [
         'status',
+        'snKey',
         'contributors',
         'notification',
         'expandButton',
@@ -101,7 +76,6 @@ export const getOrderingForMode = (mode: VIEW_MODE): Array<OrderableComponents> 
         'rewardTimer',
         'uptimeTimer',
         'version',
-        'snKey',
         'beneficiaryAddress',
         'stake',
         'operatorAddress',

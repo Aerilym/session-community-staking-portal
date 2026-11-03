@@ -1,7 +1,8 @@
 import type { GenericModuleProps } from '@/app/mystakes/modules/types';
 import { ModuleDynamicQueryText } from '@/components/ModuleDynamic';
+import { ModuleOverlayTitle } from '@/components/ModuleOverlayTitle';
 import type { QUERY_STATUS } from '@/lib/query';
-import { Module, ModuleTitleDynamic, ModuleTooltip } from '@session/ui/components/Module';
+import { Module, ModuleTooltip } from '@session/ui/components/Module';
 import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
 
@@ -32,9 +33,14 @@ export default function DynamicModuleCard({
   const titleFormat = useTranslations('modules.title');
 
   return (
-    <Module size={size} variant={variant}>
+    <Module
+      size={size}
+      variant={variant}
+      outerClassName="mt-4"
+      className="[&>span]:!text-2xl [&>*>span]:!text-2xl [&>div:not([class*='absolute'])]:!p-3 md:[&>div:not([class*='absolute'])]:!p-4"
+    >
       {tooltipContent ? <ModuleTooltip>{tooltipContent}</ModuleTooltip> : null}
-      <ModuleTitleDynamic
+      <ModuleOverlayTitle
         longText={titleFormat('format', { title: titleLong })}
         shortText={titleShort ? titleFormat('format', { title: titleShort }) : undefined}
       />
@@ -42,7 +48,7 @@ export default function DynamicModuleCard({
         status={status as QUERY_STATUS}
         fallback={fallback ?? 0}
         enabled={enabled}
-        isLarge={size === 'lg'}
+        unified
         errorFallback={dictShared('error')}
         errorToast={{
           messages: {

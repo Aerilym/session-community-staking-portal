@@ -8,7 +8,7 @@ const moduleGridVariants = cva('module-grid', {
     variant: {
       grid: 'grid auto-rows-min',
       section:
-        'flex flex-col rounded-2xl border-[#54797241] border-[2px] bg-gradient-to-b from-[#0A0C0C] to-[#081512] bg-blend-lighten shadow-md',
+        'flex flex-col rounded-lg border-[#54797241] border-[2px] bg-gradient-to-b from-[#0A0C0C] to-[#081512] bg-blend-lighten shadow-md',
       action:
         'flex flex-col overflow-hidden rounded-2xl border-[#668C83] border-[2px] border-opacity-80 shadow-md',
     },

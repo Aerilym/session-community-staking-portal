@@ -26,6 +26,11 @@ export enum ButtonDataTestId {
   Claim_Tokens_Submit = 'button:claim-tokens-submit',
   Claim_Tokens_Legacy_Toggle = 'button:claim-tokens-legacy-toggle',
   Claim_Tokens_Fee_Mode_Toggle = 'button:claim-tokens-fee-mode-toggle',
+  Explorer_Search = 'button:explorer-search',
+  Explorer_Link_Operators = 'button:explorer-link-operators',
+  Explorer_Link_Holders = 'button:explorer-link-holders',
+  Explorer_Link_Network = 'button:explorer-link-network',
+  Explorer_Link_Tokenomics = 'button:explorer-link-tokenomics',
   Hide_Prepared_Registration = 'button:hide-prepared-registration',
   Staked_Node_Request_Exit = 'button:staked-node-request-exit',
   Staked_Node_Exit = 'button:staked-node-exit',
@@ -152,6 +157,7 @@ export enum ButtonDataTestId {
 }
 
 export enum InputDataTestId {
+  Explorer_Search = 'input:explorer-search',
   Registration_Rewards_Address_Solo = 'input:registration-rewards-address-solo',
   Registration_Rewards_Address_Multi = 'input:registration-rewards-address-multi',
   Registration_Stake_Amount = 'input:registration-stake-amount',

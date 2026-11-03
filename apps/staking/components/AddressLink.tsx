@@ -1,3 +1,4 @@
+import { URL } from '@/lib/constants';
 import { LinkOutIcon } from '@session/ui/icons/LinkOutIcon';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -7,7 +8,7 @@ export function AddressLink({ address, iconOnly }: { address: Address; iconOnly?
   const dictionary = useTranslations('general');
   return (
     <Link
-      href={`/address/${address}`}
+      href={`${URL.SESH_TOKEN_EXPLORER}/address/${address}`}
       className="inline-flex w-max items-center gap-1 fill-session-green align-middle text-session-green"
     >
       {!iconOnly ? <span className="inline-flex">{dictionary('viewOnExplorerShort')}</span> : null}

@@ -14,6 +14,7 @@ import type { LocaleKey } from './locale-util';
 export const BASE_URL = `https://${getEnvironmentTaggedDomain('stake')}.getsession.org`;
 
 export enum URL {
+  SESH_TOKEN_EXPLORER = 'https://seshtoken.info',
   ARB_SEP_FAUCET = 'https://faucet.quicknode.com/arbitrum/sepolia',
   GAS_INFO = 'https://ethereum.org/en/developers/docs/gas',
   SESSION_NODE_DOCS = 'https://docs.getsession.org/session-nodes',

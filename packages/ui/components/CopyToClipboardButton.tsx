@@ -68,7 +68,7 @@ const CopyToClipboardButton = forwardRef<HTMLButtonElement, CopyToClipboardButto
         ) : isCopied ? (
           <CheckIcon className='h-5 w-5 stroke-session-green' />
         ) : (
-          <ClipboardIcon className='h-5 w-5 fill-session-white' />
+          <ClipboardIcon className='h-5 w-5 fill-muted-foreground' />
         )}
       </Button>
     );

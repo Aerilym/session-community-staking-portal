@@ -47,13 +47,13 @@ export default function ModuleButtonDialogTrigger({
       <AlertDialogTrigger asChild>
         <ButtonModule
           data-testid={dataTestId}
-          className="group items-center transition-all duration-300 motion-reduce:transition-none"
+          className="group col-span-2 items-center transition-all duration-300 motion-reduce:transition-none"
           disabled={disabled}
         >
-          <ModuleContent className="flex h-full select-none flex-row items-center gap-2 p-0 align-middle font-bold">
+          <ModuleContent className="flex h-full select-none flex-row items-center gap-2 p-0 align-middle font-medium">
             <ModuleText
               className={cn(
-                'inline-flex items-center gap-1.5 align-middle transition-all duration-300 motion-reduce:transition-none',
+                'inline-flex items-center gap-1.5 py-3 align-middle transition-all duration-300 motion-reduce:transition-none',
                 disabled
                   ? 'opacity-50'
                   : 'text-session-green transition-all duration-300 group-hover:text-session-black motion-reduce:transition-none'
@@ -66,7 +66,7 @@ export default function ModuleButtonDialogTrigger({
                   iconFillClassName
                 )}
               />
-              <span className={cn('whitespace-normal text-3xl', textClassName)}>{label}</span>
+              <span className={cn('whitespace-normal text-2xl', textClassName)}>{label}</span>
             </ModuleText>
           </ModuleContent>
         </ButtonModule>

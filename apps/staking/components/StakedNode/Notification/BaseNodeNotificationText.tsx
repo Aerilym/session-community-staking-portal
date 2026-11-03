@@ -10,7 +10,7 @@ export const BaseNodeNotificationText = forwardRef<HTMLSpanElement, NodeNotifica
     <span
       ref={ref}
       className={cn(
-        'flex w-3/4 flex-row gap-1 font-normal text-xs sm:w-max md:text-base',
+        'ms-2 flex w-3/4 flex-row gap-1 font-normal text-xs sm:w-max md:text-base',
         level === 'warning'
           ? 'text-warning'
           : level === 'error'

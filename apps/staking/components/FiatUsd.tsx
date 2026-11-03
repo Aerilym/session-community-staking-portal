@@ -1,4 +1,5 @@
 import { formatUsd, seshAtomicToUsd } from '@session/contracts';
+import { cn } from '@session/ui/lib/utils';
 
 /**
  * A muted USD amount in parentheses, e.g. ($10.23), for display after token amounts.
@@ -17,14 +18,21 @@ export function FiatUsd({ usd, className }: { usd: number | null; className?: st
 export function SeshAmountWithUsd({
   amount,
   formatted,
+  className,
 }: {
   amount: bigint | null;
   formatted: string;
+  className?: string;
 }) {
   return (
-    <span className="inline-flex items-baseline gap-1.5 text-nowrap align-middle">
+    <span
+      className={cn(
+        'inline-flex flex-col items-baseline gap-0 text-nowrap align-middle',
+        className
+      )}
+    >
       {formatted}
-      <FiatUsd usd={amount === null ? null : seshAtomicToUsd(amount)} className="text-[0.55em]" />
+      <FiatUsd usd={amount === null ? null : seshAtomicToUsd(amount)} className="text-base" />
     </span>
   );
 }

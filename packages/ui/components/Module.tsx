@@ -8,7 +8,7 @@ import { Tooltip } from './ui/tooltip';
 import './Module.css';
 
 export const outerModuleVariants = cva(
-  'overflow-hidden rounded-2xl p-px bg-blend-lighten shadow-md transition-all ease-in-out',
+  'rounded-lg p-px bg-blend-lighten shadow-md transition-all ease-in-out',
   {
     variants: {
       variant: {
@@ -34,8 +34,7 @@ export const outerModuleVariants = cva(
 
 const innerModuleVariants = cva(
   cn(
-    'flex h-full w-full flex-col rounded-[15px] bg-module align-middle',
-    '[&>*>span]:font-medium [&>span]:font-medium'
+    'flex h-full w-full flex-col rounded-[0.45rem] bg-module align-middle',
   ),
   {
     variants: {
@@ -52,8 +51,8 @@ const innerModuleVariants = cva(
         ),
       },
       size: {
-        default: 'p-4 md:p-6',
-        lg: 'p-8',
+        default: 'p-4 md:pt-4 md:pb-3',
+        lg: 'p-6',
       },
     },
     defaultVariants: {
@@ -68,12 +67,13 @@ export interface ModuleProps
     VariantProps<typeof innerModuleVariants> {
   loading?: boolean;
   noPadding?: boolean;
+  outerClassName?: string
 }
 
 const Module = forwardRef<HTMLDivElement, ModuleProps>(
-  ({ className, variant, size, loading, children, noPadding, ...props }, ref) => {
+  ({ className, variant, size, loading, children, noPadding, outerClassName, ...props }, ref) => {
     return (
-      <div className={cn(outerModuleVariants({ size, variant, className }))}>
+      <div className={cn(outerModuleVariants({ size, variant, className: cn(className, outerClassName) }))}>
         <div
           className={cn(
             'relative',
@@ -202,7 +202,8 @@ type ModuleTitleDynamicProps = Omit<HTMLAttributes<HTMLHeadingElement>, 'childre
 
 const ModuleTitleDynamic = forwardRef<HTMLHeadingElement, ModuleTitleDynamicProps>(
   ({ shortText, longText, ...props }, ref) => (
-    <ModuleTitle ref={ref} {...props}>
+    <ModuleTitle ref={ref} {...props}
+    >
       {shortText ? (
         <>
           <div className={cn('module-title-dynamic-short', moduleTitleClassName)}>{shortText}</div>
@@ -216,15 +217,23 @@ const ModuleTitleDynamic = forwardRef<HTMLHeadingElement, ModuleTitleDynamicProp
 );
 ModuleTitleDynamic.displayName = 'ModuleTitleDynamic';
 
-export type ModuleTextProps = HTMLAttributes<HTMLSpanElement> & { isLarge?: boolean };
+export type ModuleTextProps = HTMLAttributes<HTMLSpanElement> & {
+  isLarge?: boolean;
+  /** Skip the container relative clamp sizing and use the class font size instead. */
+  unified?: boolean;
+};
 
 const ModuleText = forwardRef<HTMLSpanElement, ModuleTextProps>(
-  ({ className, isLarge, ...props }, ref) => (
+  ({ className, isLarge, unified, ...props }, ref) => (
     <span
       ref={ref}
       className={cn('overflow-hidden text-gradient-white', className)}
       {...props}
-      style={{ fontSize: isLarge ? 'clamp(24px, 11cqi, 48px)' : 'clamp(18px, 12cqi, 30px)' }}
+      style={
+        unified
+          ? undefined
+          : { fontSize: isLarge ? 'clamp(24px, 11cqi, 48px)' : 'clamp(18px, 12cqi, 30px)' }
+      }
     />
   )
 );
@@ -272,8 +281,8 @@ const ModuleTooltip = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>
   ({ className, children, ...props }, ref) => {
     return (
       <Tooltip ref={ref} tooltipContent={children} putContentInPortal>
-        <div className={cn('absolute md:top-4 top-3 end-3 md:end-5 cursor-pointer', className)} {...props}>
-          <QuestionIcon className='h-4 w-4 fill-session-text' />
+        <div className={cn('absolute md:bottom-3 bottom-2 end-2 md:end-4 cursor-pointer', className)} {...props}>
+          <QuestionIcon className='h-4 w-4 fill-muted-foreground' />
         </div>
       </Tooltip>
     );

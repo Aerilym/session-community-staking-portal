@@ -83,13 +83,38 @@ describe('computeFee', () => {
   });
 
   test('sesh mode is flat plus bps of the claim amount', () => {
-    // 1 SESH flat + 0.5% of 1_000 = 1_000_000_000 + 5
-    expect(computeFee(1_000n, 'sesh', CONFIG)).toBe(1_000_000_005n);
+    // 1 SESH flat + 0.5% of 1_000 = 1_000_000_005, rounded down to 3 significant digits
+    expect(computeFee(1_000n, 'sesh', CONFIG)).toBe(1_000_000_000n);
   });
 
   test('eth mode is flat plus the bps converted at the constant prices', () => {
     // 0.5% of 1_000 = 5 atomic SESH = 5 * 1e4 wei = 50_000 wei, plus the flat fee
     expect(computeFee(1_000n, 'eth', CONFIG)).toBe(1_050_000n);
+  });
+
+  test('eth fee is rounded down to 3 significant digits', () => {
+    // 1360.512977 SESH claimed, 0.00002 ETH flat + 0.1% converted = 33_605_129_770_000 wei
+    // (0.00003360512977 ETH) -> 33_600_000_000_000 wei (0.0000336 ETH)
+    const config: FeeConfig = {
+      address: CONFIG.address,
+      defaultMode: 'eth',
+      seshFlat: 5_000_000_000n,
+      ethFlat: 20_000_000_000_000n,
+      bps: 10n,
+    };
+    expect(computeFee(1_360_512_977_000n, 'eth', config)).toBe(33_600_000_000_000n);
+  });
+
+  test('sesh fee is rounded down to 3 significant digits', () => {
+    // 5 SESH flat + 0.1% of 1360.512977 SESH = 6_360_512_977 atomic -> 6_360_000_000
+    const config: FeeConfig = {
+      address: CONFIG.address,
+      defaultMode: 'sesh',
+      seshFlat: 5_000_000_000n,
+      ethFlat: 20_000_000_000_000n,
+      bps: 10n,
+    };
+    expect(computeFee(1_360_512_977_000n, 'sesh', config)).toBe(6_360_000_000n);
   });
 
   test('bps rounds down', () => {

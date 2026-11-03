@@ -69,7 +69,7 @@ export const PubKey = forwardRef<HTMLDivElement, PubKeyProps>((props, ref) => {
     {pubKey}
     {pubKeyDisplayedOverride ? <CopyToClipboardButton
     className={cn(
-      '-mt-0.5 mx-1 p-0.5 opacity-100 duration-0 hover:bg-session-green hover:text-session-black hover:opacity-100 *:hover:fill-session-black'
+      '-mt-0.5 p-0.5 opacity-100 duration-0 hover:bg-session-green hover:text-session-black hover:opacity-100 *:hover:fill-session-black'
     )}
     textToCopy={pubKey}
     data-testid={ButtonDataTestId.Copy_Pub_Key_To_Clipboard}
@@ -112,7 +112,7 @@ export const PubKey = forwardRef<HTMLDivElement, PubKeyProps>((props, ref) => {
       </div>
       <CopyToClipboardButton
         className={cn(
-          'mx-1 p-0.5 duration-0 group-hover:bg-session-green group-hover:text-session-black group-hover:opacity-100 *:group-hover:fill-session-black',
+          'p-0.5 duration-0 group-hover:bg-session-green group-hover:text-session-black group-hover:opacity-100 *:group-hover:fill-session-black',
           alwaysShowCopyButton || isExpanded ? 'opacity-100' : 'opacity-0'
         )}
         textToCopy={pubKeyDisplayedOverride || pubKey}

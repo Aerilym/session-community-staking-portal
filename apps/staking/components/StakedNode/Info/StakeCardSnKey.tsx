@@ -19,7 +19,7 @@ export function StakeCardSnKey({ pubkey, isOperator, width, tooltipSide }: CardS
   return (
     <NodeCardText
       className={cn(
-        'flex flex-row flex-wrap gap-1 peer-checked:mt-1 peer-checked:[&>.separator]:opacity-0 md:peer-checked:[&>.separator]:opacity-100 peer-checked:[&>span>span>button]:opacity-100 peer-checked:[&>span>span>div]:block peer-checked:[&>span>span>span]:hidden',
+        'me-2 flex flex-row flex-wrap gap-1 peer-checked:[&>.separator]:opacity-0 md:peer-checked:[&>.separator]:opacity-100 peer-checked:[&>span>span>button]:opacity-100 peer-checked:[&>span>span>div]:block peer-checked:[&>span>span>span]:hidden',
         width
       )}
     >
