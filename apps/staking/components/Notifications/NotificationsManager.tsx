@@ -83,7 +83,7 @@ export function NotificationsDialogProvider({ children }: { children: ReactNode 
   const dismissedWallets = parseDismissedWallets(
     usePreferenceValue<string>(PREFERENCE.NOTIFICATION_PROMPT_DISMISSED)
   );
-  const dismissedKey = dismissedWallets.join(',');
+  const isCurrentWalletDismissed = dismissedWallets.includes(connectedAddress?.toLowerCase() ?? '');
 
   const [promptAddress, setPromptAddress] = useState<string | undefined>(undefined);
   const [busy, setBusy] = useState(false);
@@ -133,8 +133,7 @@ export function NotificationsDialogProvider({ children }: { children: ReactNode 
     if (typeof Notification !== 'undefined' && Notification.permission === 'denied') return;
     if (promptedForRef.current === connectedAddress) return;
 
-    const lowerCased = connectedAddress.toLowerCase();
-    if (dismissedWallets.includes(lowerCased)) return;
+    if (isCurrentWalletDismissed) return;
 
     promptedForRef.current = connectedAddress;
 
@@ -158,8 +157,7 @@ export function NotificationsDialogProvider({ children }: { children: ReactNode 
       // If the check was cut short (e.g. React StrictMode double-invoke), allow a re-run.
       if (!finished) promptedForRef.current = undefined;
     };
-    // biome-ignore lint/correctness/useExhaustiveDependencies(dismissedKey): derived from dismissedWallets
-  }, [connectedAddress, notificationsEnabled, notificationsDisabled, flagsLoading, dismissedKey]);
+  }, [connectedAddress, notificationsEnabled, notificationsDisabled, flagsLoading, isCurrentWalletDismissed]);
 
   const openPrompt = useCallback((address: string) => {
     setPromptAddress(address);
