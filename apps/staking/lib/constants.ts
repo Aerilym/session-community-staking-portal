@@ -237,6 +237,8 @@ export enum PREFERENCE {
   INFO_NOTICE_DONT_SHOW_STAKE = 'infoNoticeDontShowStake',
   INFO_NOTICE_DONT_SHOW_STAKE_TOP_UP = 'infoNoticeDontShowStakeTopUp',
   MY_STAKES_SETTINGS_VIEW = 'myStakesSettingsView',
+  NOTIFICATIONS_ENABLED = 'notificationsEnabled',
+  NOTIFICATION_PROMPT_DISMISSED = 'notificationPromptDismissed',
 }
 
 export const preferenceStorageDefaultItems = {} as const;
@@ -300,12 +302,25 @@ export const prefDetails = {
     type: 'boolean',
     defaultValue: false,
   },
+  [PREFERENCE.NOTIFICATIONS_ENABLED]: {
+    label: 'Node Notifications',
+    type: 'boolean',
+    defaultValue: false,
+    description:
+      'Enable browser notifications for your staked nodes (e.g. when a node is decommissioned or ready for exit). Turning this off unsubscribes this device from all node notifications.',
+  },
+  [PREFERENCE.NOTIFICATION_PROMPT_DISMISSED]: {
+    label: 'Dismissed Notification Wallets',
+    type: 'string',
+    defaultValue: '[]',
+  },
 } as const satisfies WalletSheetSettingDetailsGenerator;
 
 const hiddenPreferences = [
   PREFERENCE.PREF_REGISTRATION_MODE,
   PREFERENCE.ANONYMIZE_UI,
   PREFERENCE.BACKEND_URL,
+  PREFERENCE.NOTIFICATION_PROMPT_DISMISSED,
 ];
 
 export const customSettings = Object.entries(prefDetails)

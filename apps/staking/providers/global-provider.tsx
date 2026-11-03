@@ -1,3 +1,4 @@
+import { NotificationsDialogProvider } from '@/components/Notifications/NotificationsManager';
 import { FeatureFlagProvider } from '@/lib/feature-flags-client';
 import LocalizationProvider, {
   type LocalizationProviderProps,
@@ -52,7 +53,9 @@ export function GlobalProvider({ children, wagmiCookie, messages, locale }: Glob
                     <VestingProvider>
                       <StatusBarProvider>
                         <TOSProvider>
-                          <UserProvider>{children}</UserProvider>
+                          <NotificationsDialogProvider>
+                            <UserProvider>{children}</UserProvider>
+                          </NotificationsDialogProvider>
                         </TOSProvider>
                       </StatusBarProvider>
                     </VestingProvider>

@@ -45,7 +45,8 @@
         "NEXT_PUBLIC_RPC_URL_ETH",
         "NEXT_PUBLIC_RPC_BATCH_ETH",
         "NEXT_PUBLIC_RPC_URL_ARB",
-        "NEXT_PUBLIC_RPC_BATCH_ARB"
+        "NEXT_PUBLIC_RPC_BATCH_ARB",
+        "NEXT_PUBLIC_VAPID_PUBLIC_KEY"
       ]
     },
     "dev": {

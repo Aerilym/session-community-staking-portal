@@ -463,6 +463,24 @@ export const stakesResponseSchema = z.object({
 
 export type StakesResponse = z.infer<typeof stakesResponseSchema>;
 
+/**
+ * Stake schema for the `/nodes` endpoint. Legacy nodes on the network can have a non-Ethereum
+ * `operator_address` (an Ed25519 public key), so it is not validated as an address here. The
+ * inferred type is still compatible with {@link Stake}.
+ */
+const nodeStakeSchema = stakeSchema.extend({
+  operator_address: z.string(),
+});
+
+export const nodesResponseSchema = z.object({
+  network: networkInfoSchema,
+  /** Every service node currently on the network */
+  nodes: z.array(nodeStakeSchema),
+  t: z.number(),
+});
+
+export type NodesResponse = z.infer<typeof nodesResponseSchema>;
+
 export const hardForkInfoSchema = z.object({
   enabled: z.boolean(),
   earliest_height: z.number().nullable(),

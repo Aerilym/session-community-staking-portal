@@ -18,12 +18,19 @@ import { GlobalProvider } from '@/providers/global-provider';
 import { cn } from '@session/ui/lib/utils';
 import { Toaster } from '@session/ui/ui/sonner';
 import { getBuildInfo } from '@session/util-js/build';
+import type { Viewport } from 'next';
 import { headers } from 'next/headers';
 import type { ReactNode } from 'react';
 
 export async function generateMetadata() {
   return await siteMetadata({});
 }
+
+export const viewport: Viewport = {
+  themeColor: '#0a0a0a',
+  width: 'device-width',
+  initialScale: 1,
+};
 
 const buildInfo = getBuildInfo();
 

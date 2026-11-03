@@ -12,11 +12,11 @@ import {
   NodeItemSeparator,
   NodeItemValue,
 } from '@/components/InfoNodeCard';
-import { STAKE_CONTRACT_STATE, parseStakeContractState } from '@/components/StakedNode/state';
 import { NodeOperatorIndicator } from '@/components/StakedNodeCard';
 import { SESSION_NODE_FULL_STAKE_AMOUNT } from '@/lib/constants';
 import { formatPercentage } from '@/lib/locale-client';
 import { getTotalStaked } from '@/lib/maths';
+import { STAKE_CONTRACT_STATE, parseStakeContractState } from '@/lib/stake-state';
 import { useUser } from '@/providers/user-provider';
 import { ButtonDataTestId } from '@/testing/data-test-ids';
 import { formatSENTBigInt } from '@session/contracts/hooks/Token';

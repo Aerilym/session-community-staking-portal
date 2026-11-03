@@ -1204,5 +1204,56 @@
     "button": "Continue",
     "mustAccept": "You must accept the <link>Terms and Conditions</link> to participate",
     "accepted": "You have accepted the <link>Terms and Conditions</link>"
+  },
+  "notifications": {
+    "mainTabButton": "Node Notifications",
+    "dialog": {
+      "title": "Enable Node Notifications",
+      "description": "Get a browser notification when a node staked by {address} is decommissioned or becomes ready for exit.",
+      "enable": "Enable Notifications",
+      "notNow": "Not Now",
+      "success": "Notifications enabled for this wallet",
+      "error": "Failed to enable notifications",
+      "permissionDenied": "Notification permission was denied. Enable it in your browser settings to receive node notifications.",
+      "disabledToast": "Notifications unsubscribed for this device",
+      "privacyNotice": "Privacy: notifications are delivered through your browser vendor's push service, which can see when messages are sent but never their content, which is end-to-end encrypted. The staking portal stores which wallets this device watches so it can detect node state changes. Unsubscribe at any time to delete this data; it is also deleted automatically after a period of inactivity."
+    },
+    "tab": {
+      "title": "Node Notifications",
+      "description": "Wallets watched for node state changes on this device. Unsubscribe from any or all of them below.",
+      "loading": "Loading subscriptions…",
+      "empty": "No wallets are being watched on this device yet. Connect a wallet, or use the button above to enable notifications for your current wallet.",
+      "unsubscribe": "Unsubscribe",
+      "unsubscribeWallet": "Unsubscribe wallet",
+      "unsubscribeAll": "Unsubscribe All",
+      "error": "Something went wrong, please try again",
+      "toggleLabel": "Node Notifications",
+      "toggleDescription": "Ask to enable browser notifications whenever an unsubscribed wallet connects.",
+      "disabledHint": "Notifications are disabled. Turn on the toggle above to watch wallets on this device.",
+      "testButton": "Send Test Notification",
+      "testSent": "Test notification sent, check your notifications",
+      "testNoSubscription": "No notifications are set up on this device yet. Connect a wallet and accept the notification prompt first.",
+      "testTooMany": "Please wait a moment before sending another test notification",
+      "privacyHint": "Privacy: notification content is end-to-end encrypted in transit. The portal stores only which wallets this device watches; unsubscribing deletes this data.",
+      "subscribeCurrentWallet": "Enable For This Wallet"
+    },
+    "push": {
+      "decommissioned": {
+        "title": "Node decommissioned",
+        "body": "Node {node} has been decommissioned by the network."
+      },
+      "readyForExit": {
+        "title": "Node ready for exit",
+        "body": "Node {node} is ready to exit. Visit the staking portal to exit the node and reclaim your stake."
+      },
+      "deregistered": {
+        "title": "Node ready for exit",
+        "body": "Node {node} was deregistered by the network. Visit the staking portal to exit the node and reclaim your stake."
+      },
+      "test": {
+        "title": "Test notification",
+        "body": "Node notifications are working on this device."
+      }
+    }
   }
 }

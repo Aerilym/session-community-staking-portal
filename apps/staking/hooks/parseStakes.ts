@@ -1,3 +1,10 @@
+import {
+  STAKE_EVENT_STATE,
+  STAKE_STATE,
+  isStakeRequestingExit,
+  parseStakeEventState,
+  parseStakeState,
+} from '@/lib/stake-state';
 import type {
   ContributionContract,
   ContributionContractNotReady,
@@ -7,13 +14,6 @@ import type { BLSPublicKey, Ed25519PublicKey, EthereumAddress } from '@session/u
 import { bigIntSortDesc } from '@session/util-crypto/maths';
 import { areEthereumAddressesEqual } from '@session/util-crypto/string';
 import { safeTrySyncWithFallback } from '@session/util-js/try';
-import {
-  STAKE_EVENT_STATE,
-  STAKE_STATE,
-  isStakeRequestingExit,
-  parseStakeEventState,
-  parseStakeState,
-} from '../components/StakedNode/state';
 import { getTotalStakedAmountForAddress } from '../components/getTotalStakedAmountForAddress';
 import logger from '../lib/logger';
 import { getReadyContracts, parseContracts } from './parseContracts';

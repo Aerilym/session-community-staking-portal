@@ -1,10 +1,10 @@
-import { STAKE_STATE, parseStakeState } from '@/components/StakedNode/state';
 import { parseStakes } from '@/hooks/parseStakes';
 import type { useContractNodes } from '@/hooks/useContractNodes';
 import { BACKEND, BLOCK_TIME_MS, PREFERENCE, SESSION_NODE } from '@/lib/constants';
 import { NEXT_PUBLIC_TESTNET } from '@/lib/env';
 import logger from '@/lib/logger';
 import { getStakedNodes } from '@/lib/queries/getStakedNodes';
+import { STAKE_STATE, parseStakeState } from '@/lib/stake-state';
 import { useStakingBackendQueryWithParams } from '@/lib/staking-api-client';
 import { useNodesWithConfirmations } from '@/lib/volatile-storage';
 import type { EthereumAddress } from '@session/util-crypto/keys';

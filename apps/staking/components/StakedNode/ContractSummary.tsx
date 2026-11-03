@@ -2,7 +2,7 @@ import { useConfirmationProgress } from '@/app/register/[nodeId]/solo/SubmitSolo
 import { ContractStartButton } from '@/components/StakedNode/ContractStartButton';
 import { ContractAlreadyRunningNotification } from '@/components/StakedNode/Notification/ContractAlreadyRunningNotification';
 import { NotificationJoiningNetwork } from '@/components/StakedNode/Notification/NotificationJoiningNetwork';
-import { STAKE_CONTRACT_STATE } from '@/components/StakedNode/state';
+import { STAKE_CONTRACT_STATE } from '@/lib/stake-state';
 import { useNodesWithConfirmations } from '@/lib/volatile-storage';
 import type {
   ContributionContract,
