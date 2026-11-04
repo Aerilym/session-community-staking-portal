@@ -18,6 +18,7 @@ export enum REMOTE_FEATURE_FLAG {
   ENABLE_MAINTENANCE_MODE = 'remote_enableMaintenanceMode',
   ENABLE_APP_MAINTENANCE_MODE = 'remote_enableAppMaintenanceMode',
   DISABLE_PRICE_MODULE = 'remote_disablePriceModule',
+  DISABLE_NODE_NOTIFICATIONS = 'remote_disableNodeNotifications',
 }
 
 export const remoteFeatureFlagsInfo: Record<
@@ -75,6 +76,10 @@ export const remoteFeatureFlagsInfo: Record<
   [REMOTE_FEATURE_FLAG.DISABLE_PRICE_MODULE]: {
     name: 'Disable Price Module',
     description: 'Disable the price module and use the notice module.',
+  },
+  [REMOTE_FEATURE_FLAG.DISABLE_NODE_NOTIFICATIONS]: {
+    name: 'Disable Node Notifications',
+    description: 'Disable the node notification subscription flow and push worker.',
   },
 };
 

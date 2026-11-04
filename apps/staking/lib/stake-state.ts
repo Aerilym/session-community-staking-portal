@@ -9,8 +9,8 @@ import type {
   Stake,
 } from '@session/staking-api-js/schema';
 
+import { isEventArraySorted } from '@/hooks/parseEvents';
 import { DEBUG_ASSERT } from '@session/util-js/assert';
-import { isEventArraySorted } from '../../hooks/parseEvents';
 
 export enum STAKE_EVENT_STATE {
   UNKNOWN = 0,
@@ -28,7 +28,16 @@ const STATE_EVENTS = new Set([
   ARBITRUM_EVENT.ServiceNodeLiquidated,
 ]);
 
-export function parseStakeEventState(stake: Stake) {
+/**
+ * The subset of {@link Stake} used to derive stake state. This allows deriving state from any
+ * stake-like object, e.g. the relaxed node entries returned by the `/nodes` endpoint.
+ */
+export type StakeStateInput = Pick<
+  Stake,
+  'active' | 'events' | 'exit_type' | 'deregistration_height' | 'requested_unlock_height'
+>;
+
+export function parseStakeEventState(stake: StakeStateInput) {
   const stateEvents = stake.events.filter((event) => STATE_EVENTS.has(event.name));
   DEBUG_ASSERT(() => isEventArraySorted(stateEvents), 'Stake events are not pre-sorted');
   const latestEvent = stateEvents[0];
@@ -70,7 +79,7 @@ export enum STAKE_STATE {
   UNKNOWN = 'Unknown',
 }
 
-export function isStakeDeregistered(stake: Stake) {
+export function isStakeDeregistered(stake: StakeStateInput) {
   return !!(
     stake.exit_type === EXIT_TYPE.DEREGISTER &&
     stake.deregistration_height &&
@@ -78,12 +87,12 @@ export function isStakeDeregistered(stake: Stake) {
   );
 }
 
-export function isStakeRequestingExit(stake: Stake) {
+export function isStakeRequestingExit(stake: StakeStateInput) {
   const eventState = parseStakeEventState(stake);
   return eventState === STAKE_EVENT_STATE.EXIT_REQUESTED;
 }
 
-export function isStakeReadyToExit(stake: Stake, blockHeight: number) {
+export function isStakeReadyToExit(stake: StakeStateInput, blockHeight: number) {
   const eventState = parseStakeEventState(stake);
   return (
     eventState === STAKE_EVENT_STATE.EXIT_REQUESTED &&
@@ -92,7 +101,7 @@ export function isStakeReadyToExit(stake: Stake, blockHeight: number) {
   );
 }
 
-export function parseStakeState(stake: Stake, blockHeight: number) {
+export function parseStakeState(stake: StakeStateInput, blockHeight: number) {
   const eventState = parseStakeEventState(stake);
 
   if (isStakeDeregistered(stake)) {

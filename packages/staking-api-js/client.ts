@@ -12,6 +12,7 @@ import type {
   HardForkInfoResponse,
   NetworkInfoResponse,
   NodesBlsKeysResponse,
+  NodesResponse,
   RegistrationsResponse,
   StakesResponse,
 } from './schema';
@@ -251,12 +252,12 @@ export class SessionStakingClient {
     return await this.request<ExitLiquidationListResponse>(options);
   }
 
-  public async getNodes(): Promise<StakingBackendResponse<StakesResponse>> {
+  public async getNodes(): Promise<StakingBackendResponse<NodesResponse>> {
     const options: RequestOptions = {
       endpoint: '/nodes',
       method: 'GET',
     };
-    return await this.request<StakesResponse>(options);
+    return await this.request<NodesResponse>(options);
   }
 
   /**

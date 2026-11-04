@@ -20,12 +20,6 @@ import {
   StakeCard,
   renderOrderedComponents,
 } from '@/components/StakedNode/StakeCard';
-import {
-  STAKE_EVENT_STATE,
-  STAKE_STATE,
-  parseStakeEventState,
-  parseStakeState,
-} from '@/components/StakedNode/state';
 import { WizardSectionDescription } from '@/components/Wizard';
 import { getTotalStakedAmountForAddressFormatted } from '@/components/getTotalStakedAmountForAddressFormatted';
 import { VERSION } from '@/hooks/useNetworkVersionInfo';
@@ -37,6 +31,12 @@ import {
   formatPercentage,
   useFormatDate,
 } from '@/lib/locale-client';
+import {
+  STAKE_EVENT_STATE,
+  STAKE_STATE,
+  parseStakeEventState,
+  parseStakeState,
+} from '@/lib/stake-state';
 import { useUser } from '@/providers/user-provider';
 import { NodeCardDataTestId, StakedNodeDataTestId } from '@/testing/data-test-ids';
 import { formatSENTBigInt } from '@session/contracts/hooks/Token';

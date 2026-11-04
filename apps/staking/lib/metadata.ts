@@ -24,5 +24,14 @@ export const siteMetadata = async (props: {
         },
       ],
     },
+    icons: {
+      icon: '/images/icon.svg',
+      apple: '/images/apple-touch-icon.png',
+    },
+    appleWebApp: {
+      capable: true,
+      title: 'Session Staking',
+      statusBarStyle: 'black-translucent',
+    },
   };
 };

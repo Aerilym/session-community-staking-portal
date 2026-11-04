@@ -24,6 +24,9 @@ if (!NEXT_PUBLIC_PRICE_TOKEN) {
 
 export const NEXT_PUBLIC_TESTNET = process.env.NEXT_PUBLIC_TESTNET === 'true';
 
+/** Public VAPID key for browser push notifications. Optional; notifications are disabled when unset. */
+export const NEXT_PUBLIC_VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+
 export const isProduction = isProductionEnv();
 
 DEBUG_ASSERT(() => !isProductionEnv(), "APP_DEBUG can't be used with NEXT_PUBLIC_ENV prod!");

@@ -9,10 +9,10 @@ import {
   StakeCard,
   renderOrderedComponents,
 } from '@/components/StakedNode/StakeCard';
-import { STAKE_CONTRACT_STATE, parseStakeContractState } from '@/components/StakedNode/state';
 import { getTotalStakedAmountForAddressFormatted } from '@/components/getTotalStakedAmountForAddressFormatted';
 import { SESSION_NODE_FULL_STAKE_AMOUNT } from '@/lib/constants';
 import { formatPercentage } from '@/lib/locale-client';
+import { STAKE_CONTRACT_STATE, parseStakeContractState } from '@/lib/stake-state';
 import type { VolatileStorageNodeConfirming } from '@/lib/volatile-storage';
 import { useUser } from '@/providers/user-provider';
 import {

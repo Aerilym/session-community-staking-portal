@@ -50,6 +50,7 @@
     "usepref": "^1.0.1",
     "utf-8-validate": "^6.0.5",
     "viem": "2.57.14",
+    "web-push": "^3.6.7",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -57,6 +58,7 @@
     "@types/react": "19.0.11",
     "@types/react-dom": "19.0.4",
     "@types/rtl-detect": "^1.0.3",
+    "@types/web-push": "^3.6.4",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.3"
