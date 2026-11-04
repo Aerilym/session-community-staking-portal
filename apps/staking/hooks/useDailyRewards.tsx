@@ -1,8 +1,7 @@
 import { BACKEND, PREFERENCE } from '@/lib/constants';
+import { parseDailyRewards } from '@/lib/parseDailyRewards';
 import { getDailyRewards } from '@/lib/queries/getDailyRewards';
 import { useStakingBackendQueryWithParams } from '@/lib/staking-api-client';
-import type { DailyRewardInfo } from '@session/staking-api-js/schema';
-import { numberToBigInt } from '@session/util-crypto/maths';
 import { useWallet } from '@session/wallet/hooks/useWallet';
 import { useMemo } from 'react';
 import { usePreferences } from 'usepref';
@@ -29,35 +28,10 @@ export const useDailyRewards = (params?: { addressOverride?: Address }) => {
   );
 
   const parsedData = useMemo(() => {
-    let dailyRewardAmount = 0n;
-    let dailyRewardFrom = 0;
-    let dailyRewardTo = 0;
-    let dataInRange: Array<DailyRewardInfo> = [];
-
-    if (data && data.rewards.length > 1) {
-      const cutoffTimestampSeconds = Math.trunc(Date.now() / 1000) - 24 * 60 * 60;
-      dataInRange = data.rewards.filter(({ timestamp }) => timestamp >= cutoffTimestampSeconds);
-
-      const dailyRewardStart = dataInRange[0];
-      const dailyRewardEnd = dataInRange[dataInRange.length - 1];
-
-      if (!dailyRewardStart || !dailyRewardEnd) {
-        return;
-      }
-
-      dailyRewardFrom = dailyRewardStart.timestamp;
-      dailyRewardTo = dailyRewardEnd.timestamp;
-      dailyRewardAmount =
-        numberToBigInt(dailyRewardEnd.lifetime_rewards) -
-        numberToBigInt(dailyRewardStart.lifetime_rewards);
+    if (!data) {
+      return { daily: null };
     }
-
-    return {
-      dailyRewardAmount,
-      dailyRewardFrom,
-      dailyRewardTo,
-      dataInRange,
-    };
+    return parseDailyRewards(data.rewards, Math.trunc(Date.now() / 1000));
   }, [data]);
 
   return {

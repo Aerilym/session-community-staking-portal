@@ -7,12 +7,11 @@ import { ModuleOverlayTitle } from '@/components/ModuleOverlayTitle';
 import { useDailyRewards } from '@/hooks/useDailyRewards';
 import { DYNAMIC_MODULE } from '@/lib/constants';
 import { formatPercentage } from '@/lib/locale-client';
-import { SENT_DECIMALS } from '@session/contracts';
+import { computeAprFraction } from '@/lib/parseDailyRewards';
 import { formatSENTBigInt } from '@session/contracts/hooks/Token';
 import { Module } from '@session/ui/components/Module';
 import { QuestionIcon } from '@session/ui/icons/QuestionIcon';
 import { Tooltip } from '@session/ui/ui/tooltip';
-import { bigIntToNumber } from '@session/util-crypto/maths';
 import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
 
@@ -21,15 +20,14 @@ export default function KeyInfoModule() {
   const titleFormat = useTranslations('modules.title');
 
   const { totalStaked } = useTotalStaked();
-  const { dailyRewardAmount } = useDailyRewards();
-  const dailyRewards = dailyRewardAmount ?? null;
+  const { daily } = useDailyRewards();
   const price = useSeshPrice();
 
-  // NOTE: the user's effective APY, 24h rewards annualised over their stake
-  const apyPercent =
-    totalStaked !== null && totalStaked > 0n && dailyRewards !== null
-      ? (bigIntToNumber(dailyRewards, SENT_DECIMALS) * 365) /
-        bigIntToNumber(totalStaked, SENT_DECIMALS)
+  const rewardsAmount = daily?.rewardAmount ?? null;
+
+  const aprPercent =
+    daily && totalStaked !== null && totalStaked > 0n
+      ? computeAprFraction(daily, totalStaked)
       : null;
 
   return (
@@ -53,22 +51,22 @@ export default function KeyInfoModule() {
           label={dict('dailyRewards')}
           tooltipContent={dict('dailyRewardsTooltip')}
           value={
-            dailyRewards !== null ? (
+            rewardsAmount !== null ? (
               <SeshAmountWithUsd
-                amount={dailyRewards}
-                formatted={formatSENTBigInt(dailyRewards, DYNAMIC_MODULE.SENT_ROUNDED_DECIMALS)}
+                amount={rewardsAmount}
+                formatted={formatSENTBigInt(rewardsAmount, DYNAMIC_MODULE.SENT_ROUNDED_DECIMALS)}
                 price={price}
               />
             ) : null
           }
         />
         <KeyInfoStat
-          label={dict('apy')}
-          tooltipContent={dict('apyTooltip')}
+          label={dict('apr')}
+          tooltipContent={dict('aprTooltip')}
           value={
-            apyPercent !== null ? (
+            aprPercent !== null ? (
               <span className="inline-flex flex-col items-baseline gap-1 text-nowrap align-middle">
-                {formatPercentage(apyPercent)}
+                {formatPercentage(aprPercent)}
                 <span className="text-muted-foreground text-sm">{dict('current')}</span>
               </span>
             ) : null
@@ -83,7 +81,11 @@ function KeyInfoStat({
   label,
   value,
   tooltipContent,
-}: { label: string; value: ReactNode; tooltipContent: string }) {
+}: {
+  label: string;
+  value: ReactNode;
+  tooltipContent: string;
+}) {
   return (
     <div className="flex flex-col items-start justify-center text-start">
       <span className="inline-flex flex-row gap-1 text-muted-foreground text-sm">

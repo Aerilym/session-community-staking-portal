@@ -30,21 +30,17 @@ export default function DailyRewardsModule({
     [addressOverride, connectedAddress]
   );
 
-  const { dailyRewardAmount, dailyRewardTo, dailyRewardFrom, refetch, status, enabled } =
-    useDailyRewards({
-      addressOverride: address,
-    });
+  const { daily, refetch, status, enabled } = useDailyRewards({
+    addressOverride: address,
+  });
   const price = useSeshPrice();
 
   const formattedStartDate = useMemo(
-    () => (dailyRewardFrom ? formatDateTime(dailyRewardFrom) : null),
-    [dailyRewardFrom]
+    () => (daily ? formatDateTime(daily.rewardFrom) : null),
+    [daily]
   );
 
-  const formattedEndDate = useMemo(
-    () => (dailyRewardTo ? formatDateTime(dailyRewardTo) : null),
-    [dailyRewardTo]
-  );
+  const formattedEndDate = useMemo(() => (daily ? formatDateTime(daily.rewardTo) : null), [daily]);
 
   return (
     <DynamicModuleCard
@@ -61,8 +57,11 @@ export default function DailyRewardsModule({
       variant={variant}
     >
       <SeshAmountWithUsd
-        amount={dailyRewardAmount ?? null}
-        formatted={formatSENTBigInt(dailyRewardAmount, DYNAMIC_MODULE.SENT_ROUNDED_DECIMALS)}
+        amount={daily?.rewardAmount ?? null}
+        formatted={formatSENTBigInt(
+          daily?.rewardAmount ?? null,
+          DYNAMIC_MODULE.SENT_ROUNDED_DECIMALS
+        )}
         price={price}
       />
     </DynamicModuleCard>

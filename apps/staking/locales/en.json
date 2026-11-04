@@ -427,11 +427,11 @@
       "title": "Key Info",
       "totalStaked": "Total Staked",
       "dailyRewards": "24h Rewards",
-      "apy": "APY",
+      "apr": "APR",
       "current": "current",
       "totalStakedTooltip": "The total amount of SESH you currently have staked across all nodes.",
       "dailyRewardsTooltip": "Rewards earned by your stakes over the last 24 hours. If you have stakes with a beneficiary address set to another wallet those rewards go there and are not counted in this wallet's 24 hour rewards.",
-      "apyTooltip": "Your effective annual yield: your 24h rewards annualised over your total stake. If you have stakes with a beneficiary address set to another wallet your APY will appear lower because some of your stakes don't earn rewards for this wallet."
+      "aprTooltip": "Your effective annual return: your recent rewards annualised over your total stake. This is a simple rate and does not compound rewards. If you have stakes with a beneficiary address set to another wallet your APR will appear lower because some of your stakes don't earn rewards for this wallet."
     },
     "seshPrice": {
       "title": "SESH Price"
