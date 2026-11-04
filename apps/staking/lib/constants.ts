@@ -94,6 +94,7 @@ type LinkItem = {
 };
 
 export const STATIC_LINKS = {
+  home: { dictionaryKey: 'communityHome', href: 'https://seshtoken.info/' },
   stake: { dictionaryKey: 'stake', href: '/stake' },
   register: { dictionaryKey: 'register', href: '/register' },
   leaderboard: { dictionaryKey: 'leaderboard', href: '/leaderboard' },

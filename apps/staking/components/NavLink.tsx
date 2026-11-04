@@ -1,5 +1,6 @@
 'use client';
 
+import { LinkOutIcon } from '@session/ui/icons/LinkOutIcon';
 import { cn } from '@session/ui/lib/utils';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -34,16 +35,19 @@ export function NavLink({
   suppressHydrationWarning,
 }: NavLinkProps) {
   const pathname = usePathname();
+
+  const isExternal = isExternalLink(href);
+
   return (
     <Link
       href={href}
       className={cn(
-        'hover:text-session-green',
+        'inline-flex items-center hover:text-session-green',
         pathname.startsWith(href) && 'text-session-green',
         className
       )}
       aria-label={ariaLabel}
-      {...(isExternalLink(href)
+      {...(isExternal
         ? {
             target: '_blank',
             referrerPolicy: 'no-referrer',
@@ -52,7 +56,7 @@ export function NavLink({
       /* TODO: remove once we have proper skeletons and can dynamically import them */
       suppressHydrationWarning={suppressHydrationWarning}
     >
-      {children ?? label}
+      {children ?? label} {isExternal ? <LinkOutIcon className="ms-2 h-4 w-4" /> : null}
     </Link>
   );
 }

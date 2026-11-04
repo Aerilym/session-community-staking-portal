@@ -69,7 +69,7 @@
   },
   "navigation": {
     "home": "Home",
-    "stake": "Stake Now",
+    "stake": "Open Nodes",
     "myStakes": "My Stakes",
     "vestedStakes": "Vesting Stakes",
     "docs": "Docs",
@@ -79,6 +79,7 @@
     "faucet": "Faucet",
     "explorer": "Appchain Explorer",
     "leaderboard": "Leaderboard",
+    "communityHome": "Community Site",
     "hamburgerDropdown": {
       "ariaLabel": "Open navigation menu",
       "language": "Change language",
