@@ -52,7 +52,7 @@ import { getDateFromUnixTimestampSeconds } from '@session/util-js/date';
 import { useWallet } from '@session/wallet/hooks/useWallet';
 import type { VariantProps } from 'class-variance-authority';
 import { useTranslations } from 'next-intl';
-import { Fragment, type HTMLAttributes, forwardRef, useMemo } from 'react';
+import { type HTMLAttributes, forwardRef, useMemo } from 'react';
 import { CollapsableContent, NodeCardTitle, ToggleCardExpansionButton } from './NodeCard';
 
 /**
@@ -324,18 +324,14 @@ const StakedNodeCard = forwardRef<
   const state = useMemo(() => parseStakeState(stake, blockHeight), [stake, blockHeight]);
 
   const statusComp = (
-    <Fragment key="status">
-      <NodeCardTitle
-        className="me-2 inline-flex items-center gap-1"
-        data-testid={StakedNodeDataTestId.Title}
-      >
-        <StatusIndicator
-          status={getNodeStatus(state)}
-          data-testid={StakedNodeDataTestId.Indicator}
-        />
-        {state}
-      </NodeCardTitle>
-    </Fragment>
+    <NodeCardTitle
+      key="status"
+      className="me-2 inline-flex items-center gap-1.5"
+      data-testid={StakedNodeDataTestId.Title}
+    >
+      <StatusIndicator status={getNodeStatus(state)} data-testid={StakedNodeDataTestId.Indicator} />
+      {state}
+    </NodeCardTitle>
   );
 
   const notificationComp = (

@@ -72,7 +72,7 @@
     "stake": "Open Nodes",
     "myStakes": "My Stakes",
     "vestedStakes": "Vesting Stakes",
-    "docs": "Docs",
+    "docs": "Session Docs",
     "tokenSite": "Session Token",
     "support": "Support",
     "register": "Register",
@@ -80,6 +80,8 @@
     "explorer": "Appchain Explorer",
     "leaderboard": "Leaderboard",
     "communityHome": "Community Site",
+    "officialPortal": "Official Staking Portal",
+    "github": "GitHub",
     "hamburgerDropdown": {
       "ariaLabel": "Open navigation menu",
       "language": "Change language",
@@ -235,7 +237,7 @@
   },
   "modules": {
     "title": {
-      "format": "{title}:"
+      "format": "{title}"
     },
     "shared": {
       "error": "Error"
@@ -297,7 +299,8 @@
     "totalRewards": {
       "title": "Total Rewards Earned",
       "titleShort": "Total Rewards",
-      "description": "The total amount of lifetime rewards earned from staking."
+      "description": "The total amount of lifetime rewards earned from staking.",
+      "disclaimer": "If you were part of the <oxen-program-link></oxen-program-link> and Oxen network migration, this value includes migrated SESH from there, so this value will appear much higher than expected.<br></br><br></br>The current USD value is not shown because these are historical tokens and not part of the system."
     },
     "unlockingStakes": {
       "title": "Unlocking Stakes",
@@ -419,16 +422,32 @@
       "search": "Search"
     },
     "keyInfo": {
+      "title": "Key Info",
       "totalStaked": "Total Staked",
       "dailyRewards": "24h Rewards",
       "apy": "APY",
       "current": "current",
       "totalStakedTooltip": "The total amount of SESH you currently have staked across all nodes.",
-      "dailyRewardsTooltip": "Rewards earned by your stakes over the last 24 hours.",
-      "apyTooltip": "Your effective annual yield: your 24h rewards annualised over your total stake."
+      "dailyRewardsTooltip": "Rewards earned by your stakes over the last 24 hours. If you have stakes with a beneficiary address set to another wallet those rewards go there and are not counted in this wallet's 24 hour rewards.",
+      "apyTooltip": "Your effective annual yield: your 24h rewards annualised over your total stake. If you have stakes with a beneficiary address set to another wallet your APY will appear lower because some of your stakes don't earn rewards for this wallet."
     },
     "seshPrice": {
       "title": "SESH Price"
+    },
+    "walletBalance": {
+      "title": "Wallet Balance",
+      "arbitrum": "Arbitrum",
+      "ethereum": "Ethereum",
+      "arbitrumTooltip": "Your liquid, unstaked SESH balance on Arbitrum.",
+      "ethereumTooltip": "Your liquid, unstaked SESH balance on Ethereum."
+    },
+    "operatorScore": {
+      "title": "Operator Score",
+      "description": "Operator score data from seshtoken.info. Last updated at {date_time}.",
+      "notScoredDescription": "Operator score data from seshtoken.info. This address is not currently scored.",
+      "notScored": "Not scored",
+      "rank": "Rank #{rank} of {total}",
+      "viewOperatorsCount": "View all {count} operators"
     }
   },
   "sessionNodes": {
@@ -1231,6 +1250,7 @@
   },
   "terms": {
     "title": "Staking Portal Terms",
+    "disclaimer": "The community staking portal (this application) is not associated with or endorsed by the Session Technology Foundation (Session Technology Stiftung). This project is an open-source fork maintained and run by the <link>seshtoken.info</link> community. Features and mechanisms of this version of the application differs from the official application.",
     "description": "By accessing or using the Session Staking Portal, you agree to comply with and be bound by the <link>Terms and Conditions</link>. Please read these Terms carefully. If you do not agree to these terms, you must not use the Software.",
     "agree": "I have read, understand, and agree to the <link>Terms and Conditions</link>, including any additional guidelines and future modifications outlined therein.",
     "button": "Continue",

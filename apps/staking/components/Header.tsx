@@ -11,7 +11,7 @@ export default async function Header() {
   const isCanary = process.env.NEXT_PUBLIC_IS_CANARY?.toLowerCase() === 'true';
 
   return (
-    <nav className="z-30 flex items-center justify-between p-6">
+    <nav className="z-30 flex items-center justify-between px-6 pt-6 pb-4">
       <HeaderClient>
         <Link href="/" className="relative">
           <Image

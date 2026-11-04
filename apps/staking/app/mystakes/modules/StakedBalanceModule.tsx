@@ -1,6 +1,7 @@
 'use client';
 
 import DynamicModuleCard from '@/app/mystakes/modules/DynamicModuleCard';
+import { useSeshPrice } from '@/app/mystakes/modules/PriceModule';
 import type { AddressModuleProps } from '@/app/mystakes/modules/types';
 import { useTotalStaked } from '@/app/mystakes/modules/useTotalStaked';
 import { SeshAmountWithUsd } from '@/components/FiatUsd';
@@ -15,6 +16,7 @@ export default function StakedBalanceModule({
   const dict = useTranslations('modules.balance');
   const { totalStakedFormatted, totalStaked, status, refetch, enabled } =
     useTotalStaked(addressOverride);
+  const price = useSeshPrice();
 
   return (
     <DynamicModuleCard
@@ -25,7 +27,11 @@ export default function StakedBalanceModule({
       size={size}
       variant={variant}
     >
-      <SeshAmountWithUsd amount={totalStaked ?? null} formatted={totalStakedFormatted} />
+      <SeshAmountWithUsd
+        amount={totalStaked ?? null}
+        formatted={totalStakedFormatted}
+        price={price}
+      />
     </DynamicModuleCard>
   );
 }

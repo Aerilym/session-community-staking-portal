@@ -1,6 +1,7 @@
 'use client';
 
 import DynamicModuleCard from '@/app/mystakes/modules/DynamicModuleCard';
+import { useSeshPrice } from '@/app/mystakes/modules/PriceModule';
 import type { AddressModuleProps } from '@/app/mystakes/modules/types';
 import { SeshAmountWithUsd } from '@/components/FiatUsd';
 import { useNetworkBalances } from '@/hooks/useNetworkBalances';
@@ -21,6 +22,7 @@ export default function UnclaimedRewardsModule({
   const { claimableRewards, status, refetch, enabled } = useNetworkBalances({
     addressOverride,
   });
+  const price = useSeshPrice();
 
   return (
     <DynamicModuleCard
@@ -37,6 +39,7 @@ export default function UnclaimedRewardsModule({
       <SeshAmountWithUsd
         amount={claimableRewards ?? null}
         formatted={formatSENTBigInt(claimableRewards, DYNAMIC_MODULE.SENT_ROUNDED_DECIMALS)}
+        price={price}
       />
     </DynamicModuleCard>
   );

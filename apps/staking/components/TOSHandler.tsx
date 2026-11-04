@@ -89,6 +89,9 @@ export function TOSHandler() {
             </Link>
           </DialogTitle>
           <DialogDescription className="text-session-white">
+            {dict.rich('disclaimer', { link: externalLink(URL.SESH_TOKEN_EXPLORER) })}
+            <br />
+            <br />
             {dict.rich('description', { link: externalLink(URL.TERMS_AND_CONDITIONS) })}
           </DialogDescription>
         </DialogHeader>

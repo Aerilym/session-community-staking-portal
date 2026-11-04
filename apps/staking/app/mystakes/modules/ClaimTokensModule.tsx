@@ -3,6 +3,7 @@
 import { ClaimTokensDialog } from '@/app/mystakes/modules/claim/ClaimTokensDialog';
 import type { AddressModuleProps } from '@/app/mystakes/modules/types';
 import ModuleButtonDialogTrigger from '@/components/ModuleButtonDialogTrigger';
+import { NewFeatureTag } from '@/components/NewFeatureTag';
 import { useNetworkBalances } from '@/hooks/useNetworkBalances';
 import { REMOTE_FEATURE_FLAG } from '@/lib/feature-flags';
 import { useRemoteFeatureFlagQuery } from '@/lib/feature-flags-client';
@@ -62,6 +63,11 @@ export default function ClaimTokensModule({
       IconComp={iconOverride}
       textClassName={textClassName}
       iconStrokeForFill={iconStrokeForFill}
-    />
+    >
+      <NewFeatureTag
+        className="absolute end-0 top-2 translate-y-1/2 rotate-[20deg]"
+        subtitle="One-click claim"
+      />
+    </ModuleButtonDialogTrigger>
   );
 }

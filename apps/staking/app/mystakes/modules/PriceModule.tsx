@@ -50,6 +50,11 @@ export const useHistoricalPriceQuery = () => {
   });
 };
 
+export const useSeshPrice = () => {
+  const { data } = useHistoricalPriceQuery();
+  return data?.length ? (data.at(-1)?.price ?? null) : null;
+};
+
 const formatPriceTimeMedium = (unixSeconds: number) =>
   formatDate(new Date(unixSeconds * 1000), { dateStyle: 'medium', timeStyle: 'short' });
 

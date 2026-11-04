@@ -109,12 +109,15 @@ export const DYNAMIC_LINKS = {
 } as const;
 
 export const EXTERNAL_ROUTES: LinkItem[] = [
+  {
+    dictionaryKey: 'github',
+    href: 'https://github.com/Aerilym/session-community-staking-portal',
+    linkType: 'external',
+  },
   { dictionaryKey: 'tokenSite', href: 'https://token.getsession.org', linkType: 'external' },
-  { dictionaryKey: 'support', href: '/support', linkType: 'external' },
   { dictionaryKey: 'docs', href: 'https://docs.getsession.org', linkType: 'external' },
+  { dictionaryKey: 'officialPortal', href: 'https://stake.getsession.org', linkType: 'external' },
   { dictionaryKey: 'explorer', href: 'https://session.observer', linkType: 'external' },
-  { dictionaryKey: 'bridgeArbitrum', href: '/bridge/arbitrum', linkType: 'external' },
-  { dictionaryKey: 'swap', href: 'https://claim.oxen.io', linkType: 'external' },
 ] as const;
 
 export enum QUERY {

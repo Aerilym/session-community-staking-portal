@@ -1,5 +1,5 @@
 import { type VariantProps, cva } from 'class-variance-authority';
-import { type HTMLAttributes, forwardRef } from 'react';
+import { type HTMLAttributes, ReactNode, forwardRef } from 'react';
 import { QuestionIcon } from '../icons/QuestionIcon';
 import { cn } from '../lib/utils';
 import { Loading } from './loading';
@@ -41,13 +41,9 @@ const innerModuleVariants = cva(
       variant: {
         default: cn(
           'md:gap-1 bg-blend-lighten shadow-md',
-          '[&>*>h3]:text-lg [&>h3]:text-lg',
-          '[&>*>h3]:font-normal [&>*>span]:text-3xl [&>h3]:font-normal [&>span]:text-3xl'
         ),
         hero: cn(
           'gap-3 hover:brightness-125 md:gap-4',
-          '[&>*>h3]:font-normal [&>*>h3]:text-2xl [&>h3]:font-normal [&>h3]:text-3xl [&>h3]:text-session-white',
-          '[&>*>span]:text-8xl [&>*>span]:text-session-white [&>span]:text-8xl [&>span]:text-session-white'
         ),
       },
       size: {
@@ -186,7 +182,7 @@ const ModuleHeader = forwardRef<HTMLDivElement, ModuleHeaderProps>(
 );
 ModuleHeader.displayName = 'ModuleHeader';
 
-const moduleTitleClassName = 'text-gradient-white-mock truncate leading-none tracking-tight';
+const moduleTitleClassName = 'text-gradient-white-mock truncate tracking-tight text-lg';
 
 const ModuleTitle = forwardRef<HTMLHeadingElement, HTMLAttributes<HTMLHeadingElement>>(
   ({ className, ...props }, ref) => (
@@ -195,23 +191,24 @@ const ModuleTitle = forwardRef<HTMLHeadingElement, HTMLAttributes<HTMLHeadingEle
 );
 ModuleTitle.displayName = 'ModuleTitle';
 
-type ModuleTitleDynamicProps = Omit<HTMLAttributes<HTMLHeadingElement>, 'children'> & {
+type ModuleTitleDynamicProps = HTMLAttributes<HTMLHeadingElement> & {
   longText: string;
   shortText?: string;
 };
 
 const ModuleTitleDynamic = forwardRef<HTMLHeadingElement, ModuleTitleDynamicProps>(
-  ({ shortText, longText, ...props }, ref) => (
+  ({ shortText, longText, children, ...props }, ref) => (
     <ModuleTitle ref={ref} {...props}
     >
       {shortText ? (
         <>
-          <div className={cn('module-title-dynamic-short', moduleTitleClassName)}>{shortText}</div>
-          <div className={cn('module-title-dynamic-long', moduleTitleClassName)}>{longText}</div>
+          <span className={cn('module-title-dynamic-short')}>{shortText}</span>
+          <span className={cn('module-title-dynamic-long')}>{longText}</span>
         </>
       ) : (
         longText
       )}
+      {children}
     </ModuleTitle>
   )
 );
@@ -227,7 +224,7 @@ const ModuleText = forwardRef<HTMLSpanElement, ModuleTextProps>(
   ({ className, isLarge, unified, ...props }, ref) => (
     <span
       ref={ref}
-      className={cn('overflow-hidden text-gradient-white', className)}
+      className={cn('overflow-hidden text-gradient-white text-xl md:text-2xl', className)}
       {...props}
       style={
         unified
@@ -277,12 +274,12 @@ const ModuleContent = forwardRef<HTMLDivElement, ModuleContentProps>(
   }
 );
 
-const ModuleTooltip = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
-  ({ className, children, ...props }, ref) => {
+const ModuleTooltip = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement> & {iconClassName?: string}>(
+  ({ className, iconClassName, children, ...props }, ref) => {
     return (
       <Tooltip ref={ref} tooltipContent={children} putContentInPortal>
-        <div className={cn('absolute md:bottom-3 bottom-2 end-2 md:end-4 cursor-pointer', className)} {...props}>
-          <QuestionIcon className='h-4 w-4 fill-muted-foreground' />
+        <div className={cn('cursor-pointer', className)} {...props}>
+          <QuestionIcon className={cn('h-3 w-3 fill-muted-foreground', iconClassName)} />
         </div>
       </Tooltip>
     );

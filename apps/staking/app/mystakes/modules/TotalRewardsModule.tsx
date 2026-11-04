@@ -7,6 +7,7 @@ import { DYNAMIC_MODULE, URL } from '@/lib/constants';
 import { externalLink } from '@/lib/locale-defaults';
 import type { QUERY_STATUS } from '@/lib/query';
 import { formatSENTBigInt } from '@session/contracts/hooks/Token';
+import { ModuleTooltip } from '@session/ui/components/Module';
 import { useWallet } from '@session/wallet/hooks/useWallet';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
@@ -43,6 +44,9 @@ export default function TotalRewardsModule({
       variant={variant}
     >
       {formatSENTBigInt(lifetimeRewards, DYNAMIC_MODULE.SENT_ROUNDED_DECIMALS)}
+      <ModuleTooltip className="mt-1" iconClassName="w-4 h-4">
+        {dict.rich('disclaimer')}
+      </ModuleTooltip>
     </DynamicModuleCard>
   );
 }

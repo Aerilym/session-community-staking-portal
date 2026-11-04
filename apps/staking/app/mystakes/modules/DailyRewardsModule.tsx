@@ -1,6 +1,7 @@
 'use client';
 
 import DynamicModuleCard from '@/app/mystakes/modules/DynamicModuleCard';
+import { useSeshPrice } from '@/app/mystakes/modules/PriceModule';
 import type { AddressModuleProps } from '@/app/mystakes/modules/types';
 import { SeshAmountWithUsd } from '@/components/FiatUsd';
 import { useDailyRewards } from '@/hooks/useDailyRewards';
@@ -33,6 +34,7 @@ export default function DailyRewardsModule({
     useDailyRewards({
       addressOverride: address,
     });
+  const price = useSeshPrice();
 
   const formattedStartDate = useMemo(
     () => (dailyRewardFrom ? formatDateTime(dailyRewardFrom) : null),
@@ -61,6 +63,7 @@ export default function DailyRewardsModule({
       <SeshAmountWithUsd
         amount={dailyRewardAmount ?? null}
         formatted={formatSENTBigInt(dailyRewardAmount, DYNAMIC_MODULE.SENT_ROUNDED_DECIMALS)}
+        price={price}
       />
     </DynamicModuleCard>
   );

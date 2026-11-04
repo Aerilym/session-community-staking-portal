@@ -1,7 +1,9 @@
 'use client';
 
+import { useSeshPrice } from '@/app/mystakes/modules/PriceModule';
 import { useTotalStaked } from '@/app/mystakes/modules/useTotalStaked';
 import { SeshAmountWithUsd } from '@/components/FiatUsd';
+import { ModuleOverlayTitle } from '@/components/ModuleOverlayTitle';
 import { useDailyRewards } from '@/hooks/useDailyRewards';
 import { DYNAMIC_MODULE } from '@/lib/constants';
 import { formatPercentage } from '@/lib/locale-client';
@@ -16,10 +18,12 @@ import type { ReactNode } from 'react';
 
 export default function KeyInfoModule() {
   const dict = useTranslations('modules.keyInfo');
+  const titleFormat = useTranslations('modules.title');
 
   const { totalStaked } = useTotalStaked();
   const { dailyRewardAmount } = useDailyRewards();
   const dailyRewards = dailyRewardAmount ?? null;
+  const price = useSeshPrice();
 
   // NOTE: the user's effective APY, 24h rewards annualised over their stake
   const apyPercent =
@@ -29,10 +33,8 @@ export default function KeyInfoModule() {
       : null;
 
   return (
-    <Module
-      size="lg"
-      className="[&>div:not([class*='absolute'])]:!p-2 md:[&>div:not([class*='absolute'])]:!p-3"
-    >
+    <Module size="lg">
+      <ModuleOverlayTitle longText={titleFormat('format', { title: dict('title') })} />
       <div className="flex w-full flex-row flex-wrap justify-between gap-2">
         <KeyInfoStat
           label={dict('totalStaked')}
@@ -42,6 +44,7 @@ export default function KeyInfoModule() {
               <SeshAmountWithUsd
                 amount={totalStaked}
                 formatted={formatSENTBigInt(totalStaked, DYNAMIC_MODULE.SENT_ROUNDED_DECIMALS)}
+                price={price}
               />
             ) : null
           }
@@ -54,6 +57,7 @@ export default function KeyInfoModule() {
               <SeshAmountWithUsd
                 amount={dailyRewards}
                 formatted={formatSENTBigInt(dailyRewards, DYNAMIC_MODULE.SENT_ROUNDED_DECIMALS)}
+                price={price}
               />
             ) : null
           }
@@ -81,7 +85,7 @@ function KeyInfoStat({
   tooltipContent,
 }: { label: string; value: ReactNode; tooltipContent: string }) {
   return (
-    <div className="flex flex-col items-start justify-center gap-1 text-start">
+    <div className="flex flex-col items-start justify-center text-start">
       <span className="inline-flex flex-row gap-1 text-muted-foreground text-sm">
         {label}
         <InfoTooltip>{tooltipContent}</InfoTooltip>

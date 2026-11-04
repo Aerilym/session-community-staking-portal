@@ -29,7 +29,9 @@ export default function ModuleButtonDialogTrigger({
   iconStrokeForFill,
   disabled,
   dialogContent,
+  size,
   'data-testid': dataTestId,
+  children,
 }: ModuleButtonDialogTriggerProps) {
   const Icon = IconComp ?? HandCoinsIcon;
   // NOTE: the default icon is stroke based, colour it via stroke unless an
@@ -47,7 +49,10 @@ export default function ModuleButtonDialogTrigger({
       <AlertDialogTrigger asChild>
         <ButtonModule
           data-testid={dataTestId}
-          className="group col-span-2 items-center transition-all duration-300 motion-reduce:transition-none"
+          className={cn(
+            'group items-center transition-all duration-300 motion-reduce:transition-none',
+            size === 'lg' ? 'col-span-2' : ''
+          )}
           disabled={disabled}
         >
           <ModuleContent className="flex h-full select-none flex-row items-center gap-2 p-0 align-middle font-medium">
@@ -69,6 +74,7 @@ export default function ModuleButtonDialogTrigger({
               <span className={cn('whitespace-normal text-2xl', textClassName)}>{label}</span>
             </ModuleText>
           </ModuleContent>
+          {children}
         </ButtonModule>
       </AlertDialogTrigger>
       <AlertDialogContent dialogTitle={dialogTitle}>{dialogContent}</AlertDialogContent>

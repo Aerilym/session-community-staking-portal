@@ -33,17 +33,13 @@ export default function DynamicModuleCard({
   const titleFormat = useTranslations('modules.title');
 
   return (
-    <Module
-      size={size}
-      variant={variant}
-      outerClassName="mt-4"
-      className="[&>span]:!text-2xl [&>*>span]:!text-2xl [&>div:not([class*='absolute'])]:!p-3 md:[&>div:not([class*='absolute'])]:!p-4"
-    >
-      {tooltipContent ? <ModuleTooltip>{tooltipContent}</ModuleTooltip> : null}
+    <Module size={size} variant={variant} outerClassName="mt-4">
       <ModuleOverlayTitle
         longText={titleFormat('format', { title: titleLong })}
         shortText={titleShort ? titleFormat('format', { title: titleShort }) : undefined}
-      />
+      >
+        {tooltipContent ? <ModuleTooltip>{tooltipContent}</ModuleTooltip> : null}
+      </ModuleOverlayTitle>
       <ModuleDynamicQueryText
         status={status as QUERY_STATUS}
         fallback={fallback ?? 0}
