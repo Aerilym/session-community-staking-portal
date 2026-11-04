@@ -320,7 +320,6 @@ export const prefDetails = {
     defaultValue: false,
     description: 'Pay the claim service fee in SESH instead of ETH',
   },
-
 } as const satisfies WalletSheetSettingDetailsGenerator;
 
 const hiddenPreferences = [

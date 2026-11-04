@@ -17,7 +17,7 @@ const DynamicWalletButton = dynamic(() => import('./DynamicWalletButton'), {
 export default function HeaderClient({ children }: { children?: ReactNode }) {
   return (
     <>
-      <div className={cn('flex flex-row gap-8 pr-4')}>
+      <div className={cn('flex flex-row items-center gap-8 pr-4')}>
         {children}
         <DynamicHeaderNavLinks />
       </div>
