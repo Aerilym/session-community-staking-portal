@@ -29,9 +29,9 @@
     "@session/util-crypto": "workspace:*",
     "@session/util-js": "workspace:*",
     "@tanstack/react-query": "5.61.5",
-    "@web3sheet/core": "workspace:*",
-    "@web3sheet/ui": "workspace:*",
-    "@web3sheet/wallet": "workspace:*",
+    "@web3sheet/core": "0.2.0",
+    "@web3sheet/ui": "0.2.0",
+    "@web3sheet/wallet": "0.2.0",
     "viem": "2.57.14"
   },
   "engines": {
