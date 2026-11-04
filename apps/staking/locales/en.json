@@ -333,6 +333,8 @@
         "serviceFeeTransferCost": "Service Fee Transfer Cost:",
         "amountClaimable": "Amount Claimable",
         "amountClaimableTooltip": "Amount of unlocked {tokenSymbol} able to be claimed.",
+        "rewardsClaimable": "Rewards Earned:",
+        "stakesClaimable": "Unlocked Stakes:",
         "serviceFee": "Service Fee",
         "serviceFeeTooltip": "Fee charged by this portal for the single-transaction claim service. Use the legacy claim to avoid the fee.",
         "serviceFeeFlat": "Flat Fee:",

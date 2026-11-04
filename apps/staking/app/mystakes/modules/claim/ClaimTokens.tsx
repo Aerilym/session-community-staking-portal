@@ -1,5 +1,5 @@
 import type { ClaimDict } from '@/app/mystakes/modules/ClaimTokensModule';
-import { ActionModuleAccordionRow, ActionModuleRow } from '@/components/ActionModule';
+import { ActionModuleAccordionRow } from '@/components/ActionModule';
 import { ActionModuleFeeAccordionRow } from '@/components/ActionModuleFeeAccordionRow';
 import { FiatUsd } from '@/components/FiatUsd';
 import { WalletInteractionButtonWithLocales } from '@/components/WalletInteractionButtonWithLocales';
@@ -22,6 +22,7 @@ import { type FeeMode, ethWeiToUsd, getFeeConfig, seshAtomicToUsd } from '@sessi
 import { formatSENTBigInt } from '@session/contracts/hooks/Token';
 import type { BlsRewardsSignatureResponse } from '@session/staking-api-js/schema';
 import { FuelIcon } from '@session/ui/icons/FuelIcon';
+import { HandCoinsIcon } from '@session/ui/icons/HandCoinsIcon';
 import { SparklesIcon } from '@session/ui/icons/SparklesIcon';
 import { toast } from '@session/ui/lib/toast';
 import { PROGRESS_STATUS, Progress } from '@session/ui/motion/progress';
@@ -49,7 +50,9 @@ export function ClaimTokens({
   const dictionaryFee = useTranslations('fee');
   const [overrideFormattedUnclaimed, setOverrideFormattedUnclaimed] = useState<string | null>(null);
   const [legacyMode, setLegacyMode] = useState<boolean>(false);
-  const { refetch, unclaimed } = useNetworkBalances({ addressOverride: address });
+  const { refetch, unclaimed, claimableRewards, claimableStakes } = useNetworkBalances({
+    addressOverride: address,
+  });
 
   const vestingContractAddress = useActiveVestingContractAddress();
 
@@ -170,15 +173,13 @@ export function ClaimTokens({
   return (
     <>
       <div className="flex flex-col gap-4">
-        <ActionModuleRow
-          label={dictionary('dialog.amountClaimable')}
-          tooltip={dictionary('dialog.amountClaimableTooltip')}
-        >
-          <span className="inline-flex items-center gap-1.5 text-nowrap align-middle">
-            {unclaimedRewardsAmount}
-            <FiatUsd usd={unclaimed === null ? null : seshAtomicToUsd(unclaimed)} />
-          </span>
-        </ActionModuleRow>
+        <ClaimAmountAccordion
+          dictionary={dictionary}
+          unclaimed={unclaimed}
+          amountFormatted={unclaimedRewardsAmount}
+          claimableRewards={claimableRewards}
+          claimableStakes={claimableStakes}
+        />
         <ClaimNetworkFeeAccordion
           dictionary={dictionary}
           dictionaryFee={dictionaryFee}
@@ -421,6 +422,59 @@ function EthAmountWithUsd({ formatted, wei }: { formatted: string | null; wei: b
       {formatted}
       <FiatUsd usd={wei === null ? null : ethWeiToUsd(wei)} />
     </span>
+  );
+}
+
+function SeshAmountWithUsd({ atomic }: { atomic: bigint | null }) {
+  if (atomic === null) return null;
+  return (
+    <span className="inline-flex items-center gap-1.5 text-nowrap align-middle">
+      {formatSENTBigInt(atomic, DYNAMIC_MODULE.SENT_ROUNDED_DECIMALS)}
+      <FiatUsd usd={seshAtomicToUsd(atomic)} />
+    </span>
+  );
+}
+
+function ClaimAmountAccordion({
+  dictionary,
+  unclaimed,
+  amountFormatted,
+  claimableRewards,
+  claimableStakes,
+}: {
+  dictionary: ClaimDict;
+  unclaimed: bigint | null;
+  amountFormatted: string;
+  claimableRewards: bigint | null;
+  claimableStakes: bigint | null;
+}) {
+  return (
+    <ActionModuleAccordionRow
+      label={
+        <>
+          <HandCoinsIcon className="h-3.5 w-3.5" />
+          {dictionary('dialog.amountClaimable')}
+        </>
+      }
+      tooltip={dictionary('dialog.amountClaimableTooltip')}
+      accordionContent={
+        <div className="flex flex-col gap-1">
+          <span className="flex justify-between">
+            <span>{dictionary('dialog.rewardsClaimable')}</span>
+            <SeshAmountWithUsd atomic={claimableRewards} />
+          </span>
+          <span className="flex justify-between">
+            <span>{dictionary('dialog.stakesClaimable')}</span>
+            <SeshAmountWithUsd atomic={claimableStakes} />
+          </span>
+        </div>
+      }
+    >
+      <span className="inline-flex items-center gap-1.5 text-nowrap align-middle">
+        {amountFormatted}
+        <FiatUsd usd={unclaimed === null ? null : seshAtomicToUsd(unclaimed)} />
+      </span>
+    </ActionModuleAccordionRow>
   );
 }
 
