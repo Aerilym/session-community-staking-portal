@@ -63,8 +63,8 @@ export function Footer(props: FooterProps) {
                 <Image
                   src={logo.src}
                   alt={logo.alt}
-                  width={150}
-                  height={150}
+                  width={280}
+                  height={48}
                   className="object-contain"
                 />
               </Link>

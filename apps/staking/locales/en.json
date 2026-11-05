@@ -364,7 +364,7 @@
         "rewardsClaimable": "Rewards Earned:",
         "stakesClaimable": "Unlocked Stakes:",
         "serviceFee": "Service Fee",
-        "serviceFeeTooltip": "Fee charged by this portal for the single-transaction claim service. Use the legacy claim to avoid the fee.",
+        "serviceFeeTooltip": "Fee charged by this portal for the single-transaction claim service. Use the legacy claim to avoid the fee. The service fee supports the ongoing development and hosting of seshtoken.info community projects. It is an additional fee added to services provided that are not available as a part of any official Session project.",
         "serviceFeeFlat": "Flat Fee:",
         "serviceFeeBps": "Proportional Fee ({percent}% of claim):",
         "serviceFeePayInSesh": "Pay service fee in SESH",
