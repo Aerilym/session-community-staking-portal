@@ -50,6 +50,11 @@
         }
       }
     },
+    "explorer": {
+      "title": "Explorer le reseau",
+      "tagline": "Recherchez des adresses et des cles de noeuds, consultez le prix {tokenSymbol} en direct et allez plus loin avec l'explorateur seshtoken.info.",
+      "weekChange": "7j"
+    },
     "heroImageAlt": "Cube en verre avec des reflets verts"
   },
   "myStakes": {

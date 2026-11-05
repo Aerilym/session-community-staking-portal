@@ -1,4 +1,5 @@
 import { Footer } from '@/components/Footer';
+import { LandingExplorerSection } from '@/components/LandingExplorerSection';
 import { LANDING_BUTTON_URL, SOCIALS } from '@/lib/constants';
 import { ButtonDataTestId } from '@/testing/data-test-ids';
 import { Social } from '@session/ui/components/SocialLinkList';
@@ -153,13 +154,13 @@ const CommunitySection = () => {
 export default function LandingPage() {
   const dictionary = useTranslations('home');
   return (
-    <div className={cn('mx-auto flex flex-col items-center justify-center overflow-hidden')}>
+    <div className={cn('mx-auto flex flex-col items-center justify-center gap-10 overflow-hidden')}>
       <div
         className={cn(
-          'flex h-dvh w-screen max-w-screen-3xl flex-col-reverse items-center justify-around py-16 align-middle',
+          'flex w-screen max-w-screen-3xl flex-col-reverse items-center justify-around py-16 align-middle',
           'md:-mt-header-displacement',
-          'lg:grid lg:grid-cols-2 lg:gap-x-48 lg:p-8 lg:py-0',
-          'xl:p-32'
+          'lg:grid lg:grid-cols-2 lg:gap-x-48 lg:p-8',
+          'xl:p-32 xl:pt-72'
         )}
       >
         <div
@@ -205,6 +206,7 @@ export default function LandingPage() {
           />
         </div>
       </div>
+      <LandingExplorerSection />
       <CommunitySection />
       <Footer />
     </div>

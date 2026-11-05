@@ -27,14 +27,14 @@ export default async function Maintenance() {
                 Discord
               </Button>
             </Link>
-            <Link href={SOCIALS[Social.X].link} prefetch={false}>
+            <Link href={SOCIALS[Social.Session].link} prefetch={false}>
               <Button
                 size="sm"
                 className="w-full"
                 variant="outline"
-                data-testid={ButtonDataTestId.Maintenance_Discord}
+                data-testid={ButtonDataTestId.Maintenance_Session}
               >
-                X (Twitter)
+                Session Community
               </Button>
             </Link>
           </div>

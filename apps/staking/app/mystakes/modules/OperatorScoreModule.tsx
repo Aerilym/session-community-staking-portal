@@ -78,8 +78,8 @@ export default function OperatorScoreModule({
     >
       {data ? (
         data.score === null || data.rank === null ? (
-          <span className="inline-flex flex-col items-start gap-1 align-middle">
-            <span className="text-muted-foreground text-sm">{dict('notScored')}</span>
+          <span className="inline-flex flex-col items-start gap-2.5 align-middle">
+            <span className="mt-0.5 text-muted-foreground text-sm">{dict('notScored')}</span>
             <a
               href={`${URL.SESH_TOKEN_EXPLORER}/operators`}
               target="_blank"
