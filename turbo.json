@@ -23,6 +23,7 @@
       ],
       "env": [
         "NO_MINIFY",
+        "STANDALONE",
         "NEXT_PUBLIC_IS_CANARY",
         "NEXT_PUBLIC_ENABLE_FAUCET",
         "NEXT_PUBLIC_ENABLE_LEADERBOARD",

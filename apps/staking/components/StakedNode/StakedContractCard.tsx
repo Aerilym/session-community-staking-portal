@@ -25,28 +25,11 @@ import type {
   ContributionContract,
   ContributionContractNotReady,
 } from '@session/staking-api-js/schema';
-import type { statusVariants } from '@session/ui/components/StatusIndicator';
 import { ETH_ZERO_ADDRESS } from '@session/util-crypto/constants';
 import type { EthereumAddress } from '@session/util-crypto/keys';
 import { areEthereumAddressesEqual } from '@session/util-crypto/string';
-import type { VariantProps } from 'class-variance-authority';
 import { useTranslations } from 'next-intl';
 import { type HTMLAttributes, forwardRef, useMemo } from 'react';
-
-function getContractStatusColor(
-  state: STAKE_CONTRACT_STATE
-): VariantProps<typeof statusVariants>['status'] {
-  switch (state) {
-    case STAKE_CONTRACT_STATE.AWAITING_OPERATOR_CONTRIBUTION:
-    case STAKE_CONTRACT_STATE.AWAITING_OPERATOR_ACTIVATION:
-      return 'yellow';
-    case STAKE_CONTRACT_STATE.AWAITING_CONTRIBUTORS:
-    case STAKE_CONTRACT_STATE.JOINING:
-      return 'blue';
-    default:
-      return 'grey';
-  }
-}
 
 const StakedContractCard = forwardRef<
   HTMLDivElement,
@@ -219,7 +202,6 @@ const StakedContractCard = forwardRef<
         {...props}
         data-testid={NodeCardDataTestId.Staked_Node}
         title={parseStakeContractState(contract)}
-        statusIndicatorColor={getContractStatusColor(state)}
         operatorAddress={contract.operator_address}
       >
         {children}

@@ -1,4 +1,6 @@
 import { NodeCard } from '@/components/NodeCard';
+import { ButtonSkeleton } from '@session/ui/ui/button';
+import { Skeleton } from '@session/ui/ui/skeleton';
 import { type HTMLAttributes, type ReactNode, forwardRef } from 'react';
 import type { Address } from 'viem';
 
@@ -22,6 +24,22 @@ const StakeCard = forwardRef<HTMLDivElement, StakeCardProps>(
   }
 );
 StakeCard.displayName = 'StakeCard';
+
+export function StakeCardSkeleton() {
+  return (
+    <div className="flex w-full flex-row items-center justify-between gap-3 rounded-lg border-2 border-muted p-3.5">
+      <div className="-bottom-1/2 flex w-full flex-row gap-3">
+        <div className="flex items-center gap-3 align-middle">
+          <div className="-mr-2 scale-75 p-0 sm:mr-0 md:scale-100 md:p-0.5">
+            <Skeleton className="h-4 w-4 rounded-full" />
+          </div>
+        </div>
+        <Skeleton className="h-4 w-9/12" />
+      </div>
+      <ButtonSkeleton variant="outline" rounded="md" className="h-6 w-16" />
+    </div>
+  );
+}
 
 export type OrderableComponents =
   | 'status'

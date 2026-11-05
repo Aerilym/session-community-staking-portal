@@ -420,8 +420,9 @@
     },
     "explorer": {
       "title": "SESH Explorer",
-      "searchPlaceholder": "Search address / node / tx…",
-      "search": "Search"
+      "searchPlaceholder": "Search address, node key, or ID",
+      "search": "Search",
+      "noMatches": "No matches — press Enter to search anyway."
     },
     "keyInfo": {
       "title": "Key Info",

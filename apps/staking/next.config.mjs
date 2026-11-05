@@ -1,3 +1,4 @@
+import { execSync } from 'node:child_process';
 import { join } from 'node:path';
 import createNextIntlPlugin from 'next-intl/plugin';
 
@@ -8,6 +9,18 @@ if (isTestnet) console.log('Building staking portal in TESTNET mode!');
 
 const debugEnv = process.env.APP_DEBUG;
 if (debugEnv) console.log('Running staking portal in DEBUG mode! Debug assertions are active!');
+
+const isStandalone = process.env.STANDALONE === 'true';
+if (isStandalone) console.log('Building staking portal with standalone output!');
+
+const getCommitHash = () => {
+  try {
+    return execSync('git rev-parse HEAD').toString().trim();
+  } catch {
+    return 'unknown';
+  }
+};
+const commitHash = getCommitHash();
 
 if (process.env.NEXT_PUBLIC_ENABLE_FAUCET?.toLowerCase() === 'true') console.log('Faucet Enabled!')
 if (process.env.NEXT_PUBLIC_ENABLE_LEADERBOARD?.toLowerCase() === 'true') console.log('Leaderboard Enabled!');
@@ -39,8 +52,10 @@ const getNetworkApiUrl = () => {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  env:{
+  ...(isStandalone ? { output: 'standalone' } : {}),
+  env: {
     APP_DEBUG: debugEnv,
+    COMMIT_HASH: commitHash,
   },
   images: {
     dangerouslyAllowSVG: true,

@@ -8,33 +8,37 @@ import {
 import { Social, type SocialLink } from '@session/ui/components/SocialLinkList';
 import { getEnvironmentTaggedDomain } from '@session/util-js/env';
 import type { WalletSheetSettingDetails } from '@session/wallet/components/WalletUserSheet';
-import { NEXT_PUBLIC_TESTNET } from './env';
+import { NEXT_PUBLIC_SESH_TOKEN_EXPLORER_URL, NEXT_PUBLIC_TESTNET } from './env';
 import type { LocaleKey } from './locale-util';
 
 export const BASE_URL = `https://${getEnvironmentTaggedDomain('stake')}.getsession.org`;
 
-export enum URL {
-  SESH_TOKEN_EXPLORER = 'https://seshtoken.info',
-  ARB_SEP_FAUCET = 'https://faucet.quicknode.com/arbitrum/sepolia',
-  GAS_INFO = 'https://ethereum.org/en/developers/docs/gas',
-  SESSION_NODE_DOCS = 'https://docs.getsession.org/session-nodes',
-  INCENTIVE_PROGRAM = 'https://token.getsession.org/testnet-incentive-program',
-  LEARN_MORE_DAILY_REWARDS = 'https://docs.getsession.org/staking-reward-pool#network-reward-rate',
-  LEARN_MORE_TOTAL_REWARDS = 'https://docs.getsession.org/staking-reward-pool#network-reward-rate',
-  LEARN_MORE_UNCLAIMED_REWARDS = 'https://docs.getsession.org/staking-reward-pool#claiming-rewards',
-  OXEN_SERVICE_NODE_BONUS_PROGRAM = 'https://swap.oxen.io/',
-  SESSION_TOKEN_COMMUNITY_SNAPSHOT = 'https://token.getsession.org/testnet-incentive-program',
-  TERMS_AND_CONDITIONS = 'https://token.getsession.org/staking-terms-conditions',
-  BUG_BOUNTY_PROGRAM = 'https://token.getsession.org/bug-bounty-program',
-  TESTNET_REFERRALS = 'https://token.getsession.org/blog/testnet-referrals',
-  TESTNET_REFERRALS_TOS = 'https://token.getsession.org/referral-program-terms',
-  BUG_BOUNTY_TOS = 'https://token.getsession.org/bug-bounty-terms',
-  DOCS = 'https://docs.getsession.org/',
-  SESSION_NODE_SOLO_SETUP_DOCS = 'https://docs.getsession.org/contribute-to-the-session-network/running-a-session-node',
-  REMOVE_TOKEN_FROM_WATCH_LIST = 'https://support.metamask.io/managing-my-tokens/custom-tokens/how-to-remove-a-token/',
-  NODE_LIQUIDATION_LEARN_MORE = 'https://docs.getsession.org/class-is-in-session/session-stagenet-single-contributor-node-setup#unlocking-your-stake',
-  SESSION_NODE_UPDATE_DOCS = 'https://docs.getsession.org/contribute-to-the-session-network/running-a-session-node#keeping-your-binaries-up-to-date',
-}
+export const URL = {
+  SESH_TOKEN_EXPLORER: NEXT_PUBLIC_SESH_TOKEN_EXPLORER_URL,
+  ARB_SEP_FAUCET: 'https://faucet.quicknode.com/arbitrum/sepolia',
+  GAS_INFO: 'https://ethereum.org/en/developers/docs/gas',
+  SESSION_NODE_DOCS: 'https://docs.getsession.org/session-nodes',
+  INCENTIVE_PROGRAM: 'https://token.getsession.org/testnet-incentive-program',
+  LEARN_MORE_DAILY_REWARDS: 'https://docs.getsession.org/staking-reward-pool#network-reward-rate',
+  LEARN_MORE_TOTAL_REWARDS: 'https://docs.getsession.org/staking-reward-pool#network-reward-rate',
+  LEARN_MORE_UNCLAIMED_REWARDS: 'https://docs.getsession.org/staking-reward-pool#claiming-rewards',
+  OXEN_SERVICE_NODE_BONUS_PROGRAM: 'https://swap.oxen.io/',
+  SESSION_TOKEN_COMMUNITY_SNAPSHOT: 'https://token.getsession.org/testnet-incentive-program',
+  TERMS_AND_CONDITIONS: 'https://token.getsession.org/staking-terms-conditions',
+  BUG_BOUNTY_PROGRAM: 'https://token.getsession.org/bug-bounty-program',
+  TESTNET_REFERRALS: 'https://token.getsession.org/blog/testnet-referrals',
+  TESTNET_REFERRALS_TOS: 'https://token.getsession.org/referral-program-terms',
+  BUG_BOUNTY_TOS: 'https://token.getsession.org/bug-bounty-terms',
+  DOCS: 'https://docs.getsession.org/',
+  SESSION_NODE_SOLO_SETUP_DOCS:
+    'https://docs.getsession.org/contribute-to-the-session-network/running-a-session-node',
+  REMOVE_TOKEN_FROM_WATCH_LIST:
+    'https://support.metamask.io/managing-my-tokens/custom-tokens/how-to-remove-a-token/',
+  NODE_LIQUIDATION_LEARN_MORE:
+    'https://docs.getsession.org/class-is-in-session/session-stagenet-single-contributor-node-setup#unlocking-your-stake',
+  SESSION_NODE_UPDATE_DOCS:
+    'https://docs.getsession.org/contribute-to-the-session-network/running-a-session-node#keeping-your-binaries-up-to-date',
+} as const;
 
 export const LANDING_BUTTON_URL = {
   PRIMARY: '/stake',

@@ -5,6 +5,7 @@ import { type HTMLAttributes, forwardRef, useCallback, useEffect, useMemo, useSt
 import { ButtonDataTestId } from '../data-test-ids';
 import { cn } from '../lib/utils';
 import { CopyToClipboardButton } from './CopyToClipboardButton';
+import { OpenInExplorerButton } from './OpenInExplorerButton';
 import { Tooltip } from './ui/tooltip';
 
 type CollapseStringsParams = Parameters<typeof collapseString>;
@@ -112,13 +113,18 @@ export const PubKey = forwardRef<HTMLDivElement, PubKeyProps>((props, ref) => {
       </div>
       <CopyToClipboardButton
         className={cn(
-          'p-0.5 duration-0 group-hover:bg-session-green group-hover:text-session-black group-hover:opacity-100 *:group-hover:fill-session-black',
-          alwaysShowCopyButton || isExpanded ? 'opacity-100' : 'opacity-0'
+          'p-0.5 duration-0',
         )}
         textToCopy={pubKeyDisplayedOverride || pubKey}
         data-testid={ButtonDataTestId.Copy_Pub_Key_To_Clipboard}
         aria-label={copyToClipboardAriaLabel ?? 'Copy to Clipboard'}
         copyToClipboardToastMessage={copyToClipboardToastMessage ?? 'Copied to clipboard!'}
+      />
+      <OpenInExplorerButton
+        className={cn(
+          'p-0.5 duration-0',
+        )}
+        value={pubKey}
       />
     </span>
   );

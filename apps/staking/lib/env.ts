@@ -24,6 +24,10 @@ if (!NEXT_PUBLIC_PRICE_TOKEN) {
 
 export const NEXT_PUBLIC_TESTNET = process.env.NEXT_PUBLIC_TESTNET === 'true';
 
+/** Base URL of the SESH token explorer (seshtoken.info). Optional; defaults to the production site. */
+export const NEXT_PUBLIC_SESH_TOKEN_EXPLORER_URL =
+  process.env.NEXT_PUBLIC_SESH_TOKEN_EXPLORER_URL ?? 'https://seshtoken.info';
+
 /** Public VAPID key for browser push notifications. Optional; notifications are disabled when unset. */
 export const NEXT_PUBLIC_VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
 

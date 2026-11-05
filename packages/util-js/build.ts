@@ -9,6 +9,18 @@ export type BuildInfo = {
   };
 };
 
+function getCommitHash(): string {
+  if (process.env.COMMIT_HASH) {
+    return process.env.COMMIT_HASH;
+  }
+
+  try {
+    return execSync('git rev-parse HEAD').toString().trim();
+  } catch {
+    return 'unknown';
+  }
+}
+
 /**
  * Retrieves build information including version and commit hash.
  * @returns An object containing the build information.
@@ -16,7 +28,8 @@ export type BuildInfo = {
 export function getBuildInfo(): BuildInfo {
   // Used to get package.json in the scope of where this is run
   const pkg = require('./package.json');
-  const commitHash = execSync('git rev-parse HEAD').toString().trim();
+
+  const commitHash = getCommitHash();
 
   return {
     env: {

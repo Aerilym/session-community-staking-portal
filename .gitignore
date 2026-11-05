@@ -9,6 +9,8 @@ node_modules
 .env
 .env.local
 .env.development.local
+.env.runtime
+.env.deploy
 .env.test.local
 .env.production.local
 

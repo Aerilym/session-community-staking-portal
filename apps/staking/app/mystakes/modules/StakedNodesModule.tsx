@@ -1,8 +1,8 @@
 'use client';
 import { ErrorBox } from '@/components/Error/ErrorBox';
 import { ErrorMessage } from '@/components/ErrorMessage';
-import { NodeListModuleContent, NodesListSkeleton } from '@/components/NodesListModule';
-import { VIEW_MODE } from '@/components/StakedNode/StakeCard';
+import { NodeListModuleContent } from '@/components/NodesListModule';
+import { StakeCardSkeleton, VIEW_MODE } from '@/components/StakedNode/StakeCard';
 import {
   StakedContractCard,
   getStakedContractCardContractFromConfirmation,
@@ -189,7 +189,11 @@ export function StakedNodesFromData({
           buttonDataTestId={ButtonDataTestId.Staked_Node_Error_Retry}
         />
       ) : isLoading ? (
-        <NodesListSkeleton />
+        <>
+          <StakeCardSkeleton />
+          <StakeCardSkeleton />
+          <StakeCardSkeleton />
+        </>
       ) : rows.length && blockHeight && networkTime ? (
         rows.map(({ key, variant, contract, stake, ...rest }) => {
           if (variant === 'contract' && contract) {

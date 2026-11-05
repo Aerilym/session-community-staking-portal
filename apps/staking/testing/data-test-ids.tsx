@@ -37,6 +37,8 @@ export enum ButtonDataTestId {
   Explorer_Link_Holders = 'button:explorer-link-holders',
   Explorer_Link_Network = 'button:explorer-link-network',
   Explorer_Link_Tokenomics = 'button:explorer-link-tokenomics',
+  Explorer_Link_Bridge = 'button:explorer-link-bridge',
+  Explorer_Link_Reward_Pool = 'button:explorer-link-reward-pool',
   Hide_Prepared_Registration = 'button:hide-prepared-registration',
   Staked_Node_Request_Exit = 'button:staked-node-request-exit',
   Staked_Node_Exit = 'button:staked-node-exit',

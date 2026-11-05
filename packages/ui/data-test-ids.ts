@@ -47,4 +47,5 @@ export enum ButtonDataTestId {
   Copy_Error_To_Clipboard = 'button:copy-error-to-clipboard',
   Toggle_Show_Toaster_History = 'button:toggle-show-toaster-history',
   Delete_Toast_In_History = 'button:delete-toast-in-history',
+  Open_In_Explorer = 'button:open-in-explorer',
 }

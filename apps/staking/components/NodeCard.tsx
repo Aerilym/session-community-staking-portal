@@ -1,4 +1,3 @@
-import { AddressLink } from '@/components/AddressLink';
 import { ExitRequestorIndicator, NodeOperatorIndicator } from '@/components/StakedNodeCard';
 import { StakedNodeDataTestId } from '@/testing/data-test-ids';
 import { formatSENTBigInt } from '@session/contracts/hooks/Token';
@@ -173,7 +172,6 @@ function ContributorTooltipCard({
             isRequestingExit={isRequestingExit}
           />
           <PubkeyWithEns pubKey={contributor.address} />
-          <AddressLink address={contributor.address} />
         </div>
         <span className="flex flex-row gap-2">
           {isOperator ? <NodeOperatorIndicator /> : null}

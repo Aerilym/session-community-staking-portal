@@ -36,6 +36,12 @@ export const hasCount = <F extends FLAGS_TABLE>(row: CountType<F>, countField: F
   return count && count > 0;
 };
 
+/** Absolute or app-relative path to the feature flags sqlite database. */
+export const FLAGS_DB_PATH = process.env.FLAGS_DB_PATH || 'db/flags.sqlite';
+
+const resolveDbPath = () =>
+  path.isAbsolute(FLAGS_DB_PATH) ? FLAGS_DB_PATH : path.resolve(process.cwd(), FLAGS_DB_PATH);
+
 export const openDatabase = (fileMustExist = true): BetterSql3.Database => {
   const dbOptions: BetterSql3.Options = {
     nativeBinding: path.join(
@@ -53,7 +59,7 @@ export const openDatabase = (fileMustExist = true): BetterSql3.Database => {
     dbOptions.verbose = console.log;
   }
 
-  return new Database('db/flags.sqlite', dbOptions);
+  return new Database(resolveDbPath(), dbOptions);
 };
 
 export const setupDatabase = () => {
