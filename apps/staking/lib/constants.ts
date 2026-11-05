@@ -43,6 +43,7 @@ export const URL = {
 export const LANDING_BUTTON_URL = {
   PRIMARY: '/stake',
   SECONDARY: 'https://docs.getsession.org/contribute-to-the-session-network/running-a-session-node',
+  COMMUNITY: 'https://seshtoken.info/',
 };
 
 // These paths are restricted by the TOS
@@ -57,8 +58,10 @@ export enum COMMUNITY_DATE {
 export const SOCIALS = {
   [Social.Discord]: { name: Social.Discord, link: 'https://getsession.org/discord' },
   [Social.Session]: { name: Social.Session, link: 'https://community.seshtoken.info/r/general/' },
-  [Social.X]: { name: Social.X, link: 'https://x.com/aerilym' },
-  [Social.Github]: { name: Social.Github, link: 'https://github.com/aerilym/session-websites' },
+  [Social.Github]: {
+    name: Social.Github,
+    link: 'https://github.com/aerilym/session-community-staking-portal',
+  },
 } satisfies Partial<Record<Social, SocialLink>>;
 
 export enum FAUCET {

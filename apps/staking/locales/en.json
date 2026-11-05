@@ -139,9 +139,32 @@
   "home": {
     "title": "Stake <text-semibold>{tokenSymbol}</text-semibold>",
     "titleDescription": "Secure the Network",
+    "communityBadge": "Community Run",
     "buttons": {
       "primary": "Stake Now",
-      "secondary": "How to run a Session Node"
+      "secondary": "How to run a Session Node",
+      "community": "Visit seshtoken.info"
+    },
+    "community": {
+      "title": "Built by the community, for the community",
+      "description": "This portal is an open-source fork of the official {sessionNetwork} staking portal, maintained and run by the seshtoken.info community. It features UI changes, additional features, and a tight tie-in to seshtoken.info explorer information.",
+      "cards": {
+        "mainSite": {
+          "title": "Community Site",
+          "description": "Explorer, analytics, tools, and everything {tokenSymbol}. Visit the main community site.",
+          "cta": "Visit Main Site"
+        },
+        "forum": {
+          "title": "Community on Session",
+          "description": "Ask questions, share ideas, and get help from fellow stakers.",
+          "cta": "Join the Community"
+        },
+        "openSource": {
+          "title": "Open Source",
+          "description": "Spot a bug or have an idea? Contribute to the portal on GitHub.",
+          "cta": "View on GitHub"
+        }
+      }
     },
     "heroImageAlt": "Glass cube with green highlights"
   },
@@ -341,8 +364,23 @@
         "serviceFeeBps": "Proportional Fee ({percent}% of claim):",
         "serviceFeePayInSesh": "Pay service fee in SESH",
         "netAfterFee": "You will receive",
-        "legacyToggle": "Use legacy 2-step claim (2 transactions, no service fee)",
-        "batchedToggle": "Use single-click claim",
+        "tabs": {
+          "ariaLabel": "Claim flow",
+          "singleClick": "Single-Click",
+          "comingSoon": "Coming Soon",
+          "legacy": "Legacy"
+        },
+        "comingSoonTitle": "A new way to claim is coming soon",
+        "comingSoonDescription": "We're working on an even smoother claiming experience for your rewards. Stay tuned!",
+        "signaturePending": "Fetching your claim signature",
+        "advancedMode": "Advanced",
+        "claimAmountMax": "Max",
+        "claimAmountCancel": "Reset to full amount",
+        "claimableWithoutUpdate": "Claimable without a balance update: {amount}. The balance update always applies your full signed amount, so claiming in multiple transactions only pays for one update.",
+        "trySingleClick": "Your wallet supports single-click claiming. One wallet interaction instead of two.",
+        "trySingleClickLink": "Give it a try",
+        "batchedUnsupportedNotice": "Your wallet doesn't support single-click claiming. For example, hardware wallets cannot sign the EIP-7702 authorization it requires. The legacy tab will be used instead, with no service fee.",
+        "batchedFallbackNotice": "Your wallet couldn't execute the single-click claim, so it switched to the legacy flow. Click Claim to continue, with no service fee.",
         "buttons": {
           "submit": "Claim {tokenSymbol}",
           "submitAria": "Claim {tokenSymbol} with a claim gas fee of {gasAmount} {gasTokenSymbol}"
@@ -422,7 +460,7 @@
       "title": "SESH Explorer",
       "searchPlaceholder": "Search address, node key, or ID",
       "search": "Search",
-      "noMatches": "No matches — press Enter to search anyway."
+      "noMatches": "No matches - press Enter to search anyway."
     },
     "keyInfo": {
       "title": "Key Info",

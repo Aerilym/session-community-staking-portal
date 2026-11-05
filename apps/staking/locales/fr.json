@@ -21,11 +21,36 @@
     "homeButton": "Return Home"
   },
   "home": {
-    "title": "Stake <bold>{token}</bold> Earn Rewards",
+    "title": "Stake <text-semibold>{tokenSymbol}</text-semibold>",
+    "titleDescription": "Securiser le reseau",
+    "communityBadge": "Communautaire",
     "buttons": {
       "primary": "STAKE NOW",
-      "secondary": "HOW TO RUN A SESSION NODE"
-    }
+      "secondary": "HOW TO RUN A SESSION NODE",
+      "community": "Visiter seshtoken.info"
+    },
+    "community": {
+      "title": "Concu par la communaute, pour la communaute",
+      "description": "Ce portail est un fork open-source du portail de staking officiel du {sessionNetwork}, maintenu et gere par la communaute seshtoken.info — avec des extras communautaires comme le faucet et le classement des noeuds.",
+      "cards": {
+        "mainSite": {
+          "title": "seshtoken.info",
+          "description": "Guides, outils et tout {tokenSymbol} — visitez le site principal de la communaute.",
+          "cta": "Visiter le site principal"
+        },
+        "forum": {
+          "title": "Forum communautaire",
+          "description": "Posez des questions, partagez des idees et obtenez de l'aide d'autres stakers.",
+          "cta": "Rejoindre la discussion"
+        },
+        "openSource": {
+          "title": "Open Source",
+          "description": "Un bug ou une idee ? Contribuez au portail sur GitHub.",
+          "cta": "Voir sur GitHub"
+        }
+      }
+    },
+    "heroImageAlt": "Cube en verre avec des reflets verts"
   },
   "myStakes": {
     "title": "My Stakes"

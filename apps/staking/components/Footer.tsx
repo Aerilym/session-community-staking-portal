@@ -10,10 +10,12 @@ export function Footer() {
   const routes: typeof SSR_LINKS = [];
   for (const { dictionaryKey, href } of SSR_LINKS) {
     if (
-      dictionaryKey === 'faucet' &&
-      !(process.env.NEXT_PUBLIC_ENABLE_FAUCET?.toLowerCase() === 'true')
+      (dictionaryKey === 'faucet' &&
+        !(process.env.NEXT_PUBLIC_ENABLE_FAUCET?.toLowerCase() === 'true')) ||
+      (dictionaryKey === 'leaderboard' &&
+        !(process.env.NEXT_PUBLIC_ENABLE_LEADERBOARD?.toLowerCase() === 'true'))
     ) {
-      return;
+      continue;
     }
     routes.push({ dictionaryKey, href });
   }
@@ -30,7 +32,7 @@ export function Footer() {
 
   return (
     <FooterComp
-      logo={{ src: '/images/logo-community.svg', alt: 'seshtoken.info — community staking' }}
+      logo={{ src: '/images/logo-community.svg', alt: 'seshtoken.info community staking' }}
       menuItems={menuItems}
       socialLinks={socialLinks}
       footerManagedBy={dictionary('managedBy')}

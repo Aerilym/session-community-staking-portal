@@ -19,6 +19,10 @@ export type ModuleButtonDialogTriggerProps = ButtonModuleProps & {
   /** True to colour the icon via stroke (lucide style icons), false to colour via fill. Defaults true for the stroke based default icon. */
   iconStrokeForFill?: boolean;
   dialogContent?: ReactNode;
+  /** Classes applied to the positioned dialog container, e.g. to override the default centering. */
+  dialogContainerClassName?: string;
+  /** Optional action rendered at the start of the dialog header row. */
+  dialogHeaderAction?: ReactNode;
 };
 
 export default function ModuleButtonDialogTrigger({
@@ -29,6 +33,8 @@ export default function ModuleButtonDialogTrigger({
   iconStrokeForFill,
   disabled,
   dialogContent,
+  dialogContainerClassName,
+  dialogHeaderAction,
   size,
   'data-testid': dataTestId,
   children,
@@ -77,7 +83,13 @@ export default function ModuleButtonDialogTrigger({
           {children}
         </ButtonModule>
       </AlertDialogTrigger>
-      <AlertDialogContent dialogTitle={dialogTitle}>{dialogContent}</AlertDialogContent>
+      <AlertDialogContent
+        dialogTitle={dialogTitle}
+        containerClassName={dialogContainerClassName}
+        headerAction={dialogHeaderAction}
+      >
+        {dialogContent}
+      </AlertDialogContent>
     </AlertDialog>
   );
 }

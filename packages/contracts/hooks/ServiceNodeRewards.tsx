@@ -29,13 +29,17 @@ export type ClaimRewardsQuery = ContractWriteQueryProps & {
 
 export function useClaimRewardsQuery({
   vestingContractAddress,
+  amount,
 }: {
   vestingContractAddress?: Address;
+  /** The specific amount to claim in atomic units, claims the full balance when null/undefined. */
+  amount?: bigint | null;
 }): ClaimRewardsQuery {
   const { simulateAndWriteContract, ...rest } = useContractWriteQuery({
     contract: vestingContractAddress ? 'TokenVestingStaking' : 'ServiceNodeRewards',
     functionName: 'claimRewards',
     addressOverride: vestingContractAddress,
+    ...(amount != null ? { args: [amount] as [bigint] } : {}),
   });
 
   return {

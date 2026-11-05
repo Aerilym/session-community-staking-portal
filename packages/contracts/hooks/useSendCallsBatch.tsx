@@ -2,7 +2,9 @@
 
 import { useWallet } from '@session/wallet/hooks/useWallet';
 import { useCallback, useMemo } from 'react';
+import { numberToHex } from 'viem';
 import { useCallsStatus, useSendCalls } from 'wagmi/experimental';
+import { getCapabilitiesQueryOptions, useQuery } from 'wagmi/query';
 import type { BatchCall } from '../fees';
 
 export type BatchCallStatus = 'idle' | 'pending' | 'confirmed' | 'failed';
@@ -119,6 +121,81 @@ export function useSendCallsBatch(chainIdOverride?: number): SendCallsBatchProps
     isUnsupported,
     resetBatch,
   };
+}
+
+export type SendCallsCompatibility = {
+  /**
+   * True when the wallet explicitly supports the EIP-5792 Wallet Call API on
+   * the connected chain (capabilities response includes the chain), false
+   * when the wallet explicitly does not (unsupported-method error, or a
+   * successful response omitting the connected chain — e.g. MetaMask with
+   * hardware accounts that cannot sign EIP-7702 authorizations). Null while
+   * the wallet has not answered `wallet_getCapabilities` — treat null as
+   * "attempt the batch and fall back on failure".
+   */
+  isSupported: boolean | null;
+  /** True when the wallet reports atomic batch execution on the connected chain, false when not, null when unknown. */
+  isAtomic: boolean | null;
+};
+
+/**
+ * Pre-checks EIP-5792 support via `wallet_getCapabilities` so consumers can
+ * pick the right flow upfront instead of discovering support by failing.
+ *
+ * Per EIP-5792, a wallet that errors with an unsupported-method response does
+ * not support the Wallet Call API at all; a successful response that omits the
+ * connected chain is likewise a negative (MetaMask omits the chain for
+ * accounts that cannot sign EIP-7702 authorizations, e.g. hardware accounts,
+ * and only supports atomic — never sequential — batches). A response including
+ * the chain implies `wallet_sendCalls` support (atomic or sequential). The
+ * atomic flag is informational — sequential execution is still a single user
+ * approval.
+ *
+ * @returns The send calls compatibility. @see {@link SendCallsCompatibility}
+ */
+export function useSendCallsCompatibility(): SendCallsCompatibility {
+  const { config, address, chainId } = useWallet();
+
+  // NOTE: provider-less query — this app does not render a WagmiProvider, so
+  // the config is passed explicitly instead of using wagmi's context-based
+  // useCapabilities hook
+  const { data, error, isLoading } = useQuery({
+    ...getCapabilitiesQueryOptions(config, { account: address }),
+    enabled: !!address,
+  });
+
+  return useMemo(() => {
+    if (!address || !chainId || isLoading) return { isSupported: null, isAtomic: null };
+    if (error) {
+      return {
+        isSupported: isUnsupportedMethodError(error) ? false : null,
+        isAtomic: null,
+      };
+    }
+    if (!data) return { isSupported: null, isAtomic: null };
+
+    // NOTE: wallets key capabilities by hex chain id per EIP-5792, but guard
+    // against number-keyed or stringified responses
+    const capabilities = data as Record<string, { atomic?: { status?: string } } | undefined>;
+    const entry =
+      capabilities[numberToHex(chainId)] ?? capabilities[chainId] ?? capabilities[String(chainId)];
+    if (!entry) {
+      // The wallet answered but omitted the connected chain — an explicit
+      // negative per EIP-5792. Notably MetaMask omits the chain entry when
+      // atomic batching is not supported for the account (e.g. hardware
+      // accounts that cannot sign EIP-7702 authorizations), so start in
+      // legacy mode instead of failing at send time
+      return { isSupported: false, isAtomic: null };
+    }
+
+    return {
+      isSupported: true,
+      isAtomic:
+        entry.atomic === undefined
+          ? null
+          : entry.atomic.status === 'supported' || entry.atomic.status === 'ready',
+    };
+  }, [address, chainId, data, error, isLoading]);
 }
 
 /**

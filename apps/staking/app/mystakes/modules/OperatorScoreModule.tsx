@@ -96,7 +96,15 @@ export default function OperatorScoreModule({
               {formatSignedScore(data.score)}
             </span>
             <span className="text-muted-foreground text-sm">
-              {dict('rank', { rank: data.rank, total: data.n_operators })}
+              <a
+                href={`${URL.SESH_TOKEN_EXPLORER}/operators`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-sm underline-offset-2 hover:text-session-green"
+              >
+                {dict('rank', { rank: data.rank, total: data.n_operators })}
+                <LinkOutIcon className="h-4 w-4" />
+              </a>
             </span>
           </span>
         )

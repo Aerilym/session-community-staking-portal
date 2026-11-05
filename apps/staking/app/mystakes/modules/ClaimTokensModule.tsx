@@ -8,10 +8,13 @@ import { useNetworkBalances } from '@/hooks/useNetworkBalances';
 import { REMOTE_FEATURE_FLAG } from '@/lib/feature-flags';
 import { useRemoteFeatureFlagQuery } from '@/lib/feature-flags-client';
 import { ButtonDataTestId } from '@/testing/data-test-ids';
+import { CogIcon } from '@session/ui/icons/CogIcon';
 import type { PresentIcon } from '@session/ui/icons/PresentIcon';
+import { Button } from '@session/ui/ui/button';
 import { useWalletTokenBalance } from '@session/wallet/components/WalletButton';
 import { useWallet } from '@session/wallet/hooks/useWallet';
 import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 
 export type ClaimDict = ReturnType<typeof useTranslations<'modules.claim'>>;
 
@@ -35,6 +38,7 @@ export default function ClaimTokensModule({
   const { refetch } = useWalletTokenBalance();
   const fallbackDict = useTranslations('modules.claim');
   const dict = dictionary ?? fallbackDict;
+  const [advancedMode, setAdvancedMode] = useState<boolean>(false);
 
   const { canClaim } = useNetworkBalances({ addressOverride });
 
@@ -52,12 +56,27 @@ export default function ClaimTokensModule({
             address={address}
             dictionary={dict}
             refetchBalance={refetchBalance ?? refetch}
+            advancedMode={advancedMode}
           />
         ) : null
       }
       dialogTitle={dict('title')}
       label={dict('title')}
       size="lg"
+      dialogContainerClassName="sm:top-1/3 sm:translate-y-0 sm:max-h-[66dvh]"
+      dialogHeaderAction={
+        <Button
+          variant="ghost"
+          size="sm"
+          className="-ms-4 gap-1.5 px-2 text-xs"
+          aria-pressed={advancedMode}
+          data-testid={ButtonDataTestId.Claim_Tokens_Advanced_Toggle}
+          onClick={() => setAdvancedMode((previous) => !previous)}
+        >
+          <CogIcon className={advancedMode ? 'h-3.5 w-3.5 stroke-session-green' : 'h-3.5 w-3.5'} />
+          {dict('dialog.advancedMode')}
+        </Button>
+      }
       data-testid={ButtonDataTestId.Claim_Tokens_Open_Dialog}
       disabled={disabled}
       IconComp={iconOverride}

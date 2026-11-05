@@ -70,7 +70,7 @@ export default function WalletBalanceModule({ addressOverride }: AddressModulePr
   return (
     <Module size="lg" outerClassName="mt-4">
       <ModuleOverlayTitle longText={titleFormat('format', { title: dict('title') })} />
-      <div className="flex w-full flex-row flex-wrap justify-between gap-2">
+      <div className="flex w-full flex-row flex-wrap justify-around gap-2">
         <BalanceStat
           label={dict('arbitrum')}
           tooltipContent={dict('arbitrumTooltip')}

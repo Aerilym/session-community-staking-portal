@@ -44,32 +44,39 @@ const AlertDialogOverlay = forwardRef<
 ));
 AlertDialogOverlay.displayName = AlertDialogPrimitive.Overlay.displayName;
 
-
-const alertDialogContentVariants = cva('data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] fixed top-[50%] left-[50%] z-50 grid max-h-[90dvh] w-full max-w-[90svw] translate-x-[-50%] translate-y-[-50%] shadow-lg duration-200 data-[state=closed]:animate-out data-[state=open]:animate-in sm:rounded-lg', {
-  variants: {
-    size: {
-      md: 'md:max-w-xl',
-      sm: 'md:max-w-lg',
-      lg: 'md:max-w-4xl',
+const alertDialogContentVariants = cva(
+  'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] fixed top-[50%] left-[50%] z-50 grid max-h-[90dvh] w-full max-w-[90svw] translate-x-[-50%] translate-y-[-50%] shadow-lg duration-200 data-[state=closed]:animate-out data-[state=open]:animate-in sm:rounded-lg',
+  {
+    variants: {
+      size: {
+        md: 'md:max-w-xl',
+        sm: 'md:max-w-lg',
+        lg: 'md:max-w-4xl',
+      },
     },
-  },
-  defaultVariants: {
-    size: 'md',
-  },
-});
+    defaultVariants: {
+      size: 'md',
+    },
+  }
+);
 
 export type AlertDialogVariantProps = VariantProps<typeof alertDialogContentVariants>;
 
 const AlertDialogContent = forwardRef<
   ComponentRef<typeof AlertDialogPrimitive.Content>,
-  ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Content> & AlertDialogVariantProps & {
-    dialogTitle: ReactNode;
-    dialogDescription?: ReactNode;
-    hideCloseButton?: boolean;
-    showBackButton?: boolean;
-    onCloseClick?: () => void;
-    onBackButtonClick?: () => void;
-  }
+  ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Content> &
+    AlertDialogVariantProps & {
+      dialogTitle: ReactNode;
+      dialogDescription?: ReactNode;
+      hideCloseButton?: boolean;
+      showBackButton?: boolean;
+      onCloseClick?: () => void;
+      onBackButtonClick?: () => void;
+      /** Classes applied to the positioned dialog container, e.g. to override the default centering. */
+      containerClassName?: string;
+      /** Optional action rendered at the start of the header row (e.g. an advanced-mode toggle). */
+      headerAction?: ReactNode;
+    }
 >(
   (
     {
@@ -80,6 +87,8 @@ const AlertDialogContent = forwardRef<
       onCloseClick,
       onBackButtonClick,
       size,
+      containerClassName,
+      headerAction,
       className,
       children,
       ...props
@@ -90,7 +99,7 @@ const AlertDialogContent = forwardRef<
       <AlertDialogOverlay />
       <AlertDialogPrimitive.Content
         ref={ref}
-        className={cn(alertDialogContentVariants({ size }))}
+        className={cn(alertDialogContentVariants({ size }), containerClassName)}
         {...props}
       >
         <Module noPadding>
@@ -98,17 +107,18 @@ const AlertDialogContent = forwardRef<
             keepDesktopHeaderOnMobile
             className="relative flex flex-col items-center px-6"
           >
+            {headerAction ? <div className="absolute top-6 left-8 z-10">{headerAction}</div> : null}
             {showBackButton ? (
               <AlertDialogPrimitive.Cancel
                 onClick={onBackButtonClick}
-                className='absolute top-7 left-8 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-session-green focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary'
+                className="absolute top-7 left-8 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-session-green focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary"
               >
-                <ArrowDownIcon className='h-4 w-4 rotate-90 fill-session-text' />
+                <ArrowDownIcon className="h-4 w-4 rotate-90 fill-session-text" />
                 <span className="sr-only">Back</span>
               </AlertDialogPrimitive.Cancel>
             ) : null}
             {dialogTitle ? (
-              <AlertDialogTitle className='my-2 w-full text-center font-medium text-lg leading-none tracking-tight md:block md:text-3xl'>
+              <AlertDialogTitle className="my-2 w-full text-center font-medium text-lg leading-none tracking-tight md:block md:text-3xl">
                 {dialogTitle}
               </AlertDialogTitle>
             ) : null}
@@ -120,7 +130,7 @@ const AlertDialogContent = forwardRef<
             {!hideCloseButton ? (
               <AlertDialogPrimitive.Cancel
                 onClick={onCloseClick}
-                className='absolute top-6 right-8 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-session-green focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary'
+                className="absolute top-6 right-8 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-session-green focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary"
               >
                 <X className="h-6 w-6" />
                 <span className="sr-only">Close</span>

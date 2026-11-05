@@ -21,7 +21,10 @@ import {
 } from '@session/contracts/hooks/ServiceNodeRewards';
 import { useSENTBalanceQuery } from '@session/contracts/hooks/Token';
 import { useEstimateContractFee } from '@session/contracts/hooks/useEstimateContractFee';
-import { useSendCallsBatch } from '@session/contracts/hooks/useSendCallsBatch';
+import {
+  useSendCallsBatch,
+  useSendCallsCompatibility,
+} from '@session/contracts/hooks/useSendCallsBatch';
 import { PROGRESS_STATUS } from '@session/ui/motion/progress';
 import { useWallet } from '@session/wallet/hooks/useWallet';
 import { useTranslations } from 'next-intl';
@@ -46,6 +49,13 @@ export type UseClaimRewardsProps = {
   legacyMode?: boolean;
   /** The user's per-dialog fee asset choice, defaults to the configured fee mode. */
   feeMode?: FeeMode;
+  /** The user-selected claim amount in atomic units, claims the full balance when null/undefined. */
+  claimAmount?: bigint | null;
+  /**
+   * Fallback claimable amount (e.g. from the staking backend) used for the
+   * service fee display before the claim signature arrives.
+   */
+  fallbackClaimableAmount?: bigint | null;
 };
 
 export type UseClaimRewards = {
@@ -75,6 +85,16 @@ export type UseClaimRewards = {
   feeBreakdown: { flat: bigint; bps: bigint } | null;
   /** Gas units consumed by the fee payment call, null when no fee applies. */
   feeTransferGasAmount: bigint | null;
+  /** Wallet EIP-5792 support from `wallet_getCapabilities`: true/false once resolved, null while undetermined. */
+  isBatchSupported: boolean | null;
+  /** Whether the wallet reports atomic batch execution on the connected chain, null when unknown. */
+  isAtomicBatchSupported: boolean | null;
+  /**
+   * True after a batched attempt failed as unsupported and the flow switched
+   * to legacy mode without starting it — the user re-triggers the claim to
+   * begin the two-transaction flow.
+   */
+  fellBackToLegacy: boolean;
 };
 
 /**
@@ -85,6 +105,12 @@ export type UseClaimRewards = {
  * 1. Updates the rewards balance
  * 2. Claims the rewards
  * 3. Transfers the service fee (when configured)
+ *
+ * Wallet EIP-5792 support is pre-checked via `wallet_getCapabilities`; when
+ * the wallet is known not to support it the flow starts in legacy mode
+ * upfront. If support was overstated and the batch fails as unsupported, the
+ * flow switches to legacy mode but does NOT auto-start — the user re-triggers
+ * the claim to begin the two-transaction flow.
  *
  * Legacy mode: updates the rewards balance, waits for the transaction to
  * confirm, then claims the rewards as two separate transactions with no fee.
@@ -97,6 +123,8 @@ export default function useClaimRewards({
   forceLegacy = false,
   legacyMode = false,
   feeMode,
+  claimAmount,
+  fallbackClaimableAmount,
 }: UseClaimRewardsProps): UseClaimRewards {
   const [enabled, setEnabled] = useState<boolean>(false);
   const [skipUpdateBalance, setSkipUpdateBalance] = useState<boolean>(false);
@@ -109,8 +137,17 @@ export default function useClaimRewards({
   const vestingContractAddress = useActiveVestingContractAddress();
   const { address, chainId } = useWallet();
 
+  const { isSupported: isBatchSupported, isAtomic: isAtomicBatchSupported } =
+    useSendCallsCompatibility();
+
   const mode: ClaimRewardsMode =
-    forceLegacy || legacyMode || fellBackToLegacy || vestingContractAddress ? 'legacy' : 'batched';
+    forceLegacy ||
+    legacyMode ||
+    fellBackToLegacy ||
+    isBatchSupported === false ||
+    vestingContractAddress
+      ? 'legacy'
+      : 'batched';
 
   const {
     updateRewardsBalance,
@@ -134,7 +171,12 @@ export default function useClaimRewards({
     simulateError: claimSimulateError,
     writeError: claimWriteError,
     transactionError: claimTransactionError,
-  } = useClaimRewardsQuery({ vestingContractAddress });
+  } = useClaimRewardsQuery({
+    vestingContractAddress,
+    // NOTE: vesting always claims its full balance, partial claims apply to
+    // the standard flow only
+    amount: vestingContractAddress ? null : claimAmount,
+  });
 
   const legacyUpdateRewardsBalanceStatus = useMemo(
     () => parseContractStatusToProgressStatus(updateBalanceContractCallStatus),
@@ -154,16 +196,24 @@ export default function useClaimRewards({
   // NOTE: the BLS signature covers lifetime cumulative rewards, the
   // proportional fee must only apply to the amount being claimed now
   const { claimed } = useGetRecipients({ address: feeCandidateEnabled ? address : undefined });
-
   const feeCandidates = useMemo(() => {
-    if (!feeCandidateEnabled || !feeConfig || !defaultArgs) return null;
-    const claimAmount = claimed === undefined ? defaultArgs.rewards : defaultArgs.rewards - claimed;
-    const base = claimAmount > 0n ? claimAmount : 0n;
+    if (!feeCandidateEnabled || !feeConfig) return null;
+    // NOTE: the fee base follows the amount actually being claimed — the full
+    // unclaimed delta for claim-all, or the user-selected partial amount. The
+    // precise on-chain delta is used when available, otherwise the backend's
+    // claimable amount stands in so the fee can display before the claim
+    // signature arrives
+    const fullDelta =
+      defaultArgs && claimed !== undefined
+        ? defaultArgs.rewards - claimed
+        : (fallbackClaimableAmount ?? null);
+    if (fullDelta === null) return null;
+    const base = claimAmount ?? fullDelta;
     return {
-      sesh: computeFee(base, 'sesh', feeConfig),
-      eth: computeFee(base, 'eth', feeConfig),
+      sesh: computeFee(base > 0n ? base : 0n, 'sesh', feeConfig),
+      eth: computeFee(base > 0n ? base : 0n, 'eth', feeConfig),
     };
-  }, [claimed, defaultArgs, feeCandidateEnabled, feeConfig]);
+  }, [claimAmount, claimed, defaultArgs, fallbackClaimableAmount, feeCandidateEnabled, feeConfig]);
 
   const { balance: sentBalance } = useSENTBalanceQuery({
     address: feeCandidates?.sesh != null ? address : undefined,
@@ -244,8 +294,10 @@ export default function useClaimRewards({
 
   const sendBatchedClaim = (args: UpdateRewardsBalanceArgs) => {
     if (!isValidChainId(chainId)) {
-      logger.error('Invalid chain id for batched claim, falling back to the legacy flow');
+      logger.error('Invalid chain id for batched claim, switch to the legacy flow');
       setFellBackToLegacy(true);
+      setEnabled(false);
+      claimArgsRef.current = null;
       return;
     }
 
@@ -273,7 +325,9 @@ export default function useClaimRewards({
       data: encodeFunctionData({
         abi: ServiceNodeRewardsAbi,
         functionName: 'claimRewards',
-        args: [],
+        // NOTE: the partial-claim overload when an amount is selected, the
+        // claim-all overload otherwise
+        ...(claimAmount != null ? { args: [claimAmount] as [bigint] } : {}),
       }),
     });
 
@@ -377,11 +431,14 @@ export default function useClaimRewards({
   // biome-ignore lint/correctness/useExhaustiveDependencies: Only trigger on unsupported wallet
   useEffect(() => {
     if (mode === 'batched' && isUnsupported && claimArgsRef.current) {
-      logger.debug('Wallet does not support EIP-5792 batching, falling back to the legacy flow');
+      logger.debug(
+        'Wallet does not support EIP-5792 batching, switching to the legacy flow without starting it'
+      );
       setFellBackToLegacy(true);
-      if (!skipUpdateBalance) {
-        updateRewardsBalance(claimArgsRef.current);
-      }
+      // NOTE: do not auto-start the legacy flow — the user re-triggers the
+      // claim to consent to the two-transaction flow
+      setEnabled(false);
+      claimArgsRef.current = null;
     }
   }, [isUnsupported]);
 
@@ -429,5 +486,8 @@ export default function useClaimRewards({
     effectiveFeeMode,
     feeBreakdown,
     feeTransferGasAmount,
+    isBatchSupported,
+    isAtomicBatchSupported,
+    fellBackToLegacy,
   };
 }
