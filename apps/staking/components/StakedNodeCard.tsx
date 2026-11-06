@@ -38,13 +38,18 @@ import {
   parseStakeState,
 } from '@/lib/stake-state';
 import { useUser } from '@/providers/user-provider';
-import { NodeCardDataTestId, StakedNodeDataTestId } from '@/testing/data-test-ids';
+import { StakedNodeDataTestId } from '@/testing/data-test-ids';
+import { ButtonDataTestId, NodeCardDataTestId } from '@/testing/data-test-ids';
 import { formatSENTBigInt } from '@session/contracts/hooks/Token';
 import type { Stake, StakeContributor } from '@session/staking-api-js/schema';
-import { StatusIndicator, type statusVariants } from '@session/ui/components/StatusIndicator';
+import { StatusIndicator } from '@session/ui/components/StatusIndicator';
+import type { statusVariants } from '@session/ui/components/StatusIndicator';
+import { EyeIcon } from '@session/ui/icons/EyeIcon';
+import { EyeOffIcon } from '@session/ui/icons/EyeOffIcon';
 import { KeyRoundIcon } from '@session/ui/icons/KeyRoundIcon';
 import { SpannerAndScrewdriverIcon } from '@session/ui/icons/SpannerAndScrewdriverIcon';
 import { cn } from '@session/ui/lib/utils';
+import { Button } from '@session/ui/ui/button';
 import { Tooltip } from '@session/ui/ui/tooltip';
 import type { EthereumAddress } from '@session/util-crypto/keys';
 import { areEthereumAddressesEqual } from '@session/util-crypto/string';
@@ -239,13 +244,29 @@ const StakedNodeCard = forwardRef<
     targetWalletAddress?: EthereumAddress;
     isDetailedView?: boolean;
     hideButton?: boolean;
+    nodeVisibilityMode?: boolean;
+    nodeHidden?: boolean;
+    onToggleNodeHidden?: () => void;
   }
   // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: TODO: see if it can be further componentised
->(({ stake, hideButton, isDetailedView = false, targetWalletAddress, ...props }, ref) => {
+>((props, ref) => {
   const generalDictionary = useTranslations('general');
   const generalNodeDictionary = useTranslations('sessionNodes.general');
   const stakingNodeDictionary = useTranslations('sessionNodes.staking');
+  const stakedNodesDictionary = useTranslations('modules.stakedNodes');
   const notFoundString = generalDictionary('notFound');
+
+  const {
+    stake,
+    hideButton,
+    isDetailedView = false,
+    targetWalletAddress,
+    nodeVisibilityMode = false,
+    nodeHidden = false,
+    onToggleNodeHidden,
+    className,
+    ...cardProps
+  } = props;
 
   const {
     service_node_pubkey: pubKey,
@@ -498,20 +519,70 @@ const StakedNodeCard = forwardRef<
 
   const children = renderOrderedComponents(isDetailedView, componentData);
 
-  return (
+  const canToggleHidden = state === STAKE_STATE.DEREGISTERED || state === STAKE_STATE.EXITED;
+
+  const visibilityButton = (
+    <Button
+      variant="ghost"
+      size="icon"
+      className="shrink-0 self-center"
+      onClick={onToggleNodeHidden}
+      disabled={!canToggleHidden}
+      aria-label={
+        nodeHidden ? stakedNodesDictionary('unhideNodeAria') : stakedNodesDictionary('hideNodeAria')
+      }
+      data-testid={
+        nodeHidden ? ButtonDataTestId.My_Stakes_Unhide_Node : ButtonDataTestId.My_Stakes_Hide_Node
+      }
+    >
+      {nodeHidden ? <EyeIcon /> : <EyeOffIcon />}
+    </Button>
+  );
+
+  const nodeVisibilityButtonComp =
+    nodeVisibilityMode && onToggleNodeHidden ? (
+      <Tooltip
+        tooltipContent={
+          !canToggleHidden
+            ? stakedNodesDictionary('hideNodeDisabled')
+            : nodeHidden
+              ? stakedNodesDictionary('unhideNode')
+              : stakedNodesDictionary('hideNode')
+        }
+      >
+        {!canToggleHidden ? (
+          <div className="shrink-0 self-center">{visibilityButton}</div>
+        ) : (
+          visibilityButton
+        )}
+      </Tooltip>
+    ) : null;
+
+  const card = (
     <StakeCard
       ref={ref}
-      {...props}
+      {...cardProps}
       data-testid={NodeCardDataTestId.Staked_Node}
       isDetailedView={isDetailedView}
       className={cn(
         props.className,
-        isDetailedView ? 'gap-x-1' : 'px-3 pt-3 pb-0 md:px-4 md:pt-4 md:pb-1'
+        className,
+        isDetailedView ? 'gap-x-1' : 'px-3 pt-3 pb-0 md:px-4 md:pt-4 md:pb-1',
+        nodeVisibilityMode && nodeHidden ? 'opacity-60' : ''
       )}
     >
       {children}
       <br className="hidden peer-checked:block" />
     </StakeCard>
+  );
+
+  return nodeVisibilityButtonComp ? (
+    <div className="flex w-full flex-row items-center gap-2">
+      <div className="min-w-0 flex-1">{card}</div>
+      {nodeVisibilityButtonComp}
+    </div>
+  ) : (
+    card
   );
 });
 

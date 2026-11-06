@@ -10,6 +10,7 @@ import {
 import { StakedNodeCard } from '@/components/StakedNodeCard';
 import { useDisplayStatusBar } from '@/components/StatusBar';
 import WalletButtonWithLocales from '@/components/WalletButtonWithLocales';
+import { useHiddenNodes } from '@/hooks/useHiddenNodes';
 import { useAddressStakes } from '@/hooks/useStakes';
 import { PREFERENCE } from '@/lib/constants';
 import { internalLink } from '@/lib/locale-defaults';
@@ -29,6 +30,8 @@ import {
   ModuleGridTitle,
 } from '@session/ui/components/ModuleGrid';
 import { CogIcon } from '@session/ui/icons/CogIcon';
+import { EyeIcon } from '@session/ui/icons/EyeIcon';
+import { EyeOffIcon } from '@session/ui/icons/EyeOffIcon';
 import { XIcon } from '@session/ui/icons/XIcon';
 import { Button } from '@session/ui/ui/button';
 import { Switch } from '@session/ui/ui/switch';
@@ -44,12 +47,14 @@ type StakesListProps = {
   address: EthereumAddress;
   scopeId: string;
   hideButtons?: boolean;
+  nodeVisibilityMode?: boolean;
 };
 
 export function StakedNodesForCurrentActorAddress({
   scopeId = 'none',
   hideButtons = false,
-}: { scopeId: string; hideButtons: boolean }) {
+  nodeVisibilityMode = false,
+}: { scopeId: string; hideButtons: boolean; nodeVisibilityMode?: boolean }) {
   const { stakes, activeAddress } = useUser();
   return activeAddress ? (
     <StakedNodesFromData
@@ -57,6 +62,7 @@ export function StakedNodesForCurrentActorAddress({
       address={activeAddress}
       scopeId={scopeId}
       hideButtons={hideButtons}
+      nodeVisibilityMode={nodeVisibilityMode}
     />
   ) : (
     <NoWallet />
@@ -85,6 +91,7 @@ export function StakedNodesFromData({
   address,
   scopeId,
   hideButtons,
+  nodeVisibilityMode = false,
 }: StakesListProps) {
   useAllowTestingErrorToThrow();
   const dictionary = useTranslations('modules.stakedNodes');
@@ -104,6 +111,8 @@ export function StakedNodesFromData({
   } = stakesData;
   useDisplayStatusBar({ network, isLoading, isFetching, refetch });
 
+  const { hiddenNodeIdSet, toggleNodeHidden } = useHiddenNodes(address);
+
   const { getItem } = usePref();
   const mode = getItem<string>(PREFERENCE.MY_STAKES_SETTINGS_VIEW) || 'simple';
 
@@ -118,6 +127,7 @@ export function StakedNodesFromData({
       contract?: ContributionContract | ContributionContractNotReady | null;
       stake?: Stake | null;
       showAlreadyRunningWarning?: boolean;
+      nodeHidden?: boolean;
     }> = [];
 
     for (const node of notFoundJoiningNodes) {
@@ -161,11 +171,16 @@ export function StakedNodesFromData({
     }
 
     for (const node of stakes) {
+      const nodeHidden = hiddenNodeIdSet.has(node.contract_id);
+      if (nodeHidden && !nodeVisibilityMode) {
+        continue;
+      }
       items.push({
         variant: 'stake',
         key: node.contract_id.toString(),
         toggleId: `${scopeId}.${node.contract_id.toString()}`,
         stake: node,
+        nodeHidden,
       });
     }
 
@@ -177,6 +192,8 @@ export function StakedNodesFromData({
     visibleContracts,
     stakes,
     scopeId,
+    hiddenNodeIdSet,
+    nodeVisibilityMode,
   ]);
 
   return (
@@ -218,12 +235,16 @@ export function StakedNodesFromData({
                 isDetailedView={isDetailedView}
                 hideButton={hideButtons}
                 targetWalletAddress={address}
+                nodeVisibilityMode={nodeVisibilityMode}
+                onToggleNodeHidden={() => toggleNodeHidden(stake.contract_id)}
               />
             );
           }
 
           return null;
         })
+      ) : stakes.some((stake) => hiddenNodeIdSet.has(stake.contract_id)) ? (
+        <AllNodesHidden />
       ) : (
         <NoNodes />
       )}
@@ -233,6 +254,7 @@ export function StakedNodesFromData({
 
 export default function StakedNodesModule() {
   const [inSettings, setInSettings] = useState(false);
+  const [nodeVisibilityMode, setNodeVisibilityMode] = useState(false);
   const { getItem, setItem } = usePref();
 
   const mode = getItem<string>(PREFERENCE.MY_STAKES_SETTINGS_VIEW) || 'simple';
@@ -247,6 +269,17 @@ export default function StakedNodesModule() {
     setItem(PREFERENCE.MY_STAKES_SETTINGS_VIEW, newMode);
   };
 
+  const handleSettingsClick = () => {
+    if (inSettings) {
+      setNodeVisibilityMode(false);
+    }
+    setInSettings((prev) => !prev);
+  };
+
+  const handleToggleNodeVisibilityMode = () => {
+    setNodeVisibilityMode((prev) => !prev);
+  };
+
   return (
     <>
       <ModuleGridHeader>
@@ -259,12 +292,28 @@ export default function StakedNodesModule() {
                 <Switch checked={stateMode === 'detailed'} onCheckedChange={handleChange} />
                 Detailed
               </div>
+              <Button
+                variant={nodeVisibilityMode ? 'default' : 'outline'}
+                size="sm"
+                rounded="md"
+                onClick={handleToggleNodeVisibilityMode}
+                data-testid={ButtonDataTestId.My_Stakes_Toggle_Node_Visibility_Mode}
+                aria-label={dictionary('toggleVisibilityModeAria')}
+                className="gap-1"
+              >
+                {nodeVisibilityMode ? (
+                  <EyeIcon className="h-4 w-4" />
+                ) : (
+                  <EyeOffIcon className="h-4 w-4" />
+                )}
+                {dictionary('toggleVisibilityModeButtonText')}
+              </Button>
             </>
           ) : null}
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setInSettings((prev) => !prev)}
+            onClick={handleSettingsClick}
             data-testid={ButtonDataTestId.My_Stakes_Settings}
           >
             {inSettings ? <XIcon /> : <CogIcon />}
@@ -272,7 +321,11 @@ export default function StakedNodesModule() {
         </div>
       </ModuleGridHeader>
       <ErrorBoundary errorComponent={ErrorBox}>
-        <StakedNodesForCurrentActorAddress scopeId={'main'} hideButtons={false} />
+        <StakedNodesForCurrentActorAddress
+          scopeId={'main'}
+          hideButtons={false}
+          nodeVisibilityMode={nodeVisibilityMode}
+        />
       </ErrorBoundary>
     </>
   );
@@ -307,6 +360,16 @@ function NoNodes() {
           {dictionary('stakeNowButtonText')}
         </Button>
       </Link>
+    </ModuleGridInfoContent>
+  );
+}
+
+function AllNodesHidden() {
+  const dictionary = useTranslations('modules.stakedNodes');
+  return (
+    <ModuleGridInfoContent>
+      <p>{dictionary('allNodesHiddenP1')}</p>
+      <p>{dictionary('allNodesHiddenP2')}</p>
     </ModuleGridInfoContent>
   );
 }

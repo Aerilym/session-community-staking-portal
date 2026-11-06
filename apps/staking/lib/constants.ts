@@ -250,13 +250,14 @@ export enum PREFERENCE {
   MY_STAKES_SETTINGS_VIEW = 'myStakesSettingsView',
   NOTIFICATIONS_ENABLED = 'notificationsEnabled',
   NOTIFICATION_PROMPT_DISMISSED = 'notificationPromptDismissed',
+  HIDDEN_NODE_IDS = 'hiddenNodeIds',
 }
 
 export const preferenceStorageDefaultItems = {} as const;
 
 type WalletSheetSettingDetailsGenerator = Omit<
   Record<PREFERENCE, Omit<WalletSheetSettingDetails, 'key'>>,
-  'myStakesSettingsView'
+  'myStakesSettingsView' | 'hiddenNodeIds'
 >;
 
 export const prefDetails = {
