@@ -147,6 +147,9 @@ export enum ButtonDataTestId {
   Stake_Notice_Cancel = 'button:stake-notice-cancel',
   Unstake_Operator_Notice_Continue = 'button:unstake-operator-notice-continue',
   My_Stakes_Settings = 'button:stake-manage-stake-settings',
+  My_Stakes_Toggle_Node_Visibility_Mode = 'button:my-stakes-toggle-node-visibility-mode',
+  My_Stakes_Hide_Node = 'button:my-stakes-hide-node',
+  My_Stakes_Unhide_Node = 'button:my-stakes-unhide-node',
 }
 
 export enum InputDataTestId {

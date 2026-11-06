@@ -237,13 +237,14 @@ export enum PREFERENCE {
   INFO_NOTICE_DONT_SHOW_STAKE = 'infoNoticeDontShowStake',
   INFO_NOTICE_DONT_SHOW_STAKE_TOP_UP = 'infoNoticeDontShowStakeTopUp',
   MY_STAKES_SETTINGS_VIEW = 'myStakesSettingsView',
+  HIDDEN_NODE_IDS = 'hiddenNodeIds',
 }
 
 export const preferenceStorageDefaultItems = {} as const;
 
 type WalletSheetSettingDetailsGenerator = Omit<
   Record<PREFERENCE, Omit<WalletSheetSettingDetails, 'key'>>,
-  'myStakesSettingsView'
+  'myStakesSettingsView' | 'hiddenNodeIds'
 >;
 
 export const prefDetails = {
