@@ -470,6 +470,9 @@ export type StakesResponse = z.infer<typeof stakesResponseSchema>;
  */
 const nodeStakeSchema = stakeSchema.extend({
   operator_address: z.string(),
+  /** Appchain block height this snapshot was fetched at. The endpoint returns an entry per
+   * registration, so a node key can appear multiple times and this is used to pick the freshest. */
+  fetched_block_height: z.number(),
 });
 
 export const nodesResponseSchema = z.object({

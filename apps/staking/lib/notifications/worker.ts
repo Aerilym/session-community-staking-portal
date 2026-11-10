@@ -5,7 +5,7 @@ import { getRemoteFeatureFlag } from '@/lib/feature-flags-server';
 import { DEFAULT_LOCALE } from '@/lib/locale-util';
 import logger from '@/lib/logger';
 import { getNodes } from '@/lib/queries/getNodes';
-import { STAKE_STATE, parseStakeState } from '@/lib/stake-state';
+import { STAKE_STATE } from '@/lib/stake-state';
 import { createSessionStakingClient } from '@session/staking-api-js/client';
 import { type NodesResponse, nodesResponseSchema } from '@session/staking-api-js/schema';
 import { getTranslations } from 'next-intl/server';
@@ -16,6 +16,7 @@ import {
   NOTIFICATIONS_WORKER_ENABLED,
   notificationsVapidConfigured,
 } from './env';
+import { type NodeSnapshot, resolveNodeStateNotifications } from './node-transitions';
 import { type NotificationPayload, sendNotificationToAddress } from './push';
 import {
   deleteNodeStatesExcept,
@@ -25,20 +26,9 @@ import {
   upsertNodeState,
 } from './store';
 
-/**
- * States that trigger a notification when transitioned into. `Deregistered` is included
- * because a deregistered node that has not been exited yet is ready for exit (the stake
- * can be reclaimed by the contributor).
- */
-const NOTIFIABLE_STATES = new Set<string>([
-  STAKE_STATE.DECOMMISSIONED,
-  STAKE_STATE.AWAITING_EXIT,
-  STAKE_STATE.DEREGISTERED,
-]);
+type NetworkNode = NodesResponse['nodes'][number];
 
 const NOTIFICATION_URL = '/mystakes';
-
-type NetworkNode = NodesResponse['nodes'][number];
 
 let workerStarted = false;
 let running = false;
@@ -143,27 +133,29 @@ function indexStakesByAddress(nodes: NetworkNode[], watchedAddresses: string[]) 
 async function processAddress(address: string, nodes: NetworkNode[], blockHeight: number) {
   const previousStates = getNodeStates(address);
 
-  for (const node of nodes) {
-    const newState = parseStakeState(node, blockHeight);
-    const previousState = previousStates.get(node.pubkey_bls);
+  const { notifications, currentStates } = resolveNodeStateNotifications(
+    previousStates,
+    nodes,
+    blockHeight
+  );
 
-    if (previousState === newState) continue;
+  for (const { node, state } of notifications) {
+    await sendNodeStateNotification(address, node, state);
+  }
 
-    if (previousState && NOTIFIABLE_STATES.has(newState)) {
-      await sendNodeStateNotification(address, node, newState);
-    }
-
-    upsertNodeState(address, node.pubkey_bls, newState);
+  for (const [nodeKey, state] of currentStates) {
+    upsertNodeState(address, nodeKey, state);
   }
 
   // Forget nodes that no longer appear for this address so they re-seed if they return.
-  deleteNodeStatesExcept(
-    address,
-    nodes.map((node) => node.pubkey_bls)
-  );
+  deleteNodeStatesExcept(address, [...currentStates.keys()]);
 }
 
-async function sendNodeStateNotification(address: string, node: NetworkNode, state: string) {
+async function sendNodeStateNotification(
+  address: string,
+  node: NodeSnapshot,
+  state: string
+): Promise<void> {
   const dict = await getTranslations({ locale: DEFAULT_LOCALE, namespace: 'notifications.push' });
 
   const nodeLabel = shortenEd25519Key(node.pubkey_ed25519);
@@ -175,7 +167,7 @@ async function sendNodeStateNotification(address: string, node: NetworkNode, sta
       payload = {
         title: dict('decommissioned.title'),
         body: dict('decommissioned.body', { node: nodeLabel }),
-        tag: `decommissioned:${node.pubkey_bls}`,
+        tag: `decommissioned:${node.pubkey_ed25519}`,
         url: NOTIFICATION_URL,
       };
       break;
@@ -183,7 +175,7 @@ async function sendNodeStateNotification(address: string, node: NetworkNode, sta
       payload = {
         title: dict('readyForExit.title'),
         body: dict('readyForExit.body', { node: nodeLabel }),
-        tag: `ready-for-exit:${node.pubkey_bls}`,
+        tag: `ready-for-exit:${node.pubkey_ed25519}`,
         url: NOTIFICATION_URL,
       };
       break;
@@ -191,7 +183,7 @@ async function sendNodeStateNotification(address: string, node: NetworkNode, sta
       payload = {
         title: dict('deregistered.title'),
         body: dict('deregistered.body', { node: nodeLabel }),
-        tag: `ready-for-exit:${node.pubkey_bls}`,
+        tag: `ready-for-exit:${node.pubkey_ed25519}`,
         url: NOTIFICATION_URL,
       };
       break;

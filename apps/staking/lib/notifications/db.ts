@@ -32,7 +32,7 @@ export interface SubscriptionAddressRow {
 
 export interface NodeStateRow {
   address: string;
-  pubkey_bls: string;
+  pubkey_ed25519: string;
   state: string;
   updated_at: number;
 }
@@ -65,10 +65,10 @@ const CREATE_SUBSCRIPTION_ADDRESSES_INDEX = `
 const CREATE_NODE_STATE = `
   CREATE TABLE IF NOT EXISTS ${NOTIFICATIONS_TABLE.NODE_STATE} (
     address TEXT NOT NULL,
-    pubkey_bls TEXT NOT NULL,
+    pubkey_ed25519 TEXT NOT NULL,
     state TEXT NOT NULL,
     updated_at INTEGER NOT NULL,
-    UNIQUE (address, pubkey_bls)
+    UNIQUE (address, pubkey_ed25519)
   );
 `;
 
@@ -104,6 +104,7 @@ export const setupNotificationsDatabase = () => {
   db.exec(CREATE_SUBSCRIPTION_ADDRESSES_INDEX);
   db.exec(CREATE_NODE_STATE);
   migrateLastSeenAt(db);
+  migrateNodeStateKey(db);
   db.close();
 };
 
@@ -121,4 +122,22 @@ function migrateLastSeenAt(db: BetterSql3Database) {
   db.exec(
     `UPDATE ${NOTIFICATIONS_TABLE.PUSH_SUBSCRIPTIONS} SET last_seen_at = created_at WHERE last_seen_at = 0`
   );
+}
+
+/**
+ * Renames the node state key column to `pubkey_ed25519` in databases keyed by `pubkey_bls` and
+ * clears the old rows. The states re-seed on the next worker tick without notifying (seeding
+ * never fires notifications).
+ */
+function migrateNodeStateKey(db: BetterSql3Database) {
+  const columns = db
+    .prepare(`PRAGMA table_info(${NOTIFICATIONS_TABLE.NODE_STATE})`)
+    .all() as Array<{ name: string }>;
+
+  if (!columns.some((column) => column.name === 'pubkey_bls')) return;
+
+  db.exec(
+    `ALTER TABLE ${NOTIFICATIONS_TABLE.NODE_STATE} RENAME COLUMN pubkey_bls TO pubkey_ed25519`
+  );
+  db.exec(`DELETE FROM ${NOTIFICATIONS_TABLE.NODE_STATE}`);
 }
