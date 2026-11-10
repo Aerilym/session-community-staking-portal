@@ -216,6 +216,7 @@ export default function useClaimRewards({
     // quote the proportional SESH component into ETH
     const prices = { seshUsd: seshPrice, ethUsd: ethPrice };
     return {
+      base,
       sesh: computeFee(base > 0n ? base : 0n, 'sesh', feeConfig, prices),
       eth: computeFee(base > 0n ? base : 0n, 'eth', feeConfig, prices),
     };
@@ -240,7 +241,11 @@ export default function useClaimRewards({
     const options: Array<{ mode: FeeMode; fee: bigint }> = [];
 
     if (feeCandidates.sesh !== null) {
-      if (sentBalance !== undefined && feeCandidates.sesh > sentBalance) {
+      // NOTE: the fee call executes after the claim in the batch, so the
+      // amount being claimed counts towards the payable SESH balance
+      const payableBalance =
+        sentBalance !== undefined ? sentBalance + feeCandidates.base : undefined;
+      if (payableBalance !== undefined && feeCandidates.sesh > payableBalance) {
         logger.warn('Claim service fee exceeds wallet token balance, skipping the SESH fee');
       } else {
         options.push({ mode: 'sesh', fee: feeCandidates.sesh });
