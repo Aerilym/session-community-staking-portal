@@ -304,17 +304,19 @@ export function getWatchedAddresses(): string[] {
 export function getNodeStates(address: string): Map<string, string> {
   return withDb((db) => {
     const rows = db
-      .prepare(`SELECT pubkey_bls, state FROM ${NOTIFICATIONS_TABLE.NODE_STATE} WHERE address = ?`)
-      .all(normaliseAddress(address)) as Array<{ pubkey_bls: string; state: string }>;
-    return new Map(rows.map((row) => [row.pubkey_bls, row.state]));
+      .prepare(
+        `SELECT pubkey_ed25519, state FROM ${NOTIFICATIONS_TABLE.NODE_STATE} WHERE address = ?`
+      )
+      .all(normaliseAddress(address)) as Array<{ pubkey_ed25519: string; state: string }>;
+    return new Map(rows.map((row) => [row.pubkey_ed25519, row.state]));
   });
 }
 
-export function upsertNodeState(address: string, pubkeyBls: string, state: string): void {
+export function upsertNodeState(address: string, pubkeyEd25519: string, state: string): void {
   withDb((db) => {
     db.prepare(
-      `INSERT INTO ${NOTIFICATIONS_TABLE.NODE_STATE} (address, pubkey_bls, state, updated_at) VALUES (?, ?, ?, ?) ON CONFLICT (address, pubkey_bls) DO UPDATE SET state = excluded.state, updated_at = excluded.updated_at`
-    ).run(normaliseAddress(address), pubkeyBls, state, Date.now());
+      `INSERT INTO ${NOTIFICATIONS_TABLE.NODE_STATE} (address, pubkey_ed25519, state, updated_at) VALUES (?, ?, ?, ?) ON CONFLICT (address, pubkey_ed25519) DO UPDATE SET state = excluded.state, updated_at = excluded.updated_at`
+    ).run(normaliseAddress(address), pubkeyEd25519, state, Date.now());
   });
 }
 
@@ -328,7 +330,7 @@ export function deleteNodeStatesExcept(address: string, keepPubkeys: string[]): 
     }
     const placeholders = keepPubkeys.map(() => '?').join(', ');
     db.prepare(
-      `DELETE FROM ${NOTIFICATIONS_TABLE.NODE_STATE} WHERE address = ? AND pubkey_bls NOT IN (${placeholders})`
+      `DELETE FROM ${NOTIFICATIONS_TABLE.NODE_STATE} WHERE address = ? AND pubkey_ed25519 NOT IN (${placeholders})`
     ).run(normaliseAddress(address), ...keepPubkeys);
   });
 }

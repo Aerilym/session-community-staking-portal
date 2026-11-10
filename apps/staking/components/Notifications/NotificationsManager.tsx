@@ -157,7 +157,13 @@ export function NotificationsDialogProvider({ children }: { children: ReactNode 
       // If the check was cut short (e.g. React StrictMode double-invoke), allow a re-run.
       if (!finished) promptedForRef.current = undefined;
     };
-  }, [connectedAddress, notificationsEnabled, notificationsDisabled, flagsLoading, isCurrentWalletDismissed]);
+  }, [
+    connectedAddress,
+    notificationsEnabled,
+    notificationsDisabled,
+    flagsLoading,
+    isCurrentWalletDismissed,
+  ]);
 
   const openPrompt = useCallback((address: string) => {
     setPromptAddress(address);
