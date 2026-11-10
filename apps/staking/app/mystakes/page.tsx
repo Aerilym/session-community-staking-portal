@@ -25,8 +25,8 @@ export async function generateMetadata() {
 
 export default function Page() {
   return (
-    <ModuleGrid size="lg" className="h-full px-4 md:px-6 xl:auto-rows-auto">
-      <div className="col-span-1 flex h-full flex-col gap-3 pt-2 md:max-h-screen-without-header md:overflow-y-auto md:overflow-x-hidden">
+    <ModuleGrid size="lg" className="h-full px-4 md:px-6 lg:auto-rows-auto">
+      <div className="col-span-1 flex h-full flex-col gap-3 pt-2 lg:max-h-screen-without-header lg:overflow-y-auto lg:overflow-x-hidden">
         <KeyInfoModule />
         <ModuleGrid>
           <UnclaimedStakesModule />
@@ -46,7 +46,7 @@ export default function Page() {
           <ExplorerModule />
         </ModuleGrid>
       </div>
-      <div className="col-span-2 mt-14 h-full pt-2 pb-8 md:mt-0 md:max-h-screen-without-header">
+      <div className="col-span-2 mt-14 h-full pt-2 pb-8 lg:mt-0 lg:max-h-screen-without-header">
         <ModuleGrid variant="section" colSpan={2} className="h-full">
           <ErrorBoundary errorComponent={ErrorBox}>
             <StakedNodesModule />
