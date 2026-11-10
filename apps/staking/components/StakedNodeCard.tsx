@@ -542,6 +542,7 @@ const StakedNodeCard = forwardRef<
   const nodeVisibilityButtonComp =
     nodeVisibilityMode && onToggleNodeHidden ? (
       <Tooltip
+        disableOnClick={true}
         tooltipContent={
           !canToggleHidden
             ? stakedNodesDictionary('hideNodeDisabled')
