@@ -25,13 +25,29 @@ const pricesSchema = z.object({
   ),
 });
 
-export const useHistoricalPriceQuery = () => {
+/** Tokens served by the network API /prices/<token>/<period> endpoint. */
+const PRICE_TOKEN = {
+  ETH: 'ethereum',
+} as const;
+
+/** Price history periods served by the network API /prices/<token>/<period> endpoint. */
+type PricePeriod = '1h' | '1d' | '7d' | '30d';
+
+export const useHistoricalPriceQuery = ({
+  token = NEXT_PUBLIC_PRICE_TOKEN,
+  period = '7d',
+  maxPrice = 100,
+}: {
+  token?: string;
+  period?: PricePeriod;
+  maxPrice?: number;
+} = {}) => {
   const { getItem } = usePreferences();
   const autoRefresh = !getItem(PREFERENCE.DISABLE_BACKEND_AUTO_REFRESH);
   return useQuery({
-    queryKey: ['prices'],
+    queryKey: ['prices', token, period],
     queryFn: async () => {
-      const res = await fetch(`/api/network/prices/${NEXT_PUBLIC_PRICE_TOKEN}/7d`);
+      const res = await fetch(`/api/network/prices/${token}/${period}`);
 
       if (!res.ok) {
         toast.error('Failed to fetch price data.');
@@ -44,7 +60,7 @@ export const useHistoricalPriceQuery = () => {
           price,
           t,
         }))
-        .filter(({ price }) => price < 100 && price > 0);
+        .filter(({ price }) => price < maxPrice && price > 0);
     },
     refetchInterval: autoRefresh ? BACKEND.NODE_TARGET_UPDATE_INTERVAL_SECONDS * 1000 : false,
   });
@@ -52,6 +68,15 @@ export const useHistoricalPriceQuery = () => {
 
 export const useSeshPrice = () => {
   const { data } = useHistoricalPriceQuery();
+  return data?.length ? (data.at(-1)?.price ?? null) : null;
+};
+
+export const useEthPrice = () => {
+  const { data } = useHistoricalPriceQuery({
+    token: PRICE_TOKEN.ETH,
+    period: '1d',
+    maxPrice: 1_000_000,
+  });
   return data?.length ? (data.at(-1)?.price ?? null) : null;
 };
 

@@ -36,6 +36,7 @@ import {
   parseContractStatusToProgressStatus,
 } from '@/lib/contracts';
 import logger from '@/lib/logger';
+import { useEthPrice, useSeshPrice } from '@/app/mystakes/modules/PriceModule';
 import { useActiveVestingContractAddress } from '@/providers/vesting-provider';
 
 export type ClaimRewardsMode = 'batched' | 'legacy';
@@ -192,6 +193,8 @@ export default function useClaimRewards({
 
   const feeConfig = getFeeConfig();
   const feeCandidateEnabled = mode === 'batched' && !!feeConfig && isFlowFeeEnabled('claim');
+  const seshPrice = useSeshPrice();
+  const ethPrice = useEthPrice();
 
   // NOTE: the BLS signature covers lifetime cumulative rewards, the
   // proportional fee must only apply to the amount being claimed now
@@ -209,11 +212,23 @@ export default function useClaimRewards({
         : (fallbackClaimableAmount ?? null);
     if (fullDelta === null) return null;
     const base = claimAmount ?? fullDelta;
+    // NOTE: the ETH fee option is unavailable (null) without both prices to
+    // quote the proportional SESH component into ETH
+    const prices = { seshUsd: seshPrice, ethUsd: ethPrice };
     return {
-      sesh: computeFee(base > 0n ? base : 0n, 'sesh', feeConfig),
-      eth: computeFee(base > 0n ? base : 0n, 'eth', feeConfig),
+      sesh: computeFee(base > 0n ? base : 0n, 'sesh', feeConfig, prices),
+      eth: computeFee(base > 0n ? base : 0n, 'eth', feeConfig, prices),
     };
-  }, [claimAmount, claimed, defaultArgs, fallbackClaimableAmount, feeCandidateEnabled, feeConfig]);
+  }, [
+    claimAmount,
+    claimed,
+    defaultArgs,
+    fallbackClaimableAmount,
+    feeCandidateEnabled,
+    feeConfig,
+    seshPrice,
+    ethPrice,
+  ]);
 
   const { balance: sentBalance } = useSENTBalanceQuery({
     address: feeCandidates?.sesh != null ? address : undefined,

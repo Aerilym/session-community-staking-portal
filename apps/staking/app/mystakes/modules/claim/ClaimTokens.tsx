@@ -1,5 +1,5 @@
 import type { ClaimDict } from '@/app/mystakes/modules/ClaimTokensModule';
-import { useSeshPrice } from '@/app/mystakes/modules/PriceModule';
+import { useEthPrice, useSeshPrice } from '@/app/mystakes/modules/PriceModule';
 import { ClaimAmountField } from '@/app/mystakes/modules/claim/ClaimAmountField';
 import { ActionModuleAccordionRow } from '@/components/ActionModule';
 import { ActionModuleFeeAccordionRow } from '@/components/ActionModuleFeeAccordionRow';
@@ -41,7 +41,7 @@ import { PROGRESS_STATUS, Progress } from '@session/ui/motion/progress';
 import { AlertDialogFooter } from '@session/ui/ui/alert-dialog';
 import { Button } from '@session/ui/ui/button';
 import { Checkbox } from '@session/ui/ui/checkbox';
-import { bigIntToNumber, stringToBigInt } from '@session/util-crypto/maths';
+import { stringToBigInt } from '@session/util-crypto/maths';
 import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
@@ -83,6 +83,7 @@ export function ClaimTokens({
   });
 
   const price = useSeshPrice();
+  const ethPrice = useEthPrice();
 
   const vestingContractAddress = useActiveVestingContractAddress();
 
@@ -296,6 +297,7 @@ export function ClaimTokens({
               feeTransferFeeRaw={feeTransferFeeRaw}
               feeFormulaTransfer={nullableIf(feeTransferGasAmount !== null, feeFormulaTransfer)}
               gasPrice={gasPrice}
+              ethPrice={ethPrice}
             />
             {feeAmount !== null && feeBreakdown !== null ? (
               <ClaimServiceFeeRow
@@ -307,6 +309,7 @@ export function ClaimTokens({
                 feeOptions={feeOptions}
                 effectiveFeeMode={effectiveFeeMode}
                 price={price}
+                ethPrice={ethPrice}
                 locked={enabled}
                 onToggleSesh={togglePayInSesh}
               />
@@ -521,23 +524,30 @@ function formatClaimFee(fee: bigint | null, mode: FeeMode) {
     : formatSENTBigInt(fee, DYNAMIC_MODULE.SENT_ROUNDED_DECIMALS);
 }
 
-function seshToUsd(seshAtomic: bigint, price: number | null): number {
-  return price != null
-    ? bigIntToNumber(seshAtomic, SENT_DECIMALS) * price
-    : seshAtomicToUsd(seshAtomic);
-}
-
-function feeToUsd(fee: bigint | null, mode: FeeMode, price: number | null): number | null {
+function feeToUsd(
+  fee: bigint | null,
+  mode: FeeMode,
+  price: number | null,
+  ethPrice: number | null
+): number | null {
   if (fee === null) return null;
-  return mode === 'eth' ? ethWeiToUsd(fee) : seshToUsd(fee, price);
+  return mode === 'eth' ? ethWeiToUsd(fee, ethPrice) : seshAtomicToUsd(fee, price);
 }
 
-function EthAmountWithUsd({ formatted, wei }: { formatted: string | null; wei: bigint | null }) {
+function EthAmountWithUsd({
+  formatted,
+  wei,
+  price,
+}: {
+  formatted: string | null;
+  wei: bigint | null;
+  price: number | null;
+}) {
   if (formatted === null) return null;
   return (
     <span className="inline-flex items-center gap-1.5 text-nowrap align-middle">
       {formatted}
-      <FiatUsd usd={wei === null ? null : ethWeiToUsd(wei)} />
+      <FiatUsd usd={wei === null ? null : ethWeiToUsd(wei, price)} />
     </span>
   );
 }
@@ -553,7 +563,7 @@ function SeshAmountWithUsd({
   return (
     <span className="inline-flex items-center gap-1.5 text-nowrap align-middle">
       {formatSENTBigInt(atomic, DYNAMIC_MODULE.SENT_ROUNDED_DECIMALS)}
-      <FiatUsd usd={seshToUsd(atomic, price)} />
+      <FiatUsd usd={seshAtomicToUsd(atomic, price)} />
     </span>
   );
 }
@@ -597,7 +607,7 @@ function ClaimAmountAccordion({
     >
       <span className="inline-flex items-center gap-1.5 text-nowrap align-middle">
         {amountFormatted}
-        <FiatUsd usd={unclaimed === null ? null : seshToUsd(unclaimed, price)} />
+        <FiatUsd usd={unclaimed === null ? null : seshAtomicToUsd(unclaimed, price)} />
       </span>
     </ActionModuleAccordionRow>
   );
@@ -607,17 +617,19 @@ function FeeAmount({
   fee,
   mode,
   price,
+  ethPrice,
 }: {
   fee: bigint | null;
   mode: FeeMode;
   price: number | null;
+  ethPrice: number | null;
 }) {
   const formatted = formatClaimFee(fee, mode);
   if (formatted === null) return null;
   return (
     <span className="inline-flex items-center gap-1.5 text-nowrap align-middle">
       {formatted}
-      <FiatUsd usd={feeToUsd(fee, mode, price)} />
+      <FiatUsd usd={feeToUsd(fee, mode, price, ethPrice)} />
     </span>
   );
 }
@@ -638,6 +650,7 @@ function ClaimNetworkFeeAccordion({
   feeTransferFeeRaw,
   feeFormulaTransfer,
   gasPrice,
+  ethPrice,
 }: {
   dictionary: ClaimDict;
   dictionaryFee: ReturnType<typeof useTranslations<'fee'>>;
@@ -654,6 +667,7 @@ function ClaimNetworkFeeAccordion({
   feeTransferFeeRaw: bigint | null;
   feeFormulaTransfer: ReactNode | null;
   gasPrice: bigint | null | undefined;
+  ethPrice: number | null;
 }) {
   const gasHighShowTooltip = !!(gasPrice && gasPrice > HANDRAIL_THRESHOLDS.GAS_PRICE);
 
@@ -678,21 +692,33 @@ function ClaimNetworkFeeAccordion({
       fees={[
         {
           label: dictionary('dialog.updateBalanceCost'),
-          fee: <EthAmountWithUsd formatted={feeEstimateUpdate} wei={updateBalanceFeeRaw} />,
+          fee: (
+            <EthAmountWithUsd
+              formatted={feeEstimateUpdate}
+              wei={updateBalanceFeeRaw}
+              price={ethPrice}
+            />
+          ),
           tooltip: feeFormulaUpdate,
           hasExemption: skipUpdateBalance,
           exemptionReason: dictionary('dialog.updateBalanceCostExemptionReason'),
         },
         {
           label: dictionary('dialog.claimRewardsCost'),
-          fee: <EthAmountWithUsd formatted={feeEstimateClaim} wei={claimFeeRaw} />,
+          fee: <EthAmountWithUsd formatted={feeEstimateClaim} wei={claimFeeRaw} price={ethPrice} />,
           tooltip: feeFormulaClaim,
         },
         ...(feeEstimateTransfer !== null || feeFormulaTransfer !== null
           ? [
               {
                 label: dictionary('dialog.serviceFeeTransferCost'),
-                fee: <EthAmountWithUsd formatted={feeEstimateTransfer} wei={feeTransferFeeRaw} />,
+                fee: (
+                  <EthAmountWithUsd
+                    formatted={feeEstimateTransfer}
+                    wei={feeTransferFeeRaw}
+                    price={ethPrice}
+                  />
+                ),
                 tooltip: feeFormulaTransfer,
               },
             ]
@@ -709,7 +735,7 @@ function ClaimNetworkFeeAccordion({
         />
       }
       gasHighShowTooltip={gasHighShowTooltip}
-      totalFee={<EthAmountWithUsd formatted={feeEstimate} wei={totalFeeRaw} />}
+      totalFee={<EthAmountWithUsd formatted={feeEstimate} wei={totalFeeRaw} price={ethPrice} />}
     />
   );
 }
@@ -723,6 +749,7 @@ function ClaimServiceFeeRow({
   feeOptions,
   effectiveFeeMode,
   price,
+  ethPrice,
   locked,
   onToggleSesh,
 }: {
@@ -734,6 +761,7 @@ function ClaimServiceFeeRow({
   feeOptions: Array<{ mode: FeeMode; fee: bigint }>;
   effectiveFeeMode: FeeMode;
   price: number | null;
+  ethPrice: number | null;
   locked: boolean;
   onToggleSesh: (payInSesh: boolean) => void;
 }) {
@@ -754,17 +782,27 @@ function ClaimServiceFeeRow({
           <div className="flex flex-col gap-1">
             <span className="flex justify-between">
               <span>{dictionary('dialog.serviceFeeFlat')}</span>
-              <FeeAmount fee={feeBreakdown?.flat ?? null} mode={effectiveFeeMode} price={price} />
+              <FeeAmount
+                fee={feeBreakdown?.flat ?? null}
+                mode={effectiveFeeMode}
+                price={price}
+                ethPrice={ethPrice}
+              />
             </span>
             <span className="flex justify-between">
               <span>{dictionary('dialog.serviceFeeBps', { percent })}</span>
-              <FeeAmount fee={feeBreakdown?.bps ?? null} mode={effectiveFeeMode} price={price} />
+              <FeeAmount
+                fee={feeBreakdown?.bps ?? null}
+                mode={effectiveFeeMode}
+                price={price}
+                ethPrice={ethPrice}
+              />
             </span>
           </div>
         }
       >
         <span className="inline-flex items-center gap-1.5 text-nowrap align-middle">
-          <FeeAmount fee={feeAmount} mode={effectiveFeeMode} price={price} />
+          <FeeAmount fee={feeAmount} mode={effectiveFeeMode} price={price} ethPrice={ethPrice} />
         </span>
       </ActionModuleAccordionRow>
       {seshAvailable ? (
@@ -792,6 +830,7 @@ function ClaimServiceFeeRow({
             }
             mode="sesh"
             price={price}
+            ethPrice={ethPrice}
           />
         </span>
       ) : null}

@@ -1,6 +1,5 @@
-import { SENT_DECIMALS, formatUsd, seshAtomicToUsd } from '@session/contracts';
+import { formatUsd, seshAtomicToUsd } from '@session/contracts';
 import { cn } from '@session/ui/lib/utils';
-import { bigIntToNumber } from '@session/util-crypto/maths';
 
 /**
  * A muted USD amount in parentheses, e.g. ($10.23), for display after token amounts.
@@ -15,6 +14,7 @@ export function FiatUsd({ usd, className }: { usd: number | null; className?: st
 /**
  * A SESH amount with its muted USD value in parentheses, e.g. 1234 SESH ($24.68).
  * The USD suffix is smaller than the amount so container (cqi) sized module text still fits.
+ * The USD value is hidden when no price is available.
  */
 export function SeshAmountWithUsd({
   amount,
@@ -27,12 +27,7 @@ export function SeshAmountWithUsd({
   price?: number | null;
   className?: string;
 }) {
-  const usd =
-    amount === null
-      ? null
-      : price != null
-        ? bigIntToNumber(amount, SENT_DECIMALS) * price
-        : seshAtomicToUsd(amount);
+  const usd = amount === null ? null : seshAtomicToUsd(amount, price ?? null);
   return (
     <span
       className={cn(

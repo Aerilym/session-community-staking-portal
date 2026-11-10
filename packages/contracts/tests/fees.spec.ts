@@ -26,21 +26,25 @@ const CONFIG: FeeConfig = {
 const SESH_ONLY: FeeConfig = { ...CONFIG, ethFlat: 0n };
 const ETH_ONLY: FeeConfig = { ...CONFIG, seshFlat: 0n, bps: 0n };
 
+// Prices at which $0.02/SESH and $2000/ETH reproduce the historic constant
+// conversion rate (1 SESH = 1e13 wei)
+const PRICES = { seshUsd: 0.02, ethUsd: 2000 } as const;
+
 const CALL_A: BatchCall = { to: '0x000000000000000000000000000000000000000a', data: '0x01' };
 const CALL_B: BatchCall = { to: '0x000000000000000000000000000000000000000b', data: '0x02' };
 
 // #region - seshAtomicToEthWei
 
 describe('seshAtomicToEthWei', () => {
-  test('converts at the constant prices ($0.02 / $2000)', () => {
-    // 1 SESH (1e9 atomic) = $0.02 = 0.00001 ETH = 1e13 wei
-    expect(seshAtomicToEthWei(10n ** 9n)).toBe(10n ** 13n);
+  test('converts at the given prices', () => {
+    // 1 SESH (1e9 atomic) at $0.02 with ETH at $2000 = $0.02 = 1e13 wei
+    expect(seshAtomicToEthWei(10n ** 9n, 0.02, 2000)).toBe(10n ** 13n);
   });
 
   test('rounds down for sub-wei amounts', () => {
     // 1 atomic SESH = 1e4 wei; 0.05 atomic rounds to 0
-    expect(seshAtomicToEthWei(1n)).toBe(10_000n);
-    expect(seshAtomicToEthWei(0n)).toBe(0n);
+    expect(seshAtomicToEthWei(1n, 0.02, 2000)).toBe(10_000n);
+    expect(seshAtomicToEthWei(0n, 0.02, 2000)).toBe(0n);
   });
 });
 
@@ -48,14 +52,19 @@ describe('seshAtomicToEthWei', () => {
 // #region - USD conversion
 
 describe('USD conversion', () => {
-  test('converts SESH to USD at the constant prices', () => {
+  test('converts SESH to USD at the given price', () => {
     // 100 SESH * $0.02 = $2
-    expect(seshAtomicToUsd(100n * 10n ** 9n)).toBe(2);
+    expect(seshAtomicToUsd(100n * 10n ** 9n, 0.02)).toBe(2);
   });
 
-  test('converts ETH to USD at the constant prices', () => {
+  test('converts ETH to USD at the given price', () => {
     // 0.01 ETH * $2000 = $20
-    expect(ethWeiToUsd(10n ** 16n)).toBe(20);
+    expect(ethWeiToUsd(10n ** 16n, 2000)).toBe(20);
+  });
+
+  test('returns null when no price is available', () => {
+    expect(seshAtomicToUsd(100n * 10n ** 9n, null)).toBeNull();
+    expect(ethWeiToUsd(10n ** 16n, null)).toBeNull();
   });
 });
 
@@ -87,9 +96,19 @@ describe('computeFee', () => {
     expect(computeFee(1_000n, 'sesh', CONFIG)).toBe(1_000_000_000n);
   });
 
-  test('eth mode is flat plus the bps converted at the constant prices', () => {
+  test('eth mode is flat plus the bps converted at the given prices', () => {
     // 0.5% of 1_000 = 5 atomic SESH = 5 * 1e4 wei = 50_000 wei, plus the flat fee
-    expect(computeFee(1_000n, 'eth', CONFIG)).toBe(1_050_000n);
+    expect(computeFee(1_000n, 'eth', CONFIG, PRICES)).toBe(1_050_000n);
+  });
+
+  test('eth mode is unavailable without both prices when bps applies', () => {
+    expect(computeFee(1_000n, 'eth', CONFIG, null)).toBeNull();
+    expect(computeFee(1_000n, 'eth', CONFIG, { seshUsd: 0.02, ethUsd: null })).toBeNull();
+    expect(computeFee(1_000n, 'eth', CONFIG, { seshUsd: null, ethUsd: 2000 })).toBeNull();
+  });
+
+  test('eth mode needs no prices when only the flat fee applies', () => {
+    expect(computeFee(1_000n, 'eth', ETH_ONLY, null)).toBe(1_000_000n);
   });
 
   test('eth fee is rounded down to 3 significant digits', () => {
@@ -102,7 +121,7 @@ describe('computeFee', () => {
       ethFlat: 20_000_000_000_000n,
       bps: 10n,
     };
-    expect(computeFee(1_360_512_977_000n, 'eth', config)).toBe(33_600_000_000_000n);
+    expect(computeFee(1_360_512_977_000n, 'eth', config, PRICES)).toBe(33_600_000_000_000n);
   });
 
   test('sesh fee is rounded down to 3 significant digits', () => {
@@ -134,12 +153,17 @@ describe('computeFee', () => {
 describe('isFeeModeAvailable', () => {
   test('available when a positive fee is configured', () => {
     expect(isFeeModeAvailable('sesh', CONFIG)).toBe(true);
-    expect(isFeeModeAvailable('eth', CONFIG)).toBe(true);
+    expect(isFeeModeAvailable('eth', CONFIG, PRICES)).toBe(true);
   });
 
-  test('eth is available via bps even without an eth flat fee', () => {
-    // bps converts into ETH at the constant prices
-    expect(isFeeModeAvailable('eth', SESH_ONLY)).toBe(true);
+  test('eth is available via bps with both prices', () => {
+    expect(isFeeModeAvailable('eth', SESH_ONLY, PRICES)).toBe(true);
+  });
+
+  test('eth via bps is unavailable without both prices', () => {
+    expect(isFeeModeAvailable('eth', SESH_ONLY)).toBe(false);
+    expect(isFeeModeAvailable('eth', SESH_ONLY, null)).toBe(false);
+    expect(isFeeModeAvailable('eth', SESH_ONLY, { seshUsd: 0.02, ethUsd: null })).toBe(false);
   });
 
   test('unavailable when no positive fee is configured', () => {

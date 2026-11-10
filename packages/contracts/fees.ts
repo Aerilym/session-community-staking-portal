@@ -18,43 +18,54 @@ export type BatchCall = {
 export type FeeMode = 'sesh' | 'eth';
 
 /**
- * USD prices used to convert proportional SESH fees into ETH, as rational
- * numbers to keep bigint arithmetic exact. Replace with an oracle.
+ * Live USD prices for the fee assets. Null entries mean the price is
+ * unavailable and any feature requiring that price quote is disabled.
  */
-export const SESH_USD = { numerator: 2n, denominator: 100n } as const; // $0.02
-export const ETH_USD = { numerator: 2000n, denominator: 1n } as const; // $2000
+export type FeePrices = {
+  seshUsd: number | null;
+  ethUsd: number | null;
+};
 
 const WEI_PER_ETH = 10n ** 18n;
 const ATOMIC_PER_SESH = 10n ** BigInt(SENT_DECIMALS);
 
+/** Price precision kept when converting a decimal USD price to a rational. */
+const USD_PRICE_SCALE = 1_000_000_000n;
+
 /**
- * Converts an atomic SESH amount into wei at the constant USD prices.
+ * Converts a decimal USD price into an exact rational number for bigint math.
  */
-export function seshAtomicToEthWei(seshAtomic: bigint): bigint {
+function toRationalUsdPrice(price: number) {
+  const numerator = BigInt(Math.max(0, Math.round(price * Number(USD_PRICE_SCALE))));
+  return { numerator, denominator: USD_PRICE_SCALE };
+}
+
+/**
+ * Converts an atomic SESH amount into wei at the given USD prices.
+ */
+export function seshAtomicToEthWei(seshAtomic: bigint, seshUsd: number, ethUsd: number): bigint {
+  const sesh = toRationalUsdPrice(seshUsd);
+  const eth = toRationalUsdPrice(ethUsd);
   return (
-    (seshAtomic * WEI_PER_ETH * SESH_USD.numerator * ETH_USD.denominator) /
-    (ATOMIC_PER_SESH * SESH_USD.denominator * ETH_USD.numerator)
+    (seshAtomic * WEI_PER_ETH * sesh.numerator * eth.denominator) /
+    (ATOMIC_PER_SESH * sesh.denominator * eth.numerator)
   );
 }
 
 /**
- * Converts an atomic SESH amount into USD at the constant prices.
+ * Converts an atomic SESH amount into USD at the given price, or null when no
+ * price is available.
  */
-export function seshAtomicToUsd(seshAtomic: bigint): number {
-  return (
-    (Number(seshAtomic) / Number(ATOMIC_PER_SESH)) *
-    (Number(SESH_USD.numerator) / Number(SESH_USD.denominator))
-  );
+export function seshAtomicToUsd(seshAtomic: bigint, seshUsd: number | null): number | null {
+  return seshUsd === null ? null : (Number(seshAtomic) / Number(ATOMIC_PER_SESH)) * seshUsd;
 }
 
 /**
- * Converts a wei amount into USD at the constant prices.
+ * Converts a wei amount into USD at the given price, or null when no price is
+ * available.
  */
-export function ethWeiToUsd(ethWei: bigint): number {
-  return (
-    (Number(ethWei) / Number(WEI_PER_ETH)) *
-    (Number(ETH_USD.numerator) / Number(ETH_USD.denominator))
-  );
+export function ethWeiToUsd(ethWei: bigint, ethUsd: number | null): number | null {
+  return ethUsd === null ? null : (Number(ethWei) / Number(WEI_PER_ETH)) * ethUsd;
 }
 
 /**
@@ -100,7 +111,8 @@ export type FeeConfig = {
   /**
    * Proportional fee in basis points of the amount being claimed
    * (1 bp = 0.01%). For ETH payments the SESH amount is converted to ETH at
-   * the constant USD prices. @see {@link SESH_USD} @see {@link ETH_USD}
+   * live USD prices; the ETH fee mode is unavailable without them.
+   * @see {@link FeePrices}
    */
   bps: bigint;
 };
@@ -129,8 +141,7 @@ function parseBigInt(value: string | undefined): bigint {
  * - `NEXT_PUBLIC_FEE_FLAT_WEI`: flat fee in atomic SESH
  * - `NEXT_PUBLIC_FEE_ETH_WEI`: flat fee in wei (enables paying the fee in ETH)
  * - `NEXT_PUBLIC_FEE_BPS`: proportional fee in basis points of the amount
- *   being claimed (converted to ETH at the constant USD prices for ETH
- *   payments)
+ *   being claimed (converted to ETH at live USD prices for ETH payments)
  *
  * @returns The fee configuration, or null when fees are not configured.
  */
@@ -174,20 +185,35 @@ export function isFlowFeeEnabled(
  * being claimed), used for the proportional component.
  * @param mode - The asset the fee is paid in.
  * @param config - The fee configuration, defaults to the environment configuration.
+ * @param prices - Live USD prices for converting the proportional SESH
+ * component into ETH. The ETH fee mode is unavailable (null) when a bps fee is
+ * configured and either price is missing.
  * @returns The fee in the fee asset's base units, or null when no fee applies.
  */
 export function computeFee(
   amount: bigint,
   mode: FeeMode,
-  config: FeeConfig | null = getFeeConfig()
+  config: FeeConfig | null = getFeeConfig(),
+  prices?: FeePrices | null
 ): bigint | null {
   if (!config) return null;
 
   const proportional = (amount * config.bps) / 10_000n;
-  const fee =
-    mode === 'eth'
-      ? config.ethFlat + seshAtomicToEthWei(proportional)
-      : config.seshFlat + proportional;
+
+  let fee: bigint;
+  if (mode === 'eth') {
+    // The proportional component is denominated in SESH; converting it to ETH
+    // needs a price quote — without both prices the ETH fee mode is disabled.
+    let proportionalWei = 0n;
+    if (config.bps > 0n) {
+      const { seshUsd, ethUsd } = prices ?? {};
+      if (seshUsd == null || ethUsd == null) return null;
+      proportionalWei = seshAtomicToEthWei(proportional, seshUsd, ethUsd);
+    }
+    fee = config.ethFlat + proportionalWei;
+  } else {
+    fee = config.seshFlat + proportional;
+  }
 
   const rounded = roundDownToSignificantDigits(fee, FEE_SIGNIFICANT_DIGITS);
   return rounded > 0n ? rounded : null;
@@ -198,14 +224,22 @@ export function computeFee(
  *
  * @param mode - The asset the fee is paid in.
  * @param config - The fee configuration, defaults to the environment configuration.
+ * @param prices - Live USD prices; the proportional component only counts for
+ * ETH when both prices are available for the conversion.
  * @returns True when the mode is selectable in the UI.
  */
 export function isFeeModeAvailable(
   mode: FeeMode,
-  config: FeeConfig | null = getFeeConfig()
+  config: FeeConfig | null = getFeeConfig(),
+  prices?: FeePrices | null
 ): boolean {
   if (!config) return false;
-  return config.bps > 0n || (mode === 'eth' ? config.ethFlat : config.seshFlat) > 0n;
+  if (config.bps > 0n) {
+    if (mode === 'sesh') return true;
+    const { seshUsd, ethUsd } = prices ?? {};
+    return seshUsd != null && ethUsd != null;
+  }
+  return (mode === 'eth' ? config.ethFlat : config.seshFlat) > 0n;
 }
 
 /**

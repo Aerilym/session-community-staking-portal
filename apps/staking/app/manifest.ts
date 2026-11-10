@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Session Staking Portal',
+    name: 'SESH Community Staking Portal',
     short_name: 'SESH Staking',
     description: 'Stake SESH and manage Session Nodes on the Session Network.',
     start_url: '/',
