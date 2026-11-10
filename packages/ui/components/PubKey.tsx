@@ -113,7 +113,7 @@ export const PubKey = forwardRef<HTMLDivElement, PubKeyProps>((props, ref) => {
       </div>
       <CopyToClipboardButton
         className={cn(
-          'p-0.5 duration-0',
+          'p-0.5 -mt-0.5 duration-0',
         )}
         textToCopy={pubKeyDisplayedOverride || pubKey}
         data-testid={ButtonDataTestId.Copy_Pub_Key_To_Clipboard}
@@ -122,7 +122,7 @@ export const PubKey = forwardRef<HTMLDivElement, PubKeyProps>((props, ref) => {
       />
       <OpenInExplorerButton
         className={cn(
-          'p-0.5 duration-0',
+          'p-0.5 -mt-0.5 duration-0',
         )}
         value={pubKey}
       />

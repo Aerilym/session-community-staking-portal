@@ -52,13 +52,13 @@ export interface StakeCardProps
     VariantProps<typeof innerNodeCardVariants> {
   loading?: boolean;
 }
-
+// px-3 pt-3 pb-0 md:px-4 md:pt-3.5 md:pb-1
 const NodeCard = forwardRef<HTMLDivElement, StakeCardProps>(
   ({ className, variant, loading, children, ...props }, ref) => {
     return (
       <div
         className={cn(
-          'relative flex w-full flex-row flex-wrap items-center gap-0.5 rounded-lg bg-module px-4 py-3 align-middle reduced-motion:transition-none transition-all duration-500 ease-in-out md:px-6 md:py-5',
+          'relative flex w-full flex-row flex-wrap items-center rounded-lg bg-module px-3 py-2 align-middle reduced-motion:transition-none transition-all duration-500 ease-in-out md:px-4 md:py-3',
           className
         )}
         style={{
@@ -287,7 +287,7 @@ const NodeContributorList = forwardRef<HTMLDivElement, StakedNodeContributorList
       <>
         {!forceExpand ? (
           <ContributorIconWithTooltip
-            className={cn('fill-text-primary peer-checked:hidden peer-checked:opacity-0')}
+            className={cn('-mt-0.5 fill-text-primary peer-checked:hidden peer-checked:opacity-0')}
             contributor={userContributor}
             isOperator={areEthereumAddressesEqual(userContributor?.address, operatorAddress)}
             isRequestingExit={areEthereumAddressesEqual(
@@ -325,7 +325,7 @@ const NodeContributorList = forwardRef<HTMLDivElement, StakedNodeContributorList
         </div>
         <span
           className={cn(
-            'letter mt-0.5 block text-base tracking-widest transition-all duration-300 ease-in-out',
+            'letter ms-1 block text-base tracking-widest transition-all duration-300 ease-in-out',
             forceExpand
               ? 'w-0 opacity-0'
               : 'w-max opacity-100 peer-checked:w-0 peer-checked:opacity-0'
@@ -363,7 +363,7 @@ export const ToggleCardExpansionButton = forwardRef<
         expanded ? StakedNodeDataTestId.Collapse_Button : StakedNodeDataTestId.Expand_Button
       }
       className={cn(
-        'ms-auto flex w-max cursor-pointer select-none items-center align-middle peer-checked:mt-0 peer-checked:mb-0 peer-checked:[&>svg]:rotate-180',
+        'absolute end-0 top-0 my-3 me-3 flex w-max cursor-pointer select-none items-center align-middle md:my-4 md:me-4 lg:my-3 peer-checked:[&>svg]:rotate-180',
         className
       )}
       {...props}
@@ -385,7 +385,7 @@ export const RowLabel = ({ children, className }: { children: ReactNode; classNa
 );
 
 const collapsableContentVariants = cva(
-  'inline-flex select-none flex-wrap items-center gap-1 transition-all duration-300 ease-in-out peer-checked:select-auto motion-reduce:transition-none',
+  'inline-flex select-none flex-wrap items-center gap-1 transition-all duration-300 ease-in-out peer-checked:my-0.5 peer-checked:select-auto motion-reduce:transition-none',
   {
     variants: {
       size: {

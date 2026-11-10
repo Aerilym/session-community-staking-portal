@@ -25,10 +25,10 @@ export function StakeCardSnKey({ pubkey, isOperator, width, tooltipSide }: CardS
     >
       {pubkey && isEd25519PublicKey(pubkey) ? (
         <span className="inline-flex flex-nowrap gap-1">
-          {isOperator ? (
-            <NodeOperatorIndicator className="me-0.5" isConnectedWallet={isOperator} />
-          ) : null}
-          <RowLabel className="self-center">
+          <RowLabel className="inline-flex items-center gap-1 self-start whitespace-nowrap align-middle">
+            {isOperator ? (
+              <NodeOperatorIndicator isConnectedWallet={isOperator} className="mb-0.5" />
+            ) : null}
             {titleFormat('format', { title: generalNodeDictionary('publicKeyShort') })}
           </RowLabel>
           <PubKey

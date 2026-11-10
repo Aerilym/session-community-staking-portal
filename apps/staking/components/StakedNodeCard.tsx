@@ -568,8 +568,9 @@ const StakedNodeCard = forwardRef<
       className={cn(
         props.className,
         className,
-        isDetailedView ? 'gap-x-1' : 'px-3 pt-3 pb-0 md:px-4 md:pt-4 md:pb-1',
-        nodeVisibilityMode && nodeHidden ? 'opacity-60' : ''
+        isDetailedView ? 'gap-x-1' : '',
+        nodeVisibilityMode && nodeHidden ? 'opacity-60' : '',
+        'pe-9 md:pe-36'
       )}
     >
       {children}

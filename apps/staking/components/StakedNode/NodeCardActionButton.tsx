@@ -45,7 +45,7 @@ export const NodeCardActionButton = forwardRef<HTMLSpanElement, NodeCardActionBu
     return (
       <CollapsableContent
         className={cn(
-          'end-6 bottom-4 flex items-end min-[500px]:absolute',
+          'end-0 bottom-0 my-3.5 me-3 flex items-end opacity-[0.1] transition-all duration-500 peer-checked:my-3.5 peer-checked:opacity-100 md:me-4 min-[500px]:absolute',
           props.forceExpanded ? '[&_button]:h-7 peer-checked:[&_button]:h-9' : '',
           className
         )}
