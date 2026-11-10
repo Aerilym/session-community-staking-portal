@@ -36,6 +36,7 @@ TooltipContent.displayName = PopoverPrimitive.Content.displayName;
 
 type TooltipProps = ComponentPropsWithoutRef<typeof PopoverPrimitive.Content> & {
   disableOnHover?: boolean;
+  disableOnClick?: boolean;
   tooltipContent: ReactNode;
   triggerProps?: Omit<ComponentPropsWithoutRef<typeof PopoverPrimitive.Trigger>, 'children'>;
   contentProps?: Omit<ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>, 'children'>;
@@ -50,6 +51,7 @@ const Tooltip = forwardRef<ElementRef<typeof PopoverPrimitive.Content>, TooltipP
       contentProps,
       triggerProps,
       disableOnHover,
+      disableOnClick,
       putContentInPortal,
       ...props
     },
@@ -72,6 +74,9 @@ const Tooltip = forwardRef<ElementRef<typeof PopoverPrimitive.Content>, TooltipP
     };
 
     const handleClick = () => {
+      if (disableOnClick) {
+        return;
+      }
       setClicked((prev) => !prev);
     };
 
