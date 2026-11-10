@@ -41,6 +41,19 @@ import { useActiveVestingContractAddress } from '@/providers/vesting-provider';
 
 export type ClaimRewardsMode = 'batched' | 'legacy';
 
+function parseReceipt(receipt: unknown): { hash: string | null; gasFee: bigint | null } | null {
+  if (!receipt || typeof receipt !== 'object') return null;
+  const { transactionHash, gasUsed, effectiveGasPrice } = receipt as {
+    transactionHash?: `0x${string}`;
+    gasUsed?: bigint;
+    effectiveGasPrice?: bigint;
+  };
+  return {
+    hash: transactionHash ?? null,
+    gasFee: gasUsed != null && effectiveGasPrice != null ? gasUsed * effectiveGasPrice : null,
+  };
+}
+
 export type UseClaimRewardsProps = {
   /** The default arguments for the hook. @see {@link UpdateRewardsBalanceArgs} */
   defaultArgs?: UpdateRewardsBalanceArgs;
@@ -86,6 +99,10 @@ export type UseClaimRewards = {
   feeBreakdown: { flat: bigint; bps: bigint } | null;
   /** Gas units consumed by the fee payment call, null when no fee applies. */
   feeTransferGasAmount: bigint | null;
+  /** Hashes of the transactions that executed the claim, in execution order. */
+  claimTransactionHashes: Array<string>;
+  /** Actual gas fees paid from transaction receipts (legacy flow), null when unavailable. */
+  networkFeePaid: bigint | null;
   /** Wallet EIP-5792 support from `wallet_getCapabilities`: true/false once resolved, null while undetermined. */
   isBatchSupported: boolean | null;
   /** Whether the wallet reports atomic batch execution on the connected chain, null when unknown. */
@@ -157,6 +174,7 @@ export default function useClaimRewards({
     gasAmount: updateBalanceGasAmountEstimate,
     contractCallStatus: updateBalanceContractCallStatus,
     transactionStatus: updateBalanceTransactionStatus,
+    transactionData: updateBalanceTransactionData,
     estimateFeeError: updateBalanceEstimateFeeError,
     simulateError: updateBalanceSimulateError,
     writeError: updateBalanceWriteError,
@@ -169,6 +187,7 @@ export default function useClaimRewards({
     gasPrice: claimGasPrice,
     gasAmount: claimGasAmountEstimate,
     contractCallStatus: claimContractCallStatus,
+    transactionData: claimTransactionData,
     simulateError: claimSimulateError,
     writeError: claimWriteError,
     transactionError: claimTransactionError,
@@ -486,6 +505,35 @@ export default function useClaimRewards({
       ? (batchedErrorMessage ?? claimRewardsErrorMessage)
       : claimRewardsErrorMessage;
 
+  // #region - Result
+
+  const claimTransactionHashes = useMemo<Array<string>>(() => {
+    if (mode === 'batched') {
+      const hashes = (batchReceipts ?? [])
+        .map((receipt) => receipt.transactionHash)
+        .filter((hash): hash is string => hash !== null);
+      return Array.from(new Set(hashes));
+    }
+    return [
+      skipUpdateBalance ? null : parseReceipt(updateBalanceTransactionData)?.hash,
+      parseReceipt(claimTransactionData)?.hash,
+    ].filter((hash): hash is string => hash !== null);
+  }, [batchReceipts, claimTransactionData, mode, skipUpdateBalance, updateBalanceTransactionData]);
+
+  // NOTE: batch receipts from `wallet_getCallsStatus` do not expose gas, so
+  // actual network fees are only resolvable in the legacy flow
+  const networkFeePaid = useMemo<bigint | null>(() => {
+    if (mode !== 'legacy') return null;
+    const updateGasFee = skipUpdateBalance
+      ? 0n
+      : parseReceipt(updateBalanceTransactionData)?.gasFee;
+    const claimGasFee = parseReceipt(claimTransactionData)?.gasFee;
+    if (updateGasFee == null || claimGasFee == null) return null;
+    return updateGasFee + claimGasFee;
+  }, [claimTransactionData, mode, skipUpdateBalance, updateBalanceTransactionData]);
+
+  // #endregion
+
   return {
     updateBalanceAndClaimRewards,
     claimFee,
@@ -506,6 +554,8 @@ export default function useClaimRewards({
     effectiveFeeMode,
     feeBreakdown,
     feeTransferGasAmount,
+    claimTransactionHashes,
+    networkFeePaid,
     isBatchSupported,
     isAtomicBatchSupported,
     fellBackToLegacy,

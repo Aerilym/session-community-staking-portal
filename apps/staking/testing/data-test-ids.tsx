@@ -194,6 +194,10 @@ export enum SwitchDataTestId {
   Vesting_Switch = 'switch:vesting-switch',
 }
 
+export enum LinkDataTestId {
+  Claim_Tokens_Result_View_Transaction = 'link:claim-tokens-result-view-transaction',
+}
+
 export enum RadioDataTestId {
   Registration_Start_Radio_Express = 'radio:registration-start-radio-express',
   Registration_Start_Radio_Guided = 'radio:registration-start-radio-guided',

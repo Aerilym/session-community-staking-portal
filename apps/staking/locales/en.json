@@ -405,7 +405,16 @@
           "gasFetchFailedClaimRewards": "Failed to fetch fee estimate for claiming rewards. Fee estimate may be inaccurate.",
           "highGas": "The price of gas is higher than usual."
         },
-        "successToast": "Claimed {tokenAmount} on Arbitrum"
+        "successToast": "Claimed {tokenAmount} on Arbitrum",
+        "complete": {
+          "title": "Claim complete!",
+          "amountClaimed": "Amount claimed:",
+          "serviceFeePaid": "Service fee paid:",
+          "networkFeePaid": "Network fee paid:",
+          "networkFeeEstimated": "Network fee paid (estimated):",
+          "transactions": "Transactions:",
+          "viewTransaction": "View transaction"
+        }
       },
       "error": "An error occurred while fetching the signature for your unclaimed rewards. Please try again. If the problem persists, submit a ticket in the <discord-link>Session Token Discord</discord-link> for assistance.",
       "errorButton": "Retry",

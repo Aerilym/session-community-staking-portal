@@ -21,7 +21,7 @@ import { REMOTE_FEATURE_FLAG } from '@/lib/feature-flags';
 import { useRemoteFeatureFlagQuery } from '@/lib/feature-flags-client';
 import { useDecimalDelimiter } from '@/lib/locale-client';
 import { useActiveVestingContractAddress } from '@/providers/vesting-provider';
-import { ButtonDataTestId, InputDataTestId } from '@/testing/data-test-ids';
+import { ButtonDataTestId, InputDataTestId, LinkDataTestId } from '@/testing/data-test-ids';
 import {
   type FeeMode,
   SENT_DECIMALS,
@@ -35,6 +35,8 @@ import type { BlsRewardsSignatureResponse } from '@session/staking-api-js/schema
 import { LoadingText } from '@session/ui/components/loading-text';
 import { FuelIcon } from '@session/ui/icons/FuelIcon';
 import { HandCoinsIcon } from '@session/ui/icons/HandCoinsIcon';
+import { LinkOutIcon } from '@session/ui/icons/LinkOutIcon';
+import { PartyPopperIcon } from '@session/ui/icons/PartyPopperIcon';
 import { SparklesIcon } from '@session/ui/icons/SparklesIcon';
 import { TriangleAlertIcon } from '@session/ui/icons/TriangleAlertIcon';
 import { toast } from '@session/ui/lib/toast';
@@ -44,6 +46,7 @@ import { Button } from '@session/ui/ui/button';
 import { Checkbox } from '@session/ui/ui/checkbox';
 import { stringToBigInt } from '@session/util-crypto/maths';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { usePreferences } from 'usepref';
@@ -51,6 +54,14 @@ import { formatUnits } from 'viem';
 import type { Address } from 'viem';
 
 type ClaimTab = 'single-click' | 'coming-soon' | 'legacy';
+
+/** The amounts charged for a claim, snapshotted at click time so the completion view stays stable after balances refetch. */
+type ClaimResultSnapshot = {
+  amount: bigint;
+  serviceFee: bigint | null;
+  serviceFeeMode: FeeMode;
+  networkFeeEstimate: bigint | null;
+};
 
 function resolveFeeMode(payInSesh: boolean | null): FeeMode | null {
   if (payInSesh === null) return null;
@@ -78,6 +89,7 @@ export function ClaimTokens({
 }) {
   const dictionaryFee = useTranslations('fee');
   const [overrideFormattedUnclaimed, setOverrideFormattedUnclaimed] = useState<string | null>(null);
+  const [resultSnapshot, setResultSnapshot] = useState<ClaimResultSnapshot | null>(null);
   const [activeTab, setActiveTab] = useState<ClaimTab>('single-click');
   const { refetch, unclaimed, claimableRewards, claimableStakes } = useNetworkBalances({
     addressOverride: address,
@@ -165,6 +177,8 @@ export function ClaimTokens({
     effectiveFeeMode,
     feeBreakdown,
     feeTransferGasAmount,
+    claimTransactionHashes,
+    networkFeePaid,
     isBatchSupported,
     fellBackToLegacy,
   } = useClaimRewards({
@@ -222,6 +236,12 @@ export function ClaimTokens({
     setOverrideFormattedUnclaimed(
       formatSENTBigInt(claimAmount ?? unclaimed, DYNAMIC_MODULE.SENT_ROUNDED_DECIMALS)
     );
+    setResultSnapshot({
+      amount: claimAmount ?? unclaimed ?? 0n,
+      serviceFee: feeAmount,
+      serviceFeeMode: effectiveFeeMode,
+      networkFeeEstimate: totalFeeRaw,
+    });
     updateBalanceAndClaimRewards(claimRewardsArgs);
   };
 
@@ -240,8 +260,29 @@ export function ClaimTokens({
     errorMessage: claimRewardsErrorMessage,
     refetch,
     refetchBalance,
-    onError: () => setOverrideFormattedUnclaimed(null),
+    onError: () => {
+      setOverrideFormattedUnclaimed(null);
+      setResultSnapshot(null);
+    },
   });
+
+  // NOTE: hooks must not run conditionally — the completion view early-returns
+  // below after the last hook call
+  if (enabled && claimRewardsStatus === PROGRESS_STATUS.SUCCESS && resultSnapshot) {
+    return (
+      <ClaimComplete
+        dictionary={dictionary}
+        amountClaimed={resultSnapshot.amount}
+        serviceFee={resultSnapshot.serviceFee}
+        serviceFeeMode={resultSnapshot.serviceFeeMode}
+        networkFee={networkFeePaid ?? resultSnapshot.networkFeeEstimate}
+        networkFeeIsEstimate={networkFeePaid === null}
+        transactionHashes={claimTransactionHashes}
+        price={price}
+        ethPrice={ethPrice}
+      />
+    );
+  }
 
   return (
     <>
@@ -432,6 +473,86 @@ function ClaimProgress({
         },
       ]}
     />
+  );
+}
+
+function ClaimComplete({
+  dictionary,
+  amountClaimed,
+  serviceFee,
+  serviceFeeMode,
+  networkFee,
+  networkFeeIsEstimate,
+  transactionHashes,
+  price,
+  ethPrice,
+}: {
+  dictionary: ClaimDict;
+  amountClaimed: bigint;
+  serviceFee: bigint | null;
+  serviceFeeMode: FeeMode;
+  networkFee: bigint | null;
+  networkFeeIsEstimate: boolean;
+  transactionHashes: Array<string>;
+  price: number | null;
+  ethPrice: number | null;
+}) {
+  return (
+    <div className="flex flex-col gap-6 py-2">
+      <div className="flex flex-col items-center gap-2 py-2 text-center">
+        <PartyPopperIcon className="h-12 w-12" />
+        <p className="text-md">{dictionary('dialog.complete.title')}</p>
+      </div>
+      <div className="flex flex-col gap-2 text-sm">
+        <span className="flex items-center justify-between gap-2">
+          <span>{dictionary('dialog.complete.amountClaimed')}</span>
+          <SeshAmountWithUsd atomic={amountClaimed} price={price} />
+        </span>
+        {serviceFee !== null && serviceFee > 0n ? (
+          <span className="flex items-center justify-between gap-2">
+            <span>{dictionary('dialog.complete.serviceFeePaid')}</span>
+            <FeeAmount fee={serviceFee} mode={serviceFeeMode} price={price} ethPrice={ethPrice} />
+          </span>
+        ) : null}
+        {networkFee !== null ? (
+          <span className="flex items-center justify-between gap-2">
+            <span>
+              {dictionary(
+                networkFeeIsEstimate
+                  ? 'dialog.complete.networkFeeEstimated'
+                  : 'dialog.complete.networkFeePaid'
+              )}
+            </span>
+            <EthAmountWithUsd
+              formatted={formatClaimFee(networkFee, 'eth')}
+              wei={networkFee}
+              price={ethPrice}
+            />
+          </span>
+        ) : null}
+        {transactionHashes.length > 0 ? (
+          <span className="flex items-start justify-between gap-2">
+            <span className="pt-0.5">{dictionary('dialog.complete.transactions')}</span>
+            <span className="flex flex-col items-end gap-1">
+              {transactionHashes.map((hash) => (
+                <Link
+                  key={hash}
+                  href={`/explorer/arbitrum/tx/${hash}`}
+                  target="_blank"
+                  prefetch={false}
+                  data-testid={LinkDataTestId.Claim_Tokens_Result_View_Transaction}
+                >
+                  <span className="inline-flex items-center gap-1 align-middle text-session-green">
+                    {dictionary('dialog.complete.viewTransaction')}
+                    <LinkOutIcon className="h-4 w-4" />
+                  </span>
+                </Link>
+              ))}
+            </span>
+          </span>
+        ) : null}
+      </div>
+    </div>
   );
 }
 
