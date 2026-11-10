@@ -218,6 +218,8 @@ const MEDIAN_GAS_PRICE_ARBITRUM_SEPOLIA_2024 = 1082870990n;
 export const HANDRAIL_THRESHOLD = {
   /** 0.5 SESH */
   CLAIM_REWARDS_AMOUNT: 500000000n,
+  /** Ratio of total claim fees (network + service) to the claim value above which the user is warned (0.1 = 10%) */
+  CLAIM_FEE_TO_VALUE_RATIO: 0.1,
 };
 
 export const HANDRAIL_THRESHOLD_TESTNET = {

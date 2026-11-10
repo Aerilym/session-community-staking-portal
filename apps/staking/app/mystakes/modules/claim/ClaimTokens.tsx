@@ -11,6 +11,7 @@ import { useNetworkBalances } from '@/hooks/useNetworkBalances';
 import { useNetworkFeeFormula } from '@/hooks/useNetworkFeeFormula';
 import {
   DYNAMIC_MODULE,
+  HANDRAIL_THRESHOLD,
   HANDRAIL_THRESHOLDS,
   PREFERENCE,
   SIGNIFICANT_FIGURES,
@@ -305,6 +306,7 @@ export function ClaimTokens({
                 feeAmount={feeAmount}
                 feeBreakdown={feeBreakdown}
                 unclaimed={claimAmount ?? unclaimed}
+                networkFeeRaw={totalFeeRaw}
                 bps={feeConfig?.bps ?? 0n}
                 feeOptions={feeOptions}
                 effectiveFeeMode={effectiveFeeMode}
@@ -745,6 +747,7 @@ function ClaimServiceFeeRow({
   feeAmount,
   feeBreakdown,
   unclaimed,
+  networkFeeRaw,
   bps,
   feeOptions,
   effectiveFeeMode,
@@ -757,6 +760,7 @@ function ClaimServiceFeeRow({
   feeAmount: bigint | null;
   feeBreakdown: { flat: bigint; bps: bigint } | null;
   unclaimed: bigint | null;
+  networkFeeRaw: bigint | null;
   bps: bigint;
   feeOptions: Array<{ mode: FeeMode; fee: bigint }>;
   effectiveFeeMode: FeeMode;
@@ -767,6 +771,15 @@ function ClaimServiceFeeRow({
 }) {
   const percent = `${Number(bps) / 100}`;
   const seshAvailable = feeOptions.some((option) => option.mode === 'sesh');
+
+  const feeToClaimRatio = computeClaimFeeToValueRatio({
+    claimAmount: unclaimed,
+    feeAmount,
+    feeMode: effectiveFeeMode,
+    networkFee: networkFeeRaw,
+    price,
+    ethPrice,
+  });
 
   return (
     <>
@@ -834,8 +847,43 @@ function ClaimServiceFeeRow({
           />
         </span>
       ) : null}
+      {feeToClaimRatio !== null &&
+      feeToClaimRatio >= HANDRAIL_THRESHOLD.CLAIM_FEE_TO_VALUE_RATIO ? (
+        <ClaimModeNotice
+          message={dictionary('dialog.feeValueWarning', {
+            percent: Math.round(feeToClaimRatio * 100),
+          })}
+        />
+      ) : null}
     </>
   );
+}
+
+function computeClaimFeeToValueRatio({
+  claimAmount,
+  feeAmount,
+  feeMode,
+  networkFee,
+  price,
+  ethPrice,
+}: {
+  claimAmount: bigint | null;
+  feeAmount: bigint | null;
+  feeMode: FeeMode;
+  networkFee: bigint | null;
+  price: number | null;
+  ethPrice: number | null;
+}): number | null {
+  if (claimAmount === null || feeAmount === null) return null;
+
+  const claimUsd = seshAtomicToUsd(claimAmount, price);
+  const serviceFeeUsd = feeToUsd(feeAmount, feeMode, price, ethPrice);
+  if (claimUsd === null || claimUsd <= 0 || serviceFeeUsd === null) return null;
+
+  const networkFeeUsd = networkFee === null ? 0 : ethWeiToUsd(networkFee, ethPrice);
+  if (networkFeeUsd === null) return null;
+
+  return (serviceFeeUsd + networkFeeUsd) / claimUsd;
 }
 
 function ClaimModeNotices({

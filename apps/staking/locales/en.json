@@ -378,6 +378,7 @@
         "serviceFeeBps": "Proportional Fee ({percent}% of claim):",
         "serviceFeePayInSesh": "Pay service fee in SESH",
         "netAfterFee": "You will receive",
+        "feeValueWarning": "Network and service fees are about {percent}% of the value you are claiming. You may want to wait until you have more tokens to claim.",
         "tabs": {
           "ariaLabel": "Claim flow",
           "singleClick": "Single-Click",

@@ -31,12 +31,12 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { encodeFunctionData } from 'viem';
 
+import { useEthPrice, useSeshPrice } from '@/app/mystakes/modules/PriceModule';
 import {
   formatAndHandleLocalizedContractErrorMessages,
   parseContractStatusToProgressStatus,
 } from '@/lib/contracts';
 import logger from '@/lib/logger';
-import { useEthPrice, useSeshPrice } from '@/app/mystakes/modules/PriceModule';
 import { useActiveVestingContractAddress } from '@/providers/vesting-provider';
 
 export type ClaimRewardsMode = 'batched' | 'legacy';
