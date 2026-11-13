@@ -545,6 +545,55 @@
     }
   },
   "actionModules": {
+    "operator": {
+      "score": "Operator Score",
+      "scoreDescription": "Operator score provided by seshtoken.info, based on experience, infrastructure quality and reliability. Deregistrations reduce the score.",
+      "rank": "Ranked #{rank} of {total}",
+      "unrated": "Unrated",
+      "viewProfile": "View",
+      "experience": "Experience",
+      "experienceDescription": "The number of active nodes this operator runs and when they registered their first node.",
+      "nodesOperated": "{count, plural, one{# active node} other{# active nodes}}",
+      "since": "since {date}",
+      "deregistrations": "Deregistrations",
+      "deregistrationsDescription": "Nodes operated by this operator that were deregistered from the network. Recent deregistrations can indicate reliability issues.",
+      "deregistrationsRecent": "{count, plural, one{# node in the last 60 days} other{# nodes in the last 60 days}}",
+      "deregistrationsLongterm": "{count, plural, one{# node in the last 60-90 days} other{# nodes in the last 60-90 days}}",
+      "deregistrationsNone": "None in the last 90 days",
+      "decentralization": "Operator Decentralization",
+      "decentralizationDescription": "Percentage of this operator's active nodes running on their own unique IP. 100% means no two nodes share an IP.",
+      "decentralizationBreakdown": "{nodes, plural, one{# active node} other{# active nodes}} across {ips, plural, one{# unique IP} other{# unique IPs}}",
+      "decentralizationRating": "IP ratio rating: {rating}",
+      "decentralizationTier": {
+        "good": "Good (+10)",
+        "ok": "OK (+3)",
+        "fair": "Fair (0)",
+        "poor": "Poor (−10)",
+        "bad": "Bad (−20)"
+      }
+    },
+    "nodeHistory": {
+      "firstGeneration": "Node History",
+      "firstGenerationDescription": "A node key can be reused across stakes; each stake is a generation. This node key has no previous history on the network.",
+      "noPreviousGenerations": "New to the network",
+      "previousGenerations": "Previous Generations",
+      "previousGenerationsDescription": "Previous stakes of this node key on the network. Each reuse of the key is a generation.",
+      "generationCount": "{count, plural, one{# generation} other{# generations}}",
+      "decommissions": "{count, plural, one{# decommission} other{# decommissions}}",
+      "totalUptime": "Past Uptime",
+      "totalUptimeDescription": "Time staked across the node key's previous generations.",
+      "exitOutcomes": "Exit Outcomes",
+      "exitOutcomesDescription": "How the node key's previous generations ended. Liquidations and deregistrations can indicate reliability issues.",
+      "outcomeExits": "{count, plural, one{# normal exit} other{# normal exits}}",
+      "outcomeLiquidations": "{count, plural, one{# liquidation} other{# liquidations}}",
+      "outcomeDeregistrations": "{count, plural, one{# deregistration} other{# deregistrations}}",
+      "keyActive": "Node Key Status",
+      "keyActiveDescription": "Whether this node key is already staked on the network.",
+      "keyActiveWarning": "This node key is already running on the network. This contract cannot finalize until that node exits.",
+      "fullHistory": "Full History",
+      "fullHistoryDescription": "View the complete generation history on the SESH token explorer.",
+      "viewHistoryLink": "View on seshtoken.info"
+    },
     "shared": {
       "notEnoughTokensAlert": "You don't have enough {tokenSymbol} to stake to this node. Your wallet has {walletAmount}. Please make sure you have at least {tokenAmount} in your wallet before staking.",
       "stakeAmount": "Stake Amount",
@@ -562,8 +611,14 @@
       "rewardsAddressDescription": "The wallet address that you will claim rewards to.",
       "operatorFee": "Operator Fee",
       "operatorFeeDescription": "Percentage of node rewards taken as a fee by the operator, with remaining rewards distributed to contributors, proportional to stake amount.",
+      "operatorFeeAboveMedian": "The operator fee is above the network median of {median}.",
+      "operatorFeeBelowMedian": "The operator fee is below the network median of {median}.",
       "reserveSlots": "Reserved Stakes",
       "reserveSlotsDescription": "You can reserve stakes for specific contributors to your node.",
+      "sectionStake": "Stake",
+      "sectionNode": "Node",
+      "sectionOperator": "Operator",
+      "sectionNodeHistory": "Node History",
       "buttonEditField": {
         "aria": "Edit {field}"
       },
@@ -926,11 +981,9 @@
   },
   "nodeCard": {
     "open": {
-      "min": "Min",
-      "max": "Max",
+      "range": "Stake Available",
       "yourStake": "Your Stake",
       "remainingStake": "Remaining",
-      "minContribution": "Min Contribution",
       "viewButton": {
         "text": "View",
         "ariaLabel": "View the node details in the side panel"
@@ -940,7 +993,23 @@
       "stakedTo": "Your Stake",
       "stakedToTooltip": "You have staked {tokenAmount}",
       "errorStakedButAlreadyRunningNotification": "Invalid node, withdraw your stake",
-      "errorStakedButAlreadyRunning": "This registration can't be finalized as this node is already running as a single contributor node. You may want to withdraw your stake."
+      "errorStakedButAlreadyRunning": "This registration can't be finalized as this node is already running as a single contributor node. You may want to withdraw your stake.",
+      "filled": "Filled",
+      "operatorLabel": "Operator",
+      "operatorScoreLabel": "Operator Score",
+      "operatorUnrated": "New Operator",
+      "rankedLabel": "[Ranked # {number}]",
+      "operatorScoreTooltip": "Operator score {score}, ranked #{rank}, running {nodes} active nodes",
+      "operatorUnratedTooltip": "This operator runs fewer than 3 active nodes and doesn't have a rating yet",
+      "operatorDeregistrationsWarning": "Warning: this operator had {count, plural, one{# node deregistered} other{# nodes deregistered}} from the network in the last 60 days",
+      "generationsLabel": "Generations",
+      "generationsTooltip": "{count, plural, one{# generation} other{# generations}} of this node key: {exits, plural, one{# normal exit} other{# normal exits}}, {liquidations, plural, one{# liquidation} other{# liquidations}}, {deregistrations, plural, one{# deregistration} other{# deregistrations}}",
+      "generationsNewTooltip": "This node key has no previous history on the network.",
+      "newNodeLabel": "New Node",
+      "uptimeLabel": "Uptime",
+      "uptimeTooltip": "Time staked across the node key's previous generations.",
+      "feeAboveMedian": "The operator fee is above the network median of {median}.",
+      "feeBelowMedian": "The operator fee is below the network median of {median}."
     },
     "pending": {
       "registerButton": {

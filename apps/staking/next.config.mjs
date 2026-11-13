@@ -38,6 +38,18 @@ const getBackendApiUrl = () => {
   return url;
 };
 
+const getOperatorInfoApiUrl = () => {
+  let url = process.env.OPERATOR_INFO_API_URL ?? 'https://seshtoken.info';
+
+  if (url.endsWith('/')) {
+    url = url.substring(0, url.length - 1);
+  }
+
+  console.log('Operator Info API URL:', url);
+
+  return url;
+};
+
 const getNetworkApiUrl = () => {
   let url = process.env.NEXT_PUBLIC_NETWORK_API_URL;
   if (!url) throw new Error('Network API URL is not set');
@@ -133,6 +145,14 @@ const nextConfig = {
       {
         source: '/api/network/:path*',
         destination: `${getNetworkApiUrl()}/:path*`,
+      },
+      {
+        source: '/api/operators/:path*',
+        destination: `${getOperatorInfoApiUrl()}/api/operators/:path*`,
+      },
+      {
+        source: '/api/node/:path*',
+        destination: `${getOperatorInfoApiUrl()}/api/node/:path*`,
       },
     ];
   },

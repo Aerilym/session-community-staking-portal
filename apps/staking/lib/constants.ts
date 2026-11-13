@@ -140,6 +140,8 @@ export enum QUERY {
   STALE_TIME_CLAIM_REWARDS = 2 * 60 * 1000,
   /** 60 seconds */
   STALE_TIME_REMOTE_FEATURE_FLAGS = 60 * 1000,
+  /** 5 minutes (matches the seshtoken.info operator score API cache) */
+  STALE_TIME_OPERATOR_SCORES = 5 * 60 * 1000,
 }
 
 export const SIGNIFICANT_FIGURES = {

@@ -47,7 +47,7 @@ export const PubKey = forwardRef<HTMLDivElement, PubKeyProps>((props, ref) => {
   );
 
   const collapsedPubKeyOverride = useMemo(
-    () => (pubKeyDisplayedOverride ? collapseString(pubKeyDisplayedOverride, leadingChars, trailingChars) : ''),
+    () => (pubKeyDisplayedOverride ? collapseString(pubKeyDisplayedOverride, leadingChars, trailingChars, '...') : ''),
       [pubKeyDisplayedOverride, leadingChars, trailingChars]
   )
 
@@ -66,7 +66,7 @@ export const PubKey = forwardRef<HTMLDivElement, PubKeyProps>((props, ref) => {
     };
   }, [handleSelectionChange]);
 
-  const tooltipContent = <div className='flex text-wrap break-all align-middle'>
+  const tooltipContent = <div className='font-mono flex text-wrap break-all align-middle'>
     {pubKey}
     {pubKeyDisplayedOverride ? <CopyToClipboardButton
     className={cn(
@@ -85,7 +85,7 @@ export const PubKey = forwardRef<HTMLDivElement, PubKeyProps>((props, ref) => {
         <Tooltip tooltipContent={tooltipContent} triggerProps={{ disabled: expandOnHover }} contentProps={{ side }} >
           <span
             className={cn(
-              'select-all break-all',
+              'font-mono select-all break-all',
               force !== 'collapse' && expandOnHover && 'group-hover:hidden',
               force !== 'collapse' && expandOnHover && isExpanded ? 'hidden' : 'block',
               force !== 'collapse' && expandOnHoverDesktopOnly && 'md:group-hover:hidden',
@@ -100,7 +100,7 @@ export const PubKey = forwardRef<HTMLDivElement, PubKeyProps>((props, ref) => {
       ) : null}
       <div
         className={cn(
-          'select-all break-all',
+          'font-mono select-all break-all',
           force !== 'collapse' && expandOnHover && 'group-hover:block',
           (force !== 'collapse' && expandOnHover && isExpanded) || isExpanded ? 'block' : 'hidden',
           force !== 'collapse' && expandOnHoverDesktopOnly && 'md:group-hover:block',

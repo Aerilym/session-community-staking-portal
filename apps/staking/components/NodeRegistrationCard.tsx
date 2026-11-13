@@ -1,9 +1,10 @@
 'use client';
 
-import { InfoNodeCard, NodeItem, NodeItemLabel, NodeItemValue } from '@/components/InfoNodeCard';
+import { InfoNodeCard, NodeInfoCardText } from '@/components/InfoNodeCard';
 import useRelativeTime from '@/hooks/useRelativeTime';
 import { ButtonDataTestId } from '@/testing/data-test-ids';
 import type { Registration } from '@session/staking-api-js/schema';
+import { cn } from '@session/ui/lib/utils';
 import { useTranslations } from 'next-intl';
 import { usePathname } from 'next/navigation';
 import { type HTMLAttributes, forwardRef, useMemo } from 'react';
@@ -58,7 +59,7 @@ const NodeRegistrationCard = forwardRef<
   return (
     <InfoNodeCard
       ref={ref}
-      className={className}
+      className={cn(className, isRegistrationFormOpen ? 'py-2' : '')}
       pubKey={pubKey}
       isActive={isRegistrationFormOpen}
       /*buttonSiblings={
@@ -92,17 +93,18 @@ const NodeRegistrationCard = forwardRef<
               text: dictionary('registerButton.text'),
               dataTestId: ButtonDataTestId.Node_Card_Register,
               link: `/register/${pubKey}`,
+              size: 'sm',
             }
           : undefined
       }
       {...props}
     >
-      <NodeItem>
-        <NodeItemLabel>
-          {titleFormat('format', { title: dictRegistration('submit.preparedAt') })}
-        </NodeItemLabel>
-        <NodeItemValue>{preparedTimer}</NodeItemValue>
-      </NodeItem>
+      <NodeInfoCardText
+        className="sm:ms-2"
+        label={titleFormat('format', { title: dictRegistration('submit.preparedAt') })}
+      >
+        {preparedTimer}
+      </NodeInfoCardText>
     </InfoNodeCard>
   );
 });

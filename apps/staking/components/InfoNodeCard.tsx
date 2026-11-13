@@ -1,32 +1,35 @@
 'use client';
 
-import { NodeCard, NodeCardText, NodeCardTitle } from '@/components/NodeCard';
+import { NodeCard, RowLabel } from '@/components/NodeCard';
 import type { ButtonDataTestId } from '@/testing/data-test-ids';
-import { PubKey } from '@session/ui/components/PubKey';
 import { TextSeparator } from '@session/ui/components/Separator';
 import {
   StatusIndicator,
   type StatusIndicatorVariants,
 } from '@session/ui/components/StatusIndicator';
 import { cn } from '@session/ui/lib/utils';
-import { Button, ButtonSkeleton } from '@session/ui/ui/button';
+import { Button, type ButtonProps, ButtonSkeleton } from '@session/ui/ui/button';
 import { Skeleton } from '@session/ui/ui/skeleton';
-import { useTranslations } from 'next-intl';
+import type { Ed25519PublicKey } from '@session/util-crypto/keys';
 import Link from 'next/link';
 import { type HTMLAttributes, type ReactNode, forwardRef } from 'react';
+import { StakeCardSnKey } from './StakedNode/Info/StakeCardSnKey';
 
 export type InfoNodeCardProps = HTMLAttributes<HTMLDivElement> & {
-  pubKey: string;
+  pubKey: Ed25519PublicKey;
   buttonSiblings?: ReactNode;
   isActive?: boolean;
+  isOperator?: boolean;
   forceSmall?: boolean;
   button?: {
     text: string;
     link: string;
     dataTestId: ButtonDataTestId;
     ariaLabel: string;
+    size?: ButtonProps['size'];
   };
   warnings?: ReactNode;
+  headerSiblings?: ReactNode;
   statusIndicatorColour?: StatusIndicatorVariants['status'];
 };
 
@@ -35,7 +38,9 @@ export const InfoNodeCard = forwardRef<HTMLDivElement, InfoNodeCardProps>(
     {
       statusIndicatorColour,
       buttonSiblings,
+      headerSiblings,
       isActive,
+      isOperator,
       className,
       forceSmall,
       pubKey,
@@ -46,63 +51,65 @@ export const InfoNodeCard = forwardRef<HTMLDivElement, InfoNodeCardProps>(
     },
     ref
   ) => {
-    const generalNodeDictionary = useTranslations('sessionNodes.general');
-    const titleFormat = useTranslations('modules.title');
     return (
       <NodeCard
         ref={ref}
         {...props}
         className={cn(
-          'justify-between gap-2 border border-transparent',
-          forceSmall ? '' : 'md:gap-10',
+          'justify-between gap-2 border border-transparent min-[550px]:flex-nowrap',
+          forceSmall ? '' : 'md:gap-2',
           isActive && 'border-session-green',
           className
         )}
       >
         <div className="flex flex-row">
           {warnings ? (
-            <div className="flex w-max flex-row items-center gap-2 align-middle">{warnings}</div>
-          ) : null}
-          <div className={cn('text-start', className)}>
-            <div className="flex w-full cursor-pointer items-baseline gap-1 align-middle md:gap-3">
-              {statusIndicatorColour ? (
-                <div className="scale-75 p-0 sm:mb-0.5 sm:pt-0.5 md:scale-100 md:pt-0">
-                  <StatusIndicator status={statusIndicatorColour} />
-                </div>
-              ) : null}
-              <NodeCardTitle
-                className={cn(
-                  'inline-flex flex-wrap gap-1.5',
-                  forceSmall ? 'text-xs md:text-base' : 'text-sm md:text-lg'
-                )}
-              >
-                <span className="text-nowrap font-normal">
-                  {titleFormat('format', { title: generalNodeDictionary('publicKeyShort') })}
-                </span>
-                <PubKey pubKey={pubKey} force="collapse" leadingChars={8} trailingChars={4} />
-              </NodeCardTitle>
+            <div className="me-2 flex w-max flex-row items-center gap-2 align-middle">
+              {warnings}
             </div>
-            <NodeCardText
+          ) : null}
+          <div className={cn('inline-flex flex-row flex-wrap', className)}>
+            <div
               className={cn(
-                'col-span-10 inline-flex max-h-max flex-row-reverse justify-start gap-2 text-center align-middle font-normal sm:text-start md:mt-0 md:flex-row',
-                forceSmall ? 'text-xs md:text-xs' : 'text-xs md:text-base'
+                'inline-flex flex-wrap items-baseline gap-x-1 align-middle md:gap-x-1.5',
+                forceSmall ? 'text-xs md:text-xs' : 'text-sm md:text-base'
+              )}
+            >
+              <div className="flex items-center gap-1">
+                {statusIndicatorColour ? (
+                  <StatusIndicator className="h-2.5 w-2.5" status={statusIndicatorColour} />
+                ) : null}
+                <StakeCardSnKey
+                  key="snKey"
+                  pubkey={pubKey}
+                  tooltipSide={'top'}
+                  isOperator={isOperator}
+                  className="me-0"
+                />
+              </div>
+              {headerSiblings}
+            </div>
+            <div
+              className={cn(
+                'inline-flex flex-wrap gap-x-2 text-center align-middle font-normal sm:text-start md:flex-row',
+                forceSmall ? 'text-xs md:text-xs' : 'text-sm md:text-base'
               )}
             >
               {children}
-            </NodeCardText>
+            </div>
           </div>
         </div>
-        <div className="flex w-full flex-row items-center gap-2 align-middle sm:w-auto">
+        <div className="flex w-full flex-row items-center gap-2 align-middle min-[550px]:w-auto">
           {buttonSiblings}
           {button ? (
-            <Link href={button.link} className="w-full md:w-auto" prefetch>
+            <Link href={button.link} prefetch className="w-full min-[550px]:w-auto">
               <Button
                 variant={isActive ? 'default' : 'outline'}
-                size={forceSmall ? 'sm' : 'md'}
+                size={button.size ? button.size : forceSmall ? 'sm' : 'md'}
                 rounded="md"
                 aria-label={button.ariaLabel}
                 data-testid={button.dataTestId}
-                className="w-full md:w-auto"
+                className="w-full min-[550px]:w-auto"
               >
                 {button.text}
               </Button>
@@ -152,3 +159,23 @@ export const NodeItemLabel = ({
 export const NodeItemValue = ({ children }: { children: ReactNode }) => (
   <span className="text-nowrap font-semibold"> {children}</span>
 );
+
+export type NodeInfoCardTextProps = {
+  label: string;
+  className?: string;
+  children: ReactNode;
+};
+
+export function NodeInfoCardText({ label, className, children }: NodeInfoCardTextProps) {
+  return (
+    <NodeItem
+      className={cn(
+        'inline-flex flex-wrap xs:flex-nowrap gap-1 whitespace-nowrap text-gradient-white',
+        className
+      )}
+    >
+      <RowLabel>{label}</RowLabel>
+      {children}
+    </NodeItem>
+  );
+}

@@ -41,6 +41,10 @@ export const formatLocalizedTimeFromSeconds = (
 ) =>
   formatLocalizedRelativeTimeClient(getDateFromUnixTimestampSeconds(seconds), new Date(0), options);
 
+/** Formats a duration in days as a localized distance string */
+export const formatDurationFromDays = (days: number): string =>
+  formatLocalizedTimeFromSeconds(days * 24 * 60 * 60);
+
 export const formatNumber = (num: number, options?: Intl.NumberFormatOptions) => {
   return new Intl.NumberFormat(undefined, options).format(num);
 };

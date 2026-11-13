@@ -10,9 +10,16 @@ export type CardSnKeyProps = {
   isOperator?: boolean;
   width?: 'w-full' | 'w-max';
   tooltipSide?: PubKeyProps['side'];
+  className?: string;
 };
 
-export function StakeCardSnKey({ pubkey, isOperator, width, tooltipSide }: CardSnKeyProps) {
+export function StakeCardSnKey({
+  pubkey,
+  isOperator,
+  width,
+  tooltipSide,
+  className,
+}: CardSnKeyProps) {
   const generalNodeDictionary = useTranslations('sessionNodes.general');
   const titleFormat = useTranslations('modules.title');
 
@@ -20,7 +27,8 @@ export function StakeCardSnKey({ pubkey, isOperator, width, tooltipSide }: CardS
     <NodeCardText
       className={cn(
         'me-2 flex flex-row flex-wrap gap-1 peer-checked:[&>.separator]:opacity-0 md:peer-checked:[&>.separator]:opacity-100 peer-checked:[&>span>span>button]:opacity-100 peer-checked:[&>span>span>div]:block peer-checked:[&>span>span>span]:hidden',
-        width
+        width,
+        className
       )}
     >
       {pubkey && isEd25519PublicKey(pubkey) ? (

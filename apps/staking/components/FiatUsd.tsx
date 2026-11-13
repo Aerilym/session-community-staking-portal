@@ -2,13 +2,27 @@ import { formatUsd, seshAtomicToUsd } from '@session/contracts';
 import { cn } from '@session/ui/lib/utils';
 
 /**
- * A muted USD amount in parentheses, e.g. ($10.23), for display after token amounts.
+ * A muted USD amount, e.g. $10.23 or ($10.23), for display with token amounts.
+ * Parentheses are included by default; pass `parenthesis={false}` to omit them.
  * Optionally sized relative to the surrounding font (e.g. text-[0.55em]) so it
  * scales with clamp() sized container text.
  */
-export function FiatUsd({ usd, className }: { usd: number | null; className?: string }) {
+export function FiatUsd({
+  usd,
+  className,
+  parenthesis = true,
+}: {
+  usd: number | null;
+  className?: string;
+  parenthesis?: boolean;
+}) {
   if (usd === null) return null;
-  return <span className={`text-muted-foreground ${className ?? ''}`}>(${formatUsd(usd)})</span>;
+  const formatted = `$${formatUsd(usd)}`;
+  return (
+    <span className={`text-muted-foreground ${className ?? ''}`}>
+      {parenthesis ? `(${formatted})` : formatted}
+    </span>
+  );
 }
 
 /**
