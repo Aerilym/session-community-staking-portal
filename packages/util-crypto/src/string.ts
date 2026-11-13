@@ -6,11 +6,17 @@ import type { BLSPublicKey, Ed25519PublicKey, EthereumAddress } from './keys';
  * @param str - The input string to collapse.
  * @param leadingChars - The number of characters to keep at the beginning of the string.
  * @param trailingChars - The number of characters to keep at the end of the string.
+ * @param separator - the separator character to use
  * @returns The collapsed string.
  */
-export const collapseString = (str: string, leadingChars = 6, trailingChars = 4): string => {
+export const collapseString = (
+  str: string,
+  leadingChars = 6,
+  trailingChars = 4,
+  separator = '…'
+): string => {
   if (str.length <= leadingChars + trailingChars + 3) return str;
-  return `${str.slice(0, leadingChars)}…${str.slice(-trailingChars)}`;
+  return `${str.slice(0, leadingChars)}${separator}${str.slice(-trailingChars)}`;
 };
 
 /**

@@ -118,7 +118,7 @@ const NodeCardText = forwardRef<HTMLSpanElement, HTMLAttributes<HTMLSpanElement>
   ({ className, ...props }, ref) => (
     <span
       ref={ref}
-      className={cn('font-light text-gradient-white text-sm md:text-base', className)}
+      className={cn('text-gradient-white text-sm md:text-base', className)}
       {...props}
     />
   )

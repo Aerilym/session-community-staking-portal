@@ -104,6 +104,13 @@ export const ActionModuleTooltip = forwardRef<HTMLDivElement, HTMLAttributes<HTM
 );
 ActionModuleTooltip.displayName = 'ActionModuleTooltip';
 
+/** A muted section header that groups related ActionModuleRows */
+export const ActionModuleSectionHeader = ({ children }: { children: ReactNode }) => (
+  <div className="w-full font-semibold text-muted-foreground text-xs uppercase tracking-wider md:text-sm">
+    {children}
+  </div>
+);
+
 type ActionModuleRowContentProps = {
   label: ReactNode;
   tooltip: ReactNode;

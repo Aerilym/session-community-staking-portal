@@ -9,6 +9,7 @@ import { NodesListSkeleton } from '@/components/NodesListModule';
 import { OpenNodeCard } from '@/components/OpenNodeCard';
 import { useDisplayStatusBar } from '@/components/StatusBar';
 import { useOpenContributorContracts } from '@/hooks/useOpenContributorContracts';
+import { useOperatorScores } from '@/hooks/useOperatorScores';
 import { PREFERENCE, SOCIALS, URL } from '@/lib/constants';
 import { REMOTE_FEATURE_FLAG } from '@/lib/feature-flags';
 import { useRemoteFeatureFlagQuery } from '@/lib/feature-flags-client';
@@ -19,6 +20,7 @@ import { useUser } from '@/providers/user-provider';
 import { ButtonDataTestId } from '@/testing/data-test-ids';
 import { ModuleGridInfoContent } from '@session/ui/components/ModuleGrid';
 import { Social } from '@session/ui/components/SocialLinkList';
+import { areEthereumAddressesEqual } from '@session/util-crypto/string';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { type ReactNode, useMemo } from 'react';
@@ -63,6 +65,17 @@ export default function OpenNodes() {
     });
   }, [contracts, activeAddress]);
 
+  const displayedContracts = useMemo(
+    () => [
+      ...(showAwaitingOperator ? awaitingOperatorContracts : []),
+      ...hiddenContractsToShow,
+      ...contractsToShow,
+    ],
+    [showAwaitingOperator, awaitingOperatorContracts, hiddenContractsToShow, contractsToShow]
+  );
+
+  const { operatorScores, medianOperatorFee } = useOperatorScores();
+
   return isStakingDisabled ? (
     <StakingDisabled />
   ) : isError ? (
@@ -78,16 +91,16 @@ export default function OpenNodes() {
     contractsToShow.length ||
     (showAwaitingOperator && awaitingOperatorContracts.length) ? (
     <>
-      {showAwaitingOperator
-        ? awaitingOperatorContracts.map((contract) => (
-            <OpenNodeCard key={contract.address} contract={contract} />
-          ))
-        : null}
-      {hiddenContractsToShow.map((contract) => (
-        <OpenNodeCard key={contract.address} contract={contract} showAlreadyRunningWarning />
-      ))}
-      {contractsToShow.map((contract) => (
-        <OpenNodeCard key={contract.address} contract={contract} />
+      {displayedContracts.map((contract) => (
+        <OpenNodeCard
+          key={contract.address}
+          contract={contract}
+          medianOperatorFee={medianOperatorFee}
+          operatorScore={operatorScores.get(contract.operator_address.toLowerCase())}
+          showAlreadyRunningWarning={hiddenContractsToShow.some(({ address }) =>
+            areEthereumAddressesEqual(address, contract.address)
+          )}
+        />
       ))}
     </>
   ) : (

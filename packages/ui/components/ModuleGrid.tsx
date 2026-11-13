@@ -57,7 +57,7 @@ const ModuleGridTitle = forwardRef<HTMLHeadingElement, HTMLAttributes<HTMLHeadin
     <h2
       ref={ref}
       className={cn(
-        'mx-4 my-2 text-2xl leading-none tracking-tight md:block md:text-3xl',
+        'mx-4 my-1 text-xl leading-none tracking-tight md:block md:text-2xl',
         className
       )}
       {...props}
@@ -124,7 +124,7 @@ const ModuleGridContent = forwardRef<HTMLDivElement, ModuleGridContentProps>(
     >
       <div
         className={cn(
-          'fade-to-transparent-b flex h-max flex-col gap-2 p-4 align-middle md:p-6',
+          'fade-to-transparent-b flex h-max flex-col gap-2 p-4 align-middle md:p-6 pt-0.5 md:pt-2',
           alignment === MODULE_GRID_ALIGNMENT.TOP_1_3 ? 'py-[20vh] xl:py-0 xl:pt-[20vh]' : '',
           className
         )}

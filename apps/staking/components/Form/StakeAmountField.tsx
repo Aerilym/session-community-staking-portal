@@ -1,10 +1,12 @@
+import { useSeshPrice } from '@/app/mystakes/modules/PriceModule';
 import { useVestingUnstakedBalance } from '@/app/vested-stakes/modules/VestingUnstakedBalanceModule';
 import { ActionModuleTooltip } from '@/components/ActionModule';
+import { FiatUsd } from '@/components/FiatUsd';
 import { SESSION_NODE_FULL_STAKE_AMOUNT } from '@/lib/constants';
 import { type DecimalDelimiter, useDecimalDelimiter } from '@/lib/locale-client';
 import { useActiveVestingContract } from '@/providers/vesting-provider';
 import type { ButtonDataTestId, InputDataTestId } from '@/testing/data-test-ids';
-import { SENT_DECIMALS } from '@session/contracts';
+import { SENT_DECIMALS, seshAtomicToUsd } from '@session/contracts';
 import { formatSENTBigInt, formatSENTBigIntNoRounding } from '@session/contracts/hooks/Token';
 import { Button } from '@session/ui/ui/button';
 import { FormControl, FormItem, FormMessage } from '@session/ui/ui/form';
@@ -99,6 +101,7 @@ export const StakeAmountField = forwardRef<HTMLInputElement, StakeAmountFieldPro
 
     const { value, onChange } = field;
     const decimalDelimiter = useDecimalDelimiter();
+    const price = useSeshPrice();
     const { balance: balanceWallet, value: balanceWalletValue } = useWalletTokenBalance();
     const { formattedAmount: balanceVesting, amount: balanceVestingValue } =
       useVestingUnstakedBalance();
@@ -106,6 +109,10 @@ export const StakeAmountField = forwardRef<HTMLInputElement, StakeAmountFieldPro
 
     const balanceValue = activeVestingContract ? balanceVestingValue : balanceWalletValue;
     const balance = activeVestingContract ? balanceVesting : balanceWallet;
+
+    const stakeAmountValue = stringToBigInt(value, SENT_DECIMALS, decimalDelimiter);
+    const stakeAmountUsd =
+      price !== null && stakeAmountValue > 0n ? seshAtomicToUsd(stakeAmountValue, price) : null;
 
     const fullStakeString = bigIntToString(
       SESSION_NODE_FULL_STAKE_AMOUNT,
@@ -212,22 +219,29 @@ export const StakeAmountField = forwardRef<HTMLInputElement, StakeAmountFieldPro
                 </Button>
               </div>
             </div>
-            <Input
-              placeholder={bigIntToString(maxStake, SENT_DECIMALS)}
-              disabled={!isConnected || disabled}
-              className="w-full rounded-lg border-[#668C83] border-[2px] border-opacity-80 px-4 py-8 text-3xl shadow-md"
-              {...field}
-              value={value}
-              onChange={(e) => onChange(formatInputText(e.target.value))}
-              onPaste={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                return onChange(formatInputText(e.clipboardData.getData('text/plain')));
-              }}
-              ref={ref}
-              data-testid={dataTestId}
-              {...props}
-            />
+            <div className="relative w-full">
+              <Input
+                placeholder={bigIntToString(maxStake, SENT_DECIMALS)}
+                disabled={!isConnected || disabled}
+                className="w-full rounded-lg border-[#668C83] border-[2px] border-opacity-80 px-3 pt-7 pb-12 text-3xl shadow-md"
+                {...field}
+                value={value}
+                onChange={(e) => onChange(formatInputText(e.target.value))}
+                onPaste={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  return onChange(formatInputText(e.clipboardData.getData('text/plain')));
+                }}
+                ref={ref}
+                data-testid={dataTestId}
+                {...props}
+              />
+              <FiatUsd
+                usd={stakeAmountUsd}
+                parenthesis={false}
+                className="pointer-events-none absolute start-4 bottom-2 text-base"
+              />
+            </div>
             <Slider
               className="my-2"
               max={bigIntToNumber(SESSION_NODE_FULL_STAKE_AMOUNT, SENT_DECIMALS)}
