@@ -8,6 +8,7 @@ export async function generateMetadata() {
   return siteMetadata({
     title: dict('title'),
     description: dict('description'),
+    path: '/register',
   });
 }
 

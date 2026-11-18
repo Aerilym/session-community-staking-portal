@@ -35,10 +35,7 @@ export const viewport: Viewport = {
 
 const buildInfo = getBuildInfo();
 
-export default async function RootLayout({
-  children,
-  modal,
-}: { children: ReactNode; modal: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
   const { locale, direction, messages } = await getLocalizationData();
   const wagmiCookie = (await headers()).get('cookie');
 
@@ -63,7 +60,6 @@ export default async function RootLayout({
               <AppBannerServer enabledFlags={enabledFlags} />
               <Header />
               <main>{children}</main>
-              {modal}
               <WalletUserSheet />
               {!isProduction ? <DevSheet buildInfo={buildInfo} /> : null}
               <TOSHandler />

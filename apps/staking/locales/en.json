@@ -48,6 +48,10 @@
     "vestedStakes": {
       "title": "Vested Stakes",
       "description": "View your vesting contract stakes."
+    },
+    "home": {
+      "title": "Stake SESH and Earn Rewards",
+      "description": "Stake SESH and earn rewards for securing the Session Network. Browse open nodes, register your node, and track your staking rewards on the community-run portal."
     }
   },
   "maintenance": {

@@ -1,14 +1,25 @@
 import { Footer } from '@/components/Footer';
 import { LandingExplorerSection } from '@/components/LandingExplorerSection';
 import { LANDING_BUTTON_URL, SOCIALS } from '@/lib/constants';
+import { siteMetadata } from '@/lib/metadata';
 import { ButtonDataTestId } from '@/testing/data-test-ids';
 import { Social } from '@session/ui/components/SocialLinkList';
 import { LinkOutIcon } from '@session/ui/icons/LinkOutIcon';
 import { cn } from '@session/ui/lib/utils';
 import { Button } from '@session/ui/ui/button';
 import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import Link from 'next/link';
+
+export async function generateMetadata() {
+  const dict = await getTranslations('metadata.home');
+  return siteMetadata({
+    title: dict('title'),
+    description: dict('description'),
+    path: '/',
+  });
+}
 
 const PrimaryButton = ({ size, className }: { size: 'sm' | 'lg'; className?: string }) => {
   const dictionary = useTranslations('home');

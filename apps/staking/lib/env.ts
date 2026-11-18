@@ -24,6 +24,10 @@ if (!NEXT_PUBLIC_PRICE_TOKEN) {
 
 export const NEXT_PUBLIC_TESTNET = process.env.NEXT_PUBLIC_TESTNET === 'true';
 
+/** Canonical origin of this deployment (e.g. https://stake.seshtoken.info). Used for SEO metadata, robots, and sitemap URLs. */
+export const NEXT_PUBLIC_SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://stake.seshtoken.info';
+
 /** Base URL of the SESH token explorer (seshtoken.info). Optional; defaults to the production site. */
 export const NEXT_PUBLIC_SESH_TOKEN_EXPLORER_URL =
   process.env.NEXT_PUBLIC_SESH_TOKEN_EXPLORER_URL ?? 'https://seshtoken.info';

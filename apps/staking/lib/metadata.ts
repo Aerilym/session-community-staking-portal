@@ -1,28 +1,46 @@
-import { BASE_URL } from '@/lib/constants';
+import { NEXT_PUBLIC_SITE_URL } from '@/lib/env';
 import { getTranslations } from 'next-intl/server';
 
-const SITE_IMAGE = `${BASE_URL}/images/link_preview.png`;
-// const SITE_ICON = `${BASE_URL}/images/icon.png`;
+const SITE_IMAGE = `${NEXT_PUBLIC_SITE_URL}/images/link_preview.png`;
 
 export const siteMetadata = async (props: {
   title?: string;
   description?: string;
   image?: string;
+  path?: string;
 }) => {
   const dict = await getTranslations('metadata.root');
-  const { title, description = dict('description'), image = SITE_IMAGE } = props;
+  const { title, description = dict('description'), image = SITE_IMAGE, path } = props;
+  const fullTitle = `${title ? `${title} | ` : ''}${dict('title')}`;
+  const canonical = path ? `${NEXT_PUBLIC_SITE_URL}${path}` : NEXT_PUBLIC_SITE_URL;
   return {
-    metadataBase: new URL('https://stake.seshtoken.info'),
-    title: `${title ? `${title} | ` : ''}${dict('title')}`,
+    metadataBase: new URL(NEXT_PUBLIC_SITE_URL),
+    title: fullTitle,
     description,
+    alternates: {
+      canonical,
+    },
     openGraph: {
-      title,
+      type: 'website',
+      siteName: dict('title'),
+      locale: 'en',
+      title: fullTitle,
       description,
+      url: canonical,
       images: [
         {
           url: image,
+          width: 1200,
+          height: 630,
+          alt: dict('title'),
         },
       ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: fullTitle,
+      description,
+      images: [image],
     },
     icons: {
       icon: [
