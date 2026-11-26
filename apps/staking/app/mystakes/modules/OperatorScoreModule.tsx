@@ -38,11 +38,11 @@ export function useOperatorScore({ addressOverride }: { addressOverride?: Addres
     queryKey: ['operatorScore', address],
     enabled: !!address,
     refetchInterval: autoRefresh ? BACKEND.NODE_TARGET_UPDATE_INTERVAL_SECONDS * 1000 : false,
-    queryFn: async (): Promise<OperatorScore> => {
+    queryFn: async (): Promise<OperatorScore | null> => {
       const res = await fetch(`${URL.SESH_TOKEN_EXPLORER}/api/operators/score/${address}`);
 
       if (!res.ok) {
-        throw new Error(`Failed to fetch operator score: ${res.status}`);
+        return null;
       }
 
       return operatorScoreSchema.parse(await res.json());
@@ -76,40 +76,36 @@ export default function OperatorScoreModule({
       size={size}
       variant={variant}
     >
-      {data ? (
-        data.score === null || data.rank === null ? (
-          <span className="inline-flex flex-col items-start gap-2.5 align-middle">
-            <span className="mt-0.5 text-muted-foreground text-sm">{dict('notScored')}</span>
+      {!data || data.score === null || data.rank === null ? (
+        <span className="inline-flex flex-col items-start gap-2.5 align-middle">
+          <span className="mt-0.5 text-muted-foreground text-sm">{dict('notScored')}</span>
+          <a
+            href={`${URL.SESH_TOKEN_EXPLORER}/operators`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-session-green text-sm underline underline-offset-2"
+          >
+            {dict('viewOperatorsCount', { count: data?.n_operators ? data.n_operators : '' })}
+            <LinkOutIcon className="h-4 w-4" />
+          </a>
+        </span>
+      ) : (
+        <span className="inline-flex flex-col items-start gap-0.5 align-middle">
+          <span className={data.score >= 0 ? 'text-session-green' : 'text-indicator-red'}>
+            {formatSignedScore(data.score)}
+          </span>
+          <span className="text-muted-foreground text-sm">
             <a
               href={`${URL.SESH_TOKEN_EXPLORER}/operators`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-session-green text-sm underline underline-offset-2"
+              className="inline-flex items-center gap-1 text-sm underline-offset-2 hover:text-session-green"
             >
-              {dict('viewOperatorsCount', { count: data.n_operators })}
+              {dict('rank', { rank: data.rank, total: data.n_operators })}
               <LinkOutIcon className="h-4 w-4" />
             </a>
           </span>
-        ) : (
-          <span className="inline-flex flex-col items-start gap-0.5 align-middle">
-            <span className={data.score >= 0 ? 'text-session-green' : 'text-indicator-red'}>
-              {formatSignedScore(data.score)}
-            </span>
-            <span className="text-muted-foreground text-sm">
-              <a
-                href={`${URL.SESH_TOKEN_EXPLORER}/operators`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-sm underline-offset-2 hover:text-session-green"
-              >
-                {dict('rank', { rank: data.rank, total: data.n_operators })}
-                <LinkOutIcon className="h-4 w-4" />
-              </a>
-            </span>
-          </span>
-        )
-      ) : (
-        '—'
+        </span>
       )}
     </DynamicModuleCard>
   );

@@ -1,6 +1,6 @@
 import { SENT_DECIMALS } from '@session/contracts';
 import type { DailyRewardInfo } from '@session/staking-api-js/schema';
-import { bigIntToNumber, numberToBigInt } from '@session/util-crypto/maths';
+import { bigIntToNumber } from '@session/util-crypto/maths';
 
 export const SECONDS_PER_DAY = 24 * 60 * 60;
 
@@ -34,9 +34,7 @@ const parseWindow = (
     return null;
   }
 
-  const rewardAmount =
-    numberToBigInt(Math.round(end.lifetime_rewards)) -
-    numberToBigInt(Math.round(baseline.lifetime_rewards));
+  const rewardAmount = end.lifetime_rewards - baseline.lifetime_rewards;
   const rewardFrom = Math.trunc(baseline.timestamp);
   const rewardSpanSeconds = now - rewardFrom;
 

@@ -14,7 +14,7 @@ const atomic = (sesh: number) => BigInt(sesh) * 10n ** BigInt(SENT_DECIMALS);
 
 const entry = (secondsAgo: number, lifetimeRewardsAtomic: bigint): DailyRewardInfo => ({
   block: 1,
-  lifetime_rewards: Number(lifetimeRewardsAtomic),
+  lifetime_rewards: lifetimeRewardsAtomic,
   timestamp: NOW - secondsAgo,
 });
 
@@ -103,8 +103,8 @@ describe('parseDailyRewards', () => {
 
   it('truncates fractional timestamps to whole seconds', () => {
     const rewards = [
-      { block: 1, lifetime_rewards: 100e9, timestamp: NOW - DAY - 29.70556497574 },
-      { block: 2, lifetime_rewards: 110e9, timestamp: NOW - 3600.123 },
+      { block: 1, lifetime_rewards: 100n * 10n ** 9n, timestamp: NOW - DAY - 29.70556497574 },
+      { block: 2, lifetime_rewards: 110n * 10n ** 9n, timestamp: NOW - 3600.123 },
     ];
 
     const { daily } = parseDailyRewards(rewards, NOW + 0.9);
